@@ -48,12 +48,11 @@ export class ProductStorageService {
     this.getMaxProductId(this.apiService)
     .then(this.getProductList)
     .then((data) => {
-      console.log('test');
       that._producList.next(data);
       // resule(data);
     })
     .catch((error) => {
-      console.log(error);
+      // console.log(error);
       that._producList.next(error);
       // error(error);
     });
@@ -136,7 +135,7 @@ export class ProductStorageService {
                 }
               },
               (error) => {
-                console.log(error);
+                // console.log(error);
                 return reject(error);
               }
           );
@@ -152,7 +151,7 @@ export class ProductStorageService {
             return resolve(result.data);
           },
           (error) => {
-            console.log(error);
+            // console.log(error);
             return reject(error);
           }
         );

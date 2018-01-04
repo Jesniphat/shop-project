@@ -3,11 +3,9 @@ import { isPlatformBrowser } from '@angular/common';
 import { BrowserModule, Meta, Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 
-// import { BlockUI, NgBlockUI } from 'ng-block-ui';
-
 import { ApiService } from '../../service/api.service';
 import { MenuListService } from '../../service/menu-list.service';
-// import { SocketService } from '../../service/socket.service';
+import { SocketService } from '../../service/socket.service';
 import { AlertsService } from '../../service/alerts.service';
 import { RootscopeService } from '../../service/rootscope.service';
 
@@ -19,11 +17,6 @@ declare const $: any;
   styleUrls: ['./manager.component.scss']
 })
 export class ManagerComponent implements OnInit {
-  /**
-   * Block UI variable
-   */
-  // @BlockUI() blockUI: NgBlockUI; // Load block UI
-
   /**
    * public variable
    */
@@ -44,16 +37,10 @@ export class ManagerComponent implements OnInit {
     private apiService: ApiService,
     private menuListService: MenuListService,
     private router: Router,
-    // public socketService: SocketService,
+    public socketService: SocketService,
     public alertsService: AlertsService,
     public $rootScope: RootscopeService
-  ) {
-    // const that = this;
-    // Change style of top container on scroll
-    // window.onscroll = function () {
-    //   that.scrollFunction();
-    // };
-  }
+  ) { }
 
   /**
    * Init
@@ -88,7 +75,7 @@ export class ManagerComponent implements OnInit {
    */
   public pingErrorAction(error: any) {
     if (isPlatformBrowser(this.platformId)) {
-      console.log(error);
+      // console.log(error);
     }
   }
 
@@ -154,15 +141,21 @@ export class ManagerComponent implements OnInit {
  */
   public block(obj: any) {
     if (isPlatformBrowser(this.platformId)) {
-      // if (obj.block === true && obj.block !== undefined) {
-      //   if (obj.text) {
-      //     this.blockUI.start(obj.text);
-      //   } else {
-      //     this.blockUI.start('Loading...');
-      //   }
-      // } else {
-      //   this.blockUI.stop();
-      // }
+      if (obj.block === true && obj.block !== undefined) {
+        if (obj.text) {
+          $.blockUI({
+            css: { backgroundColor: 'none', border: '0px' },
+            message: '<h3><i class="fa fa-spinner"></i> ' + obj.text + '</h3>'
+          });
+        } else {
+          $.blockUI({
+            css: { backgroundColor: 'none', border: '0px' },
+            message: '<h3><i class="fa fa-spinner"></i> Loading...</h3>'
+          });
+        }
+      } else {
+        $.unblockUI();
+      }
     }
   }
 

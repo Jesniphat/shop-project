@@ -3,15 +3,13 @@ import { isPlatformBrowser } from '@angular/common';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { AlertsService } from './alerts.service';
-import * as io from 'socket.io-client';
 
 @Injectable()
 export class SocketService {
   /**
    * Socket cliend
    */
-  public socket = io.connect('http://localhost:8800', {reconnect: true});
-  // public socket = io.connect('http://13.59.164.106:8800', {reconnect: true});
+  public socketUrl: any = 'http://localhost:8800'; // 'http://13.59.164.106:8800'
   public loginData: any;
 
   /**
@@ -30,49 +28,56 @@ export class SocketService {
   ) {
     // Build Observe data
     this.socketGetData$ = new Observable(observer => this._socketGetData = observer);
+    this.startio();
+  }
 
-    // Receive data from socket server
-    // this.loginData = JSON.parse(localStorage.getItem('logindata'));
+  /**
+   * Start Socket io
+   * @access public
+   */
+  public startio() {
     if (isPlatformBrowser(this.platformId)) {
-      // Do something if want to use only cliend site.
+      const io = require('socket.io-client');
+      const socket =  io.connect(this.socketUrl , {reconnect: true});
+
+      // Receive data from socket server
+      // this.loginData = JSON.parse(localStorage.getItem('logindata'));
       this.loginData = JSON.parse(localStorage.getItem('logindata'));
-    }
-    if (this.loginData !== null) {
-      if (isPlatformBrowser(this.platformId)) {
+      if (this.loginData !== null) {
         if (this.loginData.type === 'admin') {
-          this.socket.on('admin', function (data) {
+          socket.on('admin', function (data) {
             if (data.loginData.display_name !== this.loginData.display_name) {
               this.alertsSocket(data.message);
             }
           }.bind(this));
 
-          this.socket.on('staff', function (data) {
+          socket.on('staff', function (data) {
             // console.log('socker data', data);
             if (data.loginData.display_name !== this.loginData.display_name) {
               this.alertsSocket(data.message);
             }
           }.bind(this));
 
-          this.socket.on('customer', function (data) {
+          socket.on('customer', function (data) {
             if (data.loginData.display_name !== this.loginData.display_name) {
               this.alertsSocket(data.message);
             }
           }.bind(this));
         } else if (this.loginData.type === 'staff') {
-          this.socket.on('staff', function (data) {
+          socket.on('staff', function (data) {
             // console.log('socker data', data);
             if (data.loginData.display_name !== this.loginData.display_name) {
               this.alertsSocket(data.message);
             }
           }.bind(this));
 
-          this.socket.on('customer', function (data) {
+          socket.on('customer', function (data) {
             if (data.loginData.display_name !== this.loginData.display_name) {
               this.alertsSocket(data.message);
             }
           }.bind(this));
         } else {
-          this.socket.on('customer', function (data) {
+          socket.on('customer', function (data) {
             if (data.loginData.display_name !== this.loginData.display_name) {
               this.alertsSocket(data.message);
             }
@@ -91,9 +96,8 @@ export class SocketService {
   public alertsSocket(message: any) {
     // alerts messager in the page
     this.alerts.info(message);
-
     // Sent data for Observer
-    this.sentSocketData(message);
+    // this.sentSocketData(message);
   }
 
 
@@ -102,7 +106,11 @@ export class SocketService {
    * @param data
    */
   public emitMessage(data: any) {
-    this.socket.emit('save-message', data);
+    if (isPlatformBrowser(this.platformId)) {
+      const io = require('socket.io-client');
+      const socket =  io.connect(this.socketUrl, {reconnect: true});
+      socket.emit('save-message', data);
+    }
   }
 
   /**

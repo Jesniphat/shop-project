@@ -25,7 +25,8 @@
       ],
       "scripts": [
         "../node_modules/jquery/dist/jquery.min.js",
-        "assets/awesome/js/fontawesome-all.js"
+        "assets/awesome/js/fontawesome-all.js",
+        "assets/js/block-ui.js"
       ],
       "environmentSource": "environments/environment.ts",
       "environments": {

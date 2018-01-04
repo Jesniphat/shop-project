@@ -1,0 +1,47 @@
+<div class="w3-container page-container">
+  <div class="w3-row">
+    <button class="w3-btn w3-blue" (click)="add_new_product('create')">
+      New
+    </button>
+  </div>
+  <br/>
+  <div class="w3-row">
+    <div class="w3-col l3 m6 s12">
+      <input class="w3-input w3-border" placeholder="Search..." type="text" 
+       [(ngModel)]="filterText" (focus)="focusFilter()">
+    </div>
+  </div>
+  <br/>
+</div>
+
+<!-- Product grid -->
+<div class="w3-row">
+  <div class="w3-col l3 s6" *ngFor="let item of productLists | tableFilter:filterText | pageNumber:{pageNo:pageNo, row: 9}">
+    <div class="w3-container">
+      <div class="w3-display-container">
+        <img [src]="imgLink + item.img" style="width:100%">
+        <span class="w3-tag w3-display-topleft" *ngIf="item.recommend=='Y'">Recommend</span>
+        <div class="w3-display-middle w3-display-hover">
+          <button class="w3-button w3-black" (click)="add_new_product(item)">Edit <i class="fas fa-edit"></i></button>
+        </div>
+      </div>
+      <p>{{item.product_name}}<br><b>฿{{item.product_cost}}</b></p>
+    </div>
+  </div>
+</div>
+
+<div class="w3-container">
+  <div class="w3-col l2 m3 s12">
+    <select class="w3-select" [(ngModel)]="pageNo">
+      <option *ngFor="let page of productLists | tableFilter:filterText | pageList:9" [value]='page'>{{page}}</option>
+    </select>
+  </div>
+  <br/>
+  <hr/>
+</div>
+
+<div id="addproductmodel" class="w3-modal">
+  <div id="producct-model-content" class="w3-modal-content w3-card-4 w3-animate-zoom">
+    <app-product-manager [productId]="productId" [modelOpen] = 'true' (createProductResult)="createProductResult($event)"></app-product-manager>
+  </div>
+</div>

@@ -14,11 +14,13 @@ import { LoginModule } from './components/login/login.module';
 import { ManagerModule } from './components/manager/manager.module';
 
 import { AppComponent } from './app.component';
+import { AlertsComponent } from './components/alerts/alerts.component';
 
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    AlertsComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'shop'}),

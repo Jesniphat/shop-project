@@ -7,7 +7,7 @@ export class Config {
   public init() {
     const mysql = require('mysql');
     this.db = mysql.createConnection({
-      host: '13.59.164.106',
+      host: '47.74.235.241',
       port: 3306,
       user: 'root',
       password: 'rootp@ssw0rd',

@@ -41,7 +41,7 @@ export class MenuListService {
         }
       },
       (error) => {
-        console.log('can not get menu list', error);
+        // console.log('can not get menu list', error);
         this._menuList.next([]);
       }
     );

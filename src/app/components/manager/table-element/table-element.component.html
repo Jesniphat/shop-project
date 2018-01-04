@@ -1,0 +1,48 @@
+
+  <div class="w3-row">
+    <div class="w3-col l3 m6 s12">
+      <input class="w3-input w3-border" placeholder="Search..." type="text" 
+       [(ngModel)]="filterText" (focus)="focusFilter()">
+    </div>
+  </div>
+
+  <br/>
+  
+  <div class="w3-row">
+    <table class="w3-table-all">
+      <thead>
+        <tr>
+          <th *ngFor="let column of columnList; let key = index" class="head" [ngClass]="column.column" (click)="sortTable($event, column.column)">
+            {{column.name}}
+          </th>
+          <th *ngIf="isAction" style="text-align:center;">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of dataTableLists | tableFilter:filterText | tableSort:sortTableData | pageNumber:{pageNo:pageNo, row:10}">
+          <td *ngFor="let column of columnList; let key = index">
+            {{item[column.column]}}
+          </td>
+          <td *ngIf="isAction.status" style="text-align:center;">
+            <button *ngIf="isAction.edit" class="w3-button" (click)="edit(item)">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button *ngIf="isAction.delete" class="w3-button" (click)="delete(item)">
+              <i class="material-icons">mode_edit</i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot *ngIf="dataTableLists.length > 0">
+        <tr>
+          <th [attr.colspan]="columnList.length + 1">
+            <div class="w3-col l2 m3 s12">
+                <select class="w3-select" [(ngModel)]="pageNo">
+                  <option *ngFor="let page of dataTableLists | tableFilter:filterText | pageList:10" [value]='page'>{{page}}</option>
+                </select>
+            </div>
+          </th>
+        </tr>
+      </tfoot>
+    </table>
+  </div>

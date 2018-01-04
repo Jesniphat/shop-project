@@ -33,21 +33,21 @@ server.on('listening', onListening);
  * Socket io
  */
 
-// const io = require('socket.io')(server, {
-//   serveClient: false,
-//   wsEngine: 'ws' // uws is not supported since it is a native module
-// });
+const io = require('socket.io')(server, {
+  serveClient: false,
+  wsEngine: 'ws' // uws is not supported since it is a native module
+});
 
-// io.on('connection', function (socket) {
-//   // console.log('User connected');
-//   socket.on('disconnect', function() {
-//     // console.log('User disconnected');
-//   });
-//   socket.on('save-message', function (data) {
-//     // console.log('socket = ', data);
-//     io.emit(data.logindata.type, { loginData: data.logindata, message: data.message });
-//   });
-// });
+io.on('connection', function (socket) {
+  // console.log('User connected');
+  socket.on('disconnect', function() {
+    // console.log('User disconnected');
+  });
+  socket.on('save-message', function (data) {
+    // console.log('socket = ', data);
+    io.emit(data.logindata.type, { loginData: data.logindata, message: data.message });
+  });
+});
 
 
 /**
