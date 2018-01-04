@@ -35,9 +35,7 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Use only cliend site.
     if (isPlatformBrowser(this.platformId)) {
-      // Do something if want to use only cliend site.
       this.storage = localStorage;
     }
     // Get login and clear cookie user.
@@ -45,13 +43,15 @@ export class LoginComponent implements OnInit {
   }
 
   getLogin() {
-    const param = {'clear': 'login'};
-    this.apiService
-        .post('/api/authen/clearlogin', param)
-        .subscribe(
-            res => this.getLoginDoneAction(res),
-            error => this.getLoginErrorAction(error)
-        );
+    if (isPlatformBrowser(this.platformId)) {
+      const param = {'clear': 'login'};
+      this.apiService
+      .post('/api/authen/clearlogin', param)
+      .subscribe(
+        res => this.getLoginDoneAction(res),
+        error => this.getLoginErrorAction(error)
+      );
+    }
   }
 
   getLoginDoneAction(res: any) {

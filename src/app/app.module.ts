@@ -2,7 +2,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-// import { HttpModule } from '@angular/http';
 import { HttpClientModule } from '@angular/common/http';
 
 import { PLATFORM_ID, APP_ID, Inject } from '@angular/core';
@@ -25,7 +24,6 @@ import { AlertsComponent } from './components/alerts/alerts.component';
   imports: [
     BrowserModule.withServerTransition({appId: 'shop'}),
     FormsModule,
-    // HttpModule,
     HttpClientModule,
     Routing,
     SharedModule,
@@ -36,11 +34,11 @@ import { AlertsComponent } from './components/alerts/alerts.component';
   bootstrap: [AppComponent]
 })
 export class AppModule {
-  constructor(
-    @Inject(PLATFORM_ID) private platformId: Object,
-    @Inject(APP_ID) private appId: string) {
-    // const platform = isPlatformBrowser(platformId) ?
-    //   'on the server' : 'in the browser';
-    // console.log(`Running ${platform} with appId=${appId}`);
-  }
+  // constructor(
+  //   @Inject(PLATFORM_ID) private platformId: Object,
+  //   @Inject(APP_ID) private appId: string) {
+  //   const platform = isPlatformBrowser(platformId) ?
+  //     'on the server' : 'in the browser';
+  //   console.log(`Running ${platform} with appId=${appId}`);
+  // }
 }

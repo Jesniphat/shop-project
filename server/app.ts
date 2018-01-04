@@ -74,11 +74,6 @@ app.use('/api/user', usersRouter);
 // Server static files from /public
 app.use('/public', express.static(join(DIST_FOLDER, 'public')));
 
-// TODO: implement data requests securely
-app.get('/api/*', (req, res) => {
-  res.status(404).send('data requests are not supported');
-});
-
 // Server static files from /browser
 app.get('*.*', express.static(join(DIST_FOLDER, 'browser')));
 
@@ -86,12 +81,6 @@ app.get('*.*', express.static(join(DIST_FOLDER, 'browser')));
 app.get('*', (req, res) => {
   res.render(join(DIST_FOLDER, 'browser', 'index.html'), { req });
 });
-
-// Comment it out ** It from angular.io
-// Start up the Node server
-// app.listen(PORT, () => {
-//   console.log(`Node server listening on http://localhost:${PORT}`);
-// });
 
 // This one add it with out ex from angular.io It same express gen. For debug some error. Then we add ./bin/www.ts
 // catch 404 and forward to error handler

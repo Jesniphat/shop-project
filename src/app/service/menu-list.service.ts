@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Observable } from 'rxjs/Observable';
 import { ApiService } from './api.service';
 
@@ -17,7 +18,10 @@ export class MenuListService {
    */
   public _menuList: any;
 
-  constructor(public apiService: ApiService) {
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: object, // Get platform is cliend and server
+    public apiService: ApiService
+  ) {
     this.menuList$ = new Observable(observer => this._menuList = observer);
   }
 
@@ -26,25 +30,26 @@ export class MenuListService {
       this._menuList.next([]);
       return;
     }
-
     const param = {
       page: page
     };
-    this.apiService
-    .post('/api/menu/menulist', param)
-    .subscribe(
-      (response) => {
-        if (response.status) {
-          this._menuList.next(response.data);
-        }else {
+
+    if (isPlatformBrowser(this.platformId)) {
+      this.apiService
+      .post('/api/menu/menulist', param)
+      .subscribe(
+        (response) => {
+          if (response.status) {
+            this._menuList.next(response.data);
+          }else {
+            this._menuList.next([]);
+          }
+        },
+        (error) => {
           this._menuList.next([]);
         }
-      },
-      (error) => {
-        // console.log('can not get menu list', error);
-        this._menuList.next([]);
-      }
-    );
+      );
+    }
   }
 
 }
