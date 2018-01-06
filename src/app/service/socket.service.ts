@@ -4,6 +4,8 @@ import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { AlertsService } from './alerts.service';
 
+import { environment } from '../../environments/environment';
+
 @Injectable()
 export class SocketService {
   /**
@@ -37,6 +39,15 @@ export class SocketService {
    */
   public startio() {
     if (isPlatformBrowser(this.platformId)) {
+      this.socketUrl = window.location.protocol + '//' + window.location.hostname;
+      if (window.location.port) {
+        if (!environment.production) {
+          this.socketUrl += ':' + '8800';
+        } else {
+          this.socketUrl += ':' + window.location.port;
+        }
+      }
+
       const io = require('socket.io-client');
       const socket =  io.connect(this.socketUrl , {reconnect: true});
 
@@ -107,6 +118,15 @@ export class SocketService {
    */
   public emitMessage(data: any) {
     if (isPlatformBrowser(this.platformId)) {
+      this.socketUrl = window.location.protocol + '//' + window.location.hostname;
+      if (window.location.port) {
+        if (!environment.production) {
+          this.socketUrl += ':' + '8800';
+        } else {
+          this.socketUrl += ':' + window.location.port;
+        }
+      }
+
       const io = require('socket.io-client');
       const socket =  io.connect(this.socketUrl, {reconnect: true});
       socket.emit('save-message', data);

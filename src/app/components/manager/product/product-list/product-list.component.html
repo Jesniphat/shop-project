@@ -19,7 +19,8 @@
   <div class="w3-col l3 s6" *ngFor="let item of productLists | tableFilter:filterText | pageNumber:{pageNo:pageNo, row: 9}">
     <div class="w3-container">
       <div class="w3-display-container">
-        <img [src]="imgLink + item.img" style="width:100%">
+        <img *ngIf="item.img" [src]="imgLink + item.img" style="width:100%">
+        <img *ngIf="!item.img" [src]="imgLink + 'public/images/empty-image.png'" style="width:100%">
         <span class="w3-tag w3-display-topleft" *ngIf="item.recommend=='Y'">Recommend</span>
         <div class="w3-display-middle w3-display-hover">
           <button class="w3-button w3-black" (click)="add_new_product(item)">Edit <i class="fas fa-edit"></i></button>

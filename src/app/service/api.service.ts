@@ -1,4 +1,5 @@
-import { Injectable, Inject, Optional } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID, Optional } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { APP_BASE_HREF } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -20,20 +21,41 @@ export class ApiService {
     private prod = false;
     public api = '';
     public upl = '';
-    public img = 'http://localhost:8800/';
+    public img = '';
+    // public img = 'http://localhost:8800/';
     // public img = 'http://13.59.164.106:8800/' environment.production;
 
   constructor(
-    // @Optional() @Inject(APP_BASE_HREF) origin: string) {
-    //   this.heroesUrl = `${origin}${this.heroesUrl}`;
-    // },
+    @Inject(PLATFORM_ID) private platformId: object, // Get platform is cliend and server
     private http: HttpClient,
     private router: Router
   ) {
-    // console.log(environment);
+    this.setImgUrl();
   }
 
-  /** GET data from the server */
+  /**
+   * SET IMG Url
+   * @access private
+   */
+  private setImgUrl() {
+    if (isPlatformBrowser(this.platformId)) {
+      this.img = window.location.protocol + '//' +  window.location.hostname;
+      if (window.location.port) {
+        if (!environment.production) {
+          this.img += ':' + '8800';
+        } else {
+          this.img += ':' + window.location.port;
+        }
+      }
+      this.img += '/';
+    }
+  }
+
+  /**
+   * GET data from the server
+   * @param url: string
+   * @access public
+   */
   public get(url: string): Observable<ResponseData> {
     return this.http
       .get<ResponseData>( this.api + url, httpOptions)
@@ -46,7 +68,12 @@ export class ApiService {
 
   //////// Save methods //////////
 
-  /** POST: Add a new hero to the server */
+  /**
+   * POST: Add a new hero to the server
+   * @param url: string
+   * @param param: any
+   * @access public
+   */
   public post(url: string, param: any): Observable<ResponseData> {
     return this.http
     .post<ResponseData>(this.api + url, JSON.stringify(param), httpOptions)
@@ -56,7 +83,12 @@ export class ApiService {
     );
   }
 
-  /** PUT: Update some record */
+  /**
+   * PUT: Update some record
+   * @param url: string
+   * @param param: any
+   * @access public
+   */
   public put(url: string, param: any): Observable<ResponseData> {
     return this.http
     .put<ResponseData>(this.api + url, JSON.stringify(param), httpOptions)
@@ -68,7 +100,8 @@ export class ApiService {
 
   /**
    * If data not error we need to check permistion or something
-   * @param response
+   * @param res
+   * @access private
    */
   private access(res: any) {
       if (res.nologin) {
@@ -86,6 +119,7 @@ export class ApiService {
    * Let the app continue.
 	 * @param operation
 	 * @param result
+   * @access private
 	 */
   private handleError<T> (operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
