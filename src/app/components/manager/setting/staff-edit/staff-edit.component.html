@@ -1,0 +1,71 @@
+<form class="ui form" #editstaffForm="ngForm">
+  <div class="w3-container">
+    <div class="w3-row">
+      <div class="w3-col l5 m6 s12">
+        <label for="staffName">Staff Name <span style="color:red;">*</span></label>
+        <label *ngIf="staffName.errors && (staffName.dirty || staffName.touched)" style="color: red;">
+          <label [hidden]="!staffName.errors.required">
+            staffName is required
+          </label>
+        </label>
+        <input class="w3-input w3-border" type="text" id="staffName" [(ngModel)]="staff.staffName" 
+        name="staffName" #staffName="ngModel" placeholder="Staff Name" required>
+      </div>
+    </div>
+    <br>
+    <div class="w3-row">
+      <div class="w3-col l5 m6 s12">
+        <label for="staffLastName">Staff Last Name <span style="color:red;">*</span></label>
+        <label *ngIf="staffLastName.errors && (staffLastName.dirty || staffLastName.touched)" style="color: red;">
+          <label [hidden]="!staffLastName.errors.required">
+            Staff Last Name is required
+          </label>
+        </label>
+        <input class="w3-input w3-border" type="text" id="staffLastName" [(ngModel)]="staff.staffLastName" 
+        name="staffLastName" #staffLastName="ngModel" placeholder="Staff Name" required>
+      </div>
+    </div>
+    <br>
+    <div class="w3-row">
+      <div class="w3-col l5 m6 s12">
+        <label for="staffUserName">User Name <span style="color:red;">*</span></label>
+        <label *ngIf="staffUserName.errors && (staffUserName.dirty || staffUserName.touched)" class="ui pointing red basic label">
+          <label [hidden]="!staffUserName.errors.required">
+            staffUserName is required
+          </label>
+          <label [hidden]="!staffUserName.errors.minlength">
+            UserName must be at least 4 characters long.
+          </label>
+          <label [hidden]="!staffUserName.errors.maxlength">
+            UserName cannot be more than 20 characters long.
+          </label>
+        </label>
+        <input class="w3-input w3-border" type="text" id="staffUserName" [(ngModel)]="staff.staffUserName" 
+        name="staffUserName" #staffUserName="ngModel" placeholder="Staff Name" required minlength="4" maxlength="20">
+      </div>
+    </div>
+    <br>
+    <div class="w3-row">
+      <div>
+        <label>Profile Images</label>
+        <input class="w3-input w3-border" id="staffPic" type="file" [(ngModel)]="staff.img" name="staffPic" #staffPic
+        (change)="uploadStaffPic($event)">
+      </div>
+    </div>
+    <br/>
+    <div class="w3-row">
+      <div class="w3-col l5 m6 s12">
+        <div class="w3-card-4">
+          <img [src]="imgLink + staff.staffPic" alt="Norway" style="width: 100%">
+          <div class="w3-container w3-center">
+            <p>The Troll's tongue in Hardanger, Norway</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+    <div class="w3-row">
+      <button class="w3-button w3-blue" id="editstaff" type="submit" [disabled]="editstaffForm.form.invalid" (click)="updateStaff()">Save</button>
+    </div>
+  </div>
+</form>

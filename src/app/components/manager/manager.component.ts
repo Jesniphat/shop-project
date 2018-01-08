@@ -22,6 +22,9 @@ export class ManagerComponent implements OnInit {
    */
   public menuLists = [];
   public headerText: any = '';
+  public storage: any;
+  public imgLink: any = '';
+  public picUrl: any = '';
 
   /**
    * Constructor
@@ -55,6 +58,14 @@ export class ManagerComponent implements OnInit {
     this.menuListService.menuList$.subscribe(data => this.menu(data));
 
     this.menuListService.getMenuList(true, 'system');
+
+    this.imgLink = this.apiService.img;
+
+    if (isPlatformBrowser(this.platformId)) {
+      this.storage = localStorage;
+      const logindata = JSON.parse(this.storage.getItem('logindata'));
+      this.picUrl =  logindata.pic || 'public/images/empty-image.png';
+    }
   }
 
   /**

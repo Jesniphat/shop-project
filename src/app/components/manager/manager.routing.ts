@@ -8,6 +8,8 @@ import { CategoryListComponent } from './category/category-list/category-list.co
 import { CategoryManagerComponent } from './category/category-manager/category-manager.component';
 import { ProductListComponent } from './product/product-list/product-list.component';
 import { ProductManagerComponent } from './product/product-manager/product-manager.component';
+import { StaffCreateComponent } from './setting/staff-create/staff-create.component';
+import { StaffEditComponent } from './setting/staff-edit/staff-edit.component';
 
 const routes: Routes = [
   { path: 'manager', component: ManagerComponent, children: [
@@ -16,7 +18,9 @@ const routes: Routes = [
     { path: 'category', component: CategoryListComponent, outlet: 'm' },
     { path: 'category-manager/:id', component: CategoryManagerComponent, outlet: 'm' },
     { path: 'product', component: ProductListComponent, outlet: 'm'},
-    { path: 'product-manager/:id', component: ProductManagerComponent, outlet: 'm'}
+    { path: 'product-manager/:id', component: ProductManagerComponent, outlet: 'm'},
+    { path: 'create-staff', component: StaffCreateComponent, outlet: 'm'},
+    { path: 'create-edit', component: StaffEditComponent, outlet: 'm'}
   ]}
 ];
 

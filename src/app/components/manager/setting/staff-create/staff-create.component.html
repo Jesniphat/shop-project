@@ -1,0 +1,85 @@
+<form #createStaffForm="ngForm">
+  <div class="w3-container">
+    <div class="w3-row">
+      <div class="w3-col l5 m6 s12">
+        <label for="staffName">Staff Name <span style="color:red;">*</span></label>
+        <label [hidden]="staffName.valid || staffName.pristine" style="color: red;">
+					Staff Name is required
+        </label>
+        <input class="w3-input w3-border" type="text" id="staffName" [(ngModel)]="staff.staffName" name="staffName" #staffName="ngModel" required>
+      </div>
+    </div>
+    <br/>
+    <div class="w3-row">
+      <div class="w3-col l5 m6 s12">
+        <label for="staffLastName">Last Name <span style="color:red;">*</span></label>
+        <label [hidden]="staffLastName.valid || staffLastName.pristine" style="color: red;">
+          Staff last name is required
+        </label>
+        <input class="w3-input w3-border" type="text" id="staffLastName" [(ngModel)]="staff.staffLastName" name="staffLastName" #staffLastName="ngModel" required>
+      </div>
+    </div>
+    <br/>
+    <div class="w3-row">
+      <div class="w3-col l5 m6 s12">
+        <label for="staffUserName">User name <span style="color:red;">*</span></label>
+        <label *ngIf="staffUserName.errors && (staffUserName.dirty || staffUserName.touched)" style="color: red;">
+          <label [hidden]="!staffUserName.errors.required">
+            UserName is required
+          </label>
+          <label [hidden]="!staffUserName.errors.minlength">
+            UserName must be at least 4 characters long.
+          </label>
+          <label [hidden]="!staffUserName.errors.maxlength">
+            UserName cannot be more than 20 characters long.
+          </label>
+        </label>
+        <input class="w3-input w3-border" id="staffUserName" type="text" [(ngModel)]="staff.staffUserName" 
+        name="staffUserName" #staffUserName="ngModel" required minlength="4" maxlength="20" />
+      </div>
+    </div>
+    <br/>
+    <div class="w3-row">
+      <div class="w3-col l5 m6 s12">
+        <label for="staffPassword">Password <span style="color:red;">*</span></label>
+        <label *ngIf="staffPassword.errors && (staffPassword.dirty || staffPassword.touched)" style="color: red;">
+          <label [hidden]="!staffPassword.errors.required">
+            Password is required
+          </label>
+          <label [hidden]="!staffPassword.errors.minlength">
+            Password must be at least 4 characters long.
+          </label>
+          <label [hidden]="!staffPassword.errors.maxlength">
+            Password cannot be more than 20 characters long.
+          </label>
+        </label>
+        <input class="w3-input w3-border" id="staffPassword" type="password" [(ngModel)]="staff.staffPassword"
+        name="staffPassword" #staffPassword="ngModel" required minlength="4" maxlength="20">
+      </div>
+    </div>
+    <br/>
+    <div class="w3-row">
+      <div>
+        <label>Profile Images</label>
+        <input class="w3-input w3-border" id="staffPic" type="file" [(ngModel)]="staff.img" name="staffPic" #staffPic
+        (change)="uploadStaffPic($event)">
+      </div>
+    </div>
+    <br/>
+    <div class="w3-row">
+      <div class="w3-col l5 m6 s12">
+        <div class="w3-card-4">
+          <img [src]="imgLink + staff.staffPic" alt="Norway" style="width: 100%">
+          <div class="w3-container w3-center">
+            <p>The Troll's tongue in Hardanger, Norway</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+    <div class="w3-row">
+      <button class="w3-button w3-blue" id="saveStaff" type="submit" [disabled]="createStaffForm.form.invalid" 
+      (click)="saveStaff()">Save</button>
+    </div>
+  </div>
+</form>

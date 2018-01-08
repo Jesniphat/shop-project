@@ -172,4 +172,57 @@ uploadRouter.post('/category', uploadFile.single('file'), function (req, res, ne
   });
 });
 
+
+uploadRouter.post('/staff', uploadFile.single('file'), function (req, res, next) {
+  const $scope: any = {};
+  const connection = conn.init();
+  // console.log("res product pic = ", req.file);
+  const save_file = function(){
+    const deferred = promise.pending();
+    const newName = moment().format('YYYY-MM-DD_hh-mm-ss') + '_' + req.file.originalname;
+
+    const dirImg = './dist/public/images/staff-img/';
+    if (!fs.existsSync(dirImg)) {
+      fs.mkdirSync(dirImg);
+    }
+    const filename = dirImg + newName;
+    const src = fs.createReadStream(req.file.path);
+    src.pipe(fs.createWriteStream(filename));
+    src.on('end', function () {
+      // res.send({
+      //   status: true,
+      //   fileName: newName
+      // });
+      $scope.newName = newName;
+      deferred.resolve('Save file success');
+    });
+    src.on('error', function (err) {
+      // res.send({
+      //   status: false,
+      //   exMessage: 'upload file error' + err
+      // });
+      deferred.reject(err);
+    });
+    return deferred.promise;
+  };
+
+  save_file()
+  .then(function() {
+    res.json({
+      status: true,
+      data: {
+        pic_name: $scope.newName,
+        pic_path: 'public/images/staff-img/'  + $scope.newName
+      }
+    });
+    connection.end();
+  }).catch(function(e) {
+    res.json({
+      status: false,
+      error: e
+    });
+    connection.end();
+  });
+});
+
 export { uploadRouter };

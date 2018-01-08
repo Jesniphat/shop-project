@@ -1,6 +1,7 @@
 import * as express from 'express';
 import * as Promise from 'bluebird';
 import * as uuidv1 from 'uuid/v1';
+import * as md5 from 'md5';
 
 import { Permission } from '../library/permissions';
 import { Config } from '../library/configs';
@@ -24,7 +25,7 @@ staffRouter.use(function (req, res, next) {
   }
 });
 
-staffRouter.post('/createstaff', (req, res, next) => {
+staffRouter.post('/', (req, res, next) => {
   const con = conn.init();
   const staff = req.body;
 
@@ -36,7 +37,8 @@ staffRouter.post('/createstaff', (req, res, next) => {
           name: staff.staffName,
           lastname: staff.staffLastName,
           user: staff.staffUserName,
-          password: staff.staffPassword,
+          password: md5(staff.staffPassword),
+          pic: staff.staffPic,
           uuid: uuidv1()
         }
       };
@@ -67,7 +69,7 @@ staffRouter.post('/createstaff', (req, res, next) => {
 });
 
 
-staffRouter.post('/updatestaff', (req, res, next) => {
+staffRouter.put('/', (req, res, next) => {
   const con = conn.init();
   const staff = req.body;
 
@@ -78,7 +80,8 @@ staffRouter.post('/updatestaff', (req, res, next) => {
         query: {
           name: staff.name,
           lastname: staff.lastName,
-          user: staff.user
+          user: staff.user,
+          pic: staff.pic
         },
         where: { id: staff.id }
       };
@@ -94,7 +97,14 @@ staffRouter.post('/updatestaff', (req, res, next) => {
       db.Commit(con, (success) => {
         res.json({
           status: true,
-          data: result
+          data: {
+            id: staff.id,
+            display_name: staff.name,
+            last_name: staff.lastName,
+            login_name: staff.user,
+            password: staff.password,
+            pic: staff.pic
+          }
         });
       }, error => reject(error));
       con.end();

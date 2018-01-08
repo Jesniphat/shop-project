@@ -14,6 +14,8 @@ import { CategoryListComponent } from './category/category-list/category-list.co
 import { CategoryManagerComponent } from './category/category-manager/category-manager.component';
 import { ProductListComponent } from './product/product-list/product-list.component';
 import { ProductManagerComponent } from './product/product-manager/product-manager.component';
+import { StaffCreateComponent } from './setting/staff-create/staff-create.component';
+import { StaffEditComponent } from './setting/staff-edit/staff-edit.component';
 
 @NgModule({
   imports: [
@@ -30,7 +32,9 @@ import { ProductManagerComponent } from './product/product-manager/product-manag
     CategoryListComponent,
     CategoryManagerComponent,
     ProductListComponent,
-    ProductManagerComponent
+    ProductManagerComponent,
+    StaffCreateComponent,
+    StaffEditComponent
   ],
   providers: [
     Uploader

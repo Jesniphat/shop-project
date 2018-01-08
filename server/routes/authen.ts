@@ -38,7 +38,10 @@ authenRouter.post('/login', function(req, res, next) {
 
   const login_data = function(){
     return new Promise((resolve, reject) => {
-      const where = {user: login.user, password: md5(login.password)};
+      const where = {
+        user: login.user,
+        password: md5(login.password)
+      };
       const gets = {
         fields: '*',
         table:  'staff',
@@ -74,7 +77,8 @@ authenRouter.post('/login', function(req, res, next) {
         last_name: $scope.lastname,
         login_name: $scope.user,
         password: $scope.password,
-        type: $scope.type
+        type: $scope.type,
+        pic: $scope.pic
       }
     });
     connection.end();
