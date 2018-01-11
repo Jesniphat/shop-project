@@ -21,10 +21,13 @@
       "styles": [
         "styles.scss",
         "w3.scss",
-        "theme.scss"
+        "theme.scss",
+        "../node_modules/easy-autocomplete/dist/easy-autocomplete.min.css",
+        "../node_modules/easy-autocomplete/dist/easy-autocomplete.themes.min.css"
       ],
       "scripts": [
         "../node_modules/jquery/dist/jquery.min.js",
+        "../node_modules/easy-autocomplete/dist/jquery.easy-autocomplete.min.js",
         "assets/awesome/js/fontawesome-all.js",
         "assets/js/block-ui.js"
       ],

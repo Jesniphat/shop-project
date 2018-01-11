@@ -293,7 +293,8 @@ productRouter.get('/:id', (req, res, next) => {
  * @param callbackfucnt(@pruduct id)
  * @return JSON
  */
-productRouter.post('/getproductbyid', (req, res, next) => {
+productRouter.get('/:id', (req, res, next) => {
+  const productId: any = req.params.id;
   const connection: any = conn.init();
   const product: any = req.body;
   // let $scope;
@@ -342,7 +343,7 @@ productRouter.post('/getproductbyid', (req, res, next) => {
 
   };
 
-    get_product(product.product_id)
+    get_product(productId)
     .then(get_product_pic)
     .then(function($d){
       res.json({
@@ -793,6 +794,73 @@ productRouter.post('/delete_product', (req, res, next) => {
   });
 });
 
+/**
+ * Get producname for autocomplete max producr
+ *
+ * @access function
+ * @param max_id
+ * @return JSON
+ */
+productRouter.get('/max_update/:date', (req, res, next) => {
+  const max_update: any = req.params.date;
+  // const max_update = req.body.max_update;
+  const connection = conn.init();
+
+  /**
+   * Get data function
+   *
+   * @access public
+   * @return promist
+   */
+  const getProductName = function(){
+    return new Promise((resolve, reject) => {
+      const get = {
+        fields: [
+          'id, code, product_name as name, product_description, DATE_FORMAT(updated_date, \'%Y-%m-%d %H:%i:%s\') as updated_date'
+        ],
+        table: 'product',
+        where: 'status = \'Y\' and updated_date > ' + 'date_format(\'' + max_update + '\', \'%Y-%m-%d %H:%i:%s\')',
+        order: ['updated_date']
+      };
+
+      db.SelectAll(connection, get, (data) => {
+        resolve(data);
+      }, (error) => {
+        if (error === 'nodata') {
+          resolve([]);
+        } else {
+          console.log(error);
+          reject(error);
+        }
+      });
+    });
+  };
+
+
+  /**
+   * Blue bird start
+   *
+   * @return JSON
+   */
+  getProductName()
+  .then(function(data){
+    // console.log(data);
+    res.json({
+      status: true,
+      data: data
+    });
+    connection.end();
+  }).catch((errors) => {
+    console.log('Roll back error is', errors);
+    res.json({
+      status: false,
+      error: errors
+    });
+    connection.end();
+  });
+
+});
+
 
 /**
  * Get producname for autocomplete
@@ -866,7 +934,7 @@ productRouter.post('/getAllProductStore', (req, res, next) => {
  *
  * @return JSON
  */
-productRouter.post('/maxProductUpdate', (req, res, next) => {
+productRouter.get('/max', (req, res, next) => {
   const connection = conn.init();
 
   /**
@@ -967,9 +1035,10 @@ productRouter.post('/saveStockIn', (req, res, next) => {
 });
 
 
-productRouter.post('/getStockList', (req, res, next) => {
+productRouter.get('/getStockList/:id', (req, res, next) => {
   const connection = conn.init();
   const stock = req.body;
+  const productId = req.params.id;
 
   /** Get data of stock */
   const getStockById = function(){
@@ -983,7 +1052,7 @@ productRouter.post('/getStockList', (req, res, next) => {
           'p.product_price'
         ],
         table: 'lot_in s inner join product p on s.product_id = p.id',
-        where: {'p.status': 'Y', 's.product_id': stock.product_id}
+        where: {'p.status': 'Y', 's.product_id': productId}
       };
       db.SelectAll(connection, get, (data) => {
         resolve(data);

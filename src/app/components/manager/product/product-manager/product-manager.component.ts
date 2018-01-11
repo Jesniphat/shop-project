@@ -151,7 +151,7 @@ export class ProductManagerComponent implements OnInit {
     product_id: prodId
   };
   this.apiService
-    .post('/api/product/getproductbyid', param)
+    .get('/api/product/' + prodId)
     .subscribe(
       res => this.getProductByidDoneAction(res),
       error => this.getProductByidErrorAction(error)

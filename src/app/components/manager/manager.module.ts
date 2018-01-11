@@ -16,6 +16,7 @@ import { ProductListComponent } from './product/product-list/product-list.compon
 import { ProductManagerComponent } from './product/product-manager/product-manager.component';
 import { StaffCreateComponent } from './setting/staff-create/staff-create.component';
 import { StaffEditComponent } from './setting/staff-edit/staff-edit.component';
+import { StockInComponent } from './stock-in/stock-in.component';
 
 @NgModule({
   imports: [
@@ -34,7 +35,8 @@ import { StaffEditComponent } from './setting/staff-edit/staff-edit.component';
     ProductListComponent,
     ProductManagerComponent,
     StaffCreateComponent,
-    StaffEditComponent
+    StaffEditComponent,
+    StockInComponent
   ],
   providers: [
     Uploader

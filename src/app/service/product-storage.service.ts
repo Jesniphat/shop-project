@@ -45,7 +45,7 @@ export class ProductStorageService {
    */
   public productListGetting() {
     const that = this;
-    this.getMaxProductId(this.apiService)
+    this.getMaxProductId(this.apiService, this.platformId)
     .then(this.getProductList)
     .then((data) => {
       that._producList.next(data);
@@ -63,15 +63,16 @@ export class ProductStorageService {
    * @access public
    * @return promise
    */
-  public getMaxProductId(apiService): Promise<any> {
+  public getMaxProductId(apiService, platformId): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       apiService
-      .post('/api/product/maxProductUpdate', {})
+      .get('/api/product/max', {})
       .subscribe(
           data => {
             const param = {
               apiService: apiService,
-              max_update: data.data
+              max_update: data.data,
+              platformId: platformId
             };
             return resolve(param);
           },
@@ -91,7 +92,7 @@ export class ProductStorageService {
   public getProductList(param): Promise<any> {
   //  const storage = localStorage;
     let storage: any ;
-    if (isPlatformBrowser(this.platformId)) {
+    if (isPlatformBrowser(param.platformId)) {
       // Do something if want to use only cliend site.
       storage = localStorage;
     }
@@ -116,7 +117,8 @@ export class ProductStorageService {
           }
           // console.log(setMax);
           param.apiService
-          .post('/api/product/getAllProductStore', {'max_update': setMax})
+          // .post('/api/product/getAllProductStore', {'max_update': setMax})
+          .get('/api/product/getAllProductStore/' + setMax /*, {'max_update': setMax}*/)
           .subscribe(
               (resule) => {
                 // console.log(resule);
@@ -143,10 +145,11 @@ export class ProductStorageService {
       }else {
         // Select all first
         param.apiService
-        .post('/api/product/getAllProductStore', {'max_update': '2000-10-01'})
+        // .post('/api/product/getAllProductStore', {'max_update': '2000-10-01'})
+        .get('/api/product/max_update/' + '2000-10-01' /*, {'max_update': '2000-10-01'}*/)
         .subscribe(
           (result) => {
-            // console.log(result);
+            console.log(result);
             storage.setItem('productlist', JSON.stringify(result.data));
             return resolve(result.data);
           },

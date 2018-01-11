@@ -10,6 +10,7 @@ import { ProductListComponent } from './product/product-list/product-list.compon
 import { ProductManagerComponent } from './product/product-manager/product-manager.component';
 import { StaffCreateComponent } from './setting/staff-create/staff-create.component';
 import { StaffEditComponent } from './setting/staff-edit/staff-edit.component';
+import { StockInComponent } from './stock-in/stock-in.component';
 
 const routes: Routes = [
   { path: 'manager', component: ManagerComponent, children: [
@@ -20,7 +21,8 @@ const routes: Routes = [
     { path: 'product', component: ProductListComponent, outlet: 'm'},
     { path: 'product-manager/:id', component: ProductManagerComponent, outlet: 'm'},
     { path: 'create-staff', component: StaffCreateComponent, outlet: 'm'},
-    { path: 'create-edit', component: StaffEditComponent, outlet: 'm'}
+    { path: 'create-edit', component: StaffEditComponent, outlet: 'm'},
+    { path: 'stock-in', component: StockInComponent, outlet: 'm'}
   ]}
 ];
 
