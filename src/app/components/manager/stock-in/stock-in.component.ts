@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, Inject, PLATFORM_ID } from '@angular/core
 import { isPlatformBrowser } from '@angular/common';
 
 import { ProductManagerComponent } from '../product/product-manager/product-manager.component';
+import { TableElementComponent } from '../table-element/table-element.component';
 
 import { ProductStorageService } from '../../../service/product-storage.service';
 import { ApiService } from '../../../service/api.service';
@@ -19,6 +20,7 @@ declare var toastr: any;
 export class StockInComponent implements OnInit {
 
   /** Connect to child */
+  @ViewChild(TableElementComponent) private tableElementComponent: TableElementComponent;
   @ViewChild(ProductManagerComponent) public productManagerComponent: ProductManagerComponent;
   public productId: any = 'create';
 
@@ -120,7 +122,8 @@ export class StockInComponent implements OnInit {
       console.log($('#product-id').val());
       if (!$('#product-id').val()) {
         this.productId = 'create';
-        this.addProductDialog.showModal();
+        // this.addProductDialog.showModal();
+        document.getElementById('addproductmodel').style.display = 'block';
         this.productManagerComponent.reset();
         return;
       }
@@ -129,8 +132,8 @@ export class StockInComponent implements OnInit {
         product_id: $('#product-id').val()
       };
       this.apiService
-      // .post('/api/product/getproductbyid', param)
-      .get('/api/product/' + param.product_id)
+      // .post('/api/productstore/getproductbyid', param)
+      .get('/api/productstore/' + param.product_id)
       .subscribe(
         res => this.getProductByidDoneAction(res),
         error => this.getProductByidErrorAction(error)
@@ -215,7 +218,7 @@ export class StockInComponent implements OnInit {
         staff_id: this.stockInProduct.staffid
       };
       this.apiService
-        .post('/api/product/saveStockIn', param)
+        .post('/api/productstore/saveStockIn', param)
         .subscribe(
         res => this.saveStockDoneAction(res),
         error => this.saveStockErrorAction(error)
@@ -272,10 +275,26 @@ export class StockInComponent implements OnInit {
         product_id: id // $('#product-id').val()
       };
       this.apiService
-      // .post('/api/product/getStockList', param)
-      .get('/api/product/getStockList/' + param.product_id)
+      // .post('/api/productstore/getStockList', param)
+      .get('/api/productstore/getStockList/' + param.product_id)
       .subscribe(
-        res => this.stockList = res.data,
+        (res) => {
+          this.stockList = res.data;
+          console.log(this.stockList);
+          const stockColumn = [
+            {'name': 'Product code', 'column': 'code'},
+            {'name': 'Product name', 'column': 'product_name'},
+            {'name': 'Lot in', 'column': 'lot_in'},
+            {'name': 'Product price', 'column': 'product_price'}
+          ];
+          const action = {
+            search: false,
+            status: false,
+            edit: false,
+            delete: false
+          };
+          this.tableElementComponent.getTableDataLists({list: res.data, column: stockColumn, action: action});
+        },
         error => console.log(error)
       );
     }
@@ -302,8 +321,18 @@ export class StockInComponent implements OnInit {
     // $("#product-id").val('');
   }
 
-  public childReturn(result) {
+  public createProductResult(result) {
     console.log(result);
+    if (result) {
+      // this.getAllProduct();
+      if (isPlatformBrowser(this.platformId)) {
+        document.getElementById('addproductmodel').style.display = 'none';
+      }
+    } else {
+      if (isPlatformBrowser(this.platformId)) {
+        console.log('can\'t save');
+      }
+    }
   }
 
 }

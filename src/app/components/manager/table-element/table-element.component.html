@@ -1,5 +1,5 @@
 
-  <div class="w3-row">
+  <div class="w3-row" *ngIf="isAction.search">
     <div class="w3-col l3 m6 s12">
       <input class="w3-input w3-border" placeholder="Search..." type="text" 
        [(ngModel)]="filterText" (focus)="focusFilter()">
@@ -15,7 +15,7 @@
           <th *ngFor="let column of columnList; let key = index" class="head" [ngClass]="column.column" (click)="sortTable($event, column.column)">
             {{column.name}}
           </th>
-          <th *ngIf="isAction" style="text-align:center;">Action</th>
+          <th *ngIf="isAction.status" style="text-align:center;">Action</th>
         </tr>
       </thead>
       <tbody>

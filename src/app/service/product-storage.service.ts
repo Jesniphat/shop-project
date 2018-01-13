@@ -66,7 +66,7 @@ export class ProductStorageService {
   public getMaxProductId(apiService, platformId): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       apiService
-      .get('/api/product/max', {})
+      .get('/api/productstore/max', {})
       .subscribe(
           data => {
             const param = {
@@ -115,13 +115,13 @@ export class ProductStorageService {
           } else {
             setMax = param.max_update;
           }
-          // console.log(setMax);
+
           param.apiService
-          // .post('/api/product/getAllProductStore', {'max_update': setMax})
-          .get('/api/product/getAllProductStore/' + setMax /*, {'max_update': setMax}*/)
+          // .post('/api/productstore/getAllProductStore', {'max_update': setMax})
+          .get('/api/productstore/getAllProductStore/' + setMax /*, {'max_update': setMax}*/)
           .subscribe(
               (resule) => {
-                // console.log(resule);
+                console.log(resule);
                 if (!resule.status) {
                   return resolve(productList);
                 } else {
@@ -145,8 +145,8 @@ export class ProductStorageService {
       }else {
         // Select all first
         param.apiService
-        // .post('/api/product/getAllProductStore', {'max_update': '2000-10-01'})
-        .get('/api/product/max_update/' + '2000-10-01' /*, {'max_update': '2000-10-01'}*/)
+        // .post('/api/productstore/getAllProductStore', {'max_update': '2000-10-01'})
+        .get('/api/productstore/max_update/' + '2000-10-01' /*, {'max_update': '2000-10-01'}*/)
         .subscribe(
           (result) => {
             console.log(result);

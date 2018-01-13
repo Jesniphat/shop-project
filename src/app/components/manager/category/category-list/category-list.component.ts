@@ -101,6 +101,7 @@ export class CategoryListComponent implements OnInit {
       {'name': 'Description', 'column': 'cate_description'}
     ];
     const action = {
+      search: true,
       status: true,
       edit: true,
       delete: false

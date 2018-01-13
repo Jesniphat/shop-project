@@ -12,7 +12,7 @@ homeRouter.use((req, res, next) => {
   if (permission.isLogin(req)) {
     next();
   } else {
-    res.json({
+    res.status(401).json({
       status: true,
       nologin: true,
       error: 'Access Denied'

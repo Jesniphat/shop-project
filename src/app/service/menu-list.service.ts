@@ -39,7 +39,8 @@ export class MenuListService {
       .post('/api/menu/menulist', param)
       .subscribe(
         (response) => {
-          if (response.status) {
+          // console.log(response);
+          if (response) {
             this._menuList.next(response.data);
           }else {
             this._menuList.next([]);

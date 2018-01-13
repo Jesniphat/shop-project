@@ -16,7 +16,7 @@
 
 <!-- Product grid -->
 <div class="w3-row">
-  <div class="w3-col l3 s6" *ngFor="let item of productLists | tableFilter:filterText | pageNumber:{pageNo:pageNo, row: 9}">
+  <div class="w3-col l3 s6 s12" *ngFor="let item of productLists | tableFilter:filterText | pageNumber:{pageNo:pageNo, row: 9}">
     <div class="w3-container">
       <div class="w3-display-container">
         <img *ngIf="item.img" [src]="imgLink + item.img" style="width:100%">
