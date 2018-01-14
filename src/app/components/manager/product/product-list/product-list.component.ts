@@ -27,6 +27,8 @@ export class ProductListComponent implements OnInit {
   public productList: any = [];
   public products: any = [];
   public filterText: any = '';
+  public filterTexts: any = '';
+  public sort: any = 'id';
   public pageNo: any = 1;
   public uploadUrl: any = '/api/upload/product';
   public imgLink: any = '';
@@ -34,12 +36,14 @@ export class ProductListComponent implements OnInit {
   public delete_id: any = '';
   public productId: any = 'create';
 
+  public delayID = null;
+
   constructor(
     @Inject(PLATFORM_ID) private platformId: object,
     public meta: Meta,
     public title: Title,
     public router: Router,
-    public apiService: ApiService ,
+    public apiService: ApiService,
     public $rootscope: RootscopeService,
     public _elRef: ElementRef,
     public productStoreService: ProductStorageService,
@@ -47,8 +51,8 @@ export class ProductListComponent implements OnInit {
   ) {
     title.setTitle('Product');
     meta.addTags([
-      { name: 'author',   content: 'Coursetro.com'},
-      { name: 'keywords', content: 'product page list manager'},
+      { name: 'author', content: 'Coursetro.com' },
+      { name: 'keywords', content: 'product page list manager' },
       { name: 'description', content: 'Show all product list and edit' }
     ]);
   }
@@ -59,6 +63,40 @@ export class ProductListComponent implements OnInit {
     this.imgLink = this.apiService.img;
     this.getCategoryList();
     this.getAllProduct();
+    // this._getAllProduct();
+  }
+
+  public search(event) {
+    this.pageNo = 1;
+    if (isPlatformBrowser(this.platformId)) {
+      // console.log(event);
+      if (this.delayID === null) {
+        this.delayID = setTimeout(() => {
+          const input_data = event;
+          this._getAllProduct();
+          this.delayID = null;
+        }, 1000);
+      } else {
+        if (this.delayID) {
+          clearTimeout(this.delayID);
+          this.delayID = setTimeout(() => {
+            const input_data = event;
+            this._getAllProduct();
+            this.delayID = null;
+          }, 1000);
+        }
+      }
+    }
+  }
+
+  public _getAllProduct() {
+    this.apiService
+      .get('/api/product/product_connect?filtertext='
+      + this.filterTexts + '&filterby=' + this.sort + '&page=' + this.pageNo + '&limit=10')
+      .subscribe(
+        data => console.log(data), // this.productLists = data.data,
+        error => console.log(error)
+      );
   }
 
   /**
@@ -75,7 +113,7 @@ export class ProductListComponent implements OnInit {
         (data) => {
           if (data.status === true) {
             for (let i = 0; i < data.data.length; i++) {
-                this.categoryLists.push({ label: data.data[i].cate_name, value: data.data[i].id });
+              this.categoryLists.push({ label: data.data[i].cate_name, value: data.data[i].id });
             }
           } else {
             if (isPlatformBrowser(this.platformId)) {
@@ -88,7 +126,7 @@ export class ProductListComponent implements OnInit {
             console.log('error = ', error);
           }
         }
-      );
+        );
     });
   }
 
@@ -171,10 +209,10 @@ export class ProductListComponent implements OnInit {
    * @return void
    */
   private removeProduct() {
-    const param = {'id': this.delete_id};
+    const param = { 'id': this.delete_id };
     this.apiService
-    .post('/api/product/delete_product', param)
-    .subscribe(
+      .post('/api/product/delete_product', param)
+      .subscribe(
       (data) => {
         this.alerts.success('ลบข้อมูลสำเร็จ');
         this.getAllProduct();
@@ -186,7 +224,7 @@ export class ProductListComponent implements OnInit {
         }
         this.alerts.warning('ลบข้อมูลไม่สำเร็จ');
       }
-    );
+      );
   }
 
   /**

@@ -55,11 +55,11 @@ export class Database {
       where += ' AND ' + data.where;
     }
     fields = (Array.isArray(data.fields)) ? (data.fields).toString() : (data.fields !== undefined) ? data.fields : ' * ';
-    group  = (Array.isArray(data.group)) ? ' GROUP BY ' + (data.group).toString() : (data.group !== undefined)
-           ? ' GROUP BY ' + data.group : '';
     order  = (Array.isArray(data.order)) ? ' ORDER BY ' + (data.order).toString() : (data.order !== undefined)
            ? ' ORDER BY ' + data.order : '';
     limit  = (data.limit !== undefined) ? ' LIMIT ' + data.limit : '';
+    group  = (Array.isArray(data.group)) ? ' GROUP BY ' + (data.group).toString() : (data.group !== undefined)
+           ? ' GROUP BY ' + data.group : '';
 
     const select = 'SELECT ' + fields + ' FROM ' + data.table + ' WHERE ' + where + group + order + limit;
     // console.log('select data = ', select);

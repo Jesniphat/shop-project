@@ -209,6 +209,85 @@ productRouter.get('/', (req, res, next) => {
   });
 });
 
+/**
+ * Use for test filter **
+ */
+productRouter.get('/product_connect', (req, res, next) => {
+  const connection = conn.init();
+  const product = req.body;
+  console.log('condition');
+  const filter = req.query;
+
+  const $scope = {
+    row: '',
+    data: ''
+  };
+
+  let filterName: any = '';
+  if (filter.filtertext) {
+    filterName = ' and product_name like \'%' + filter.filtertext + '%\'';
+  }
+
+  const productCount = function(){
+    return new Promise((resolve, reject) => {
+      const gets = {
+        fields: 'count(id) as row ',
+        table: 'product',
+        where: 'status = \'Y\'' + filterName
+      };
+
+      db.SelectRow(connection, gets, (data) => {
+        $scope.row = data.row;
+        resolve(data);
+      }, (error) => {
+        console.log(error);
+        reject(error);
+      });
+    });
+  };
+
+  const product_list = function(){
+    return new Promise((resolve, reject) => {
+      const gets = {
+        fields: [
+          'p.*',
+          'max(pp.productpic_path) as img'
+        ],
+        table: 'product p left join product_pic pp on p.id = pp.product_id and pp.cover = \'Y\'',
+        where: 'p.status = \'Y\'' + filterName ,
+        order: filter.sort,
+        limit: (filter.page - 1) + ', ' + filter.limit,
+        group: 'p.id'
+      };
+      // console.log('line 186: ', gets);
+      db.SelectAll(connection, gets, (data) => {
+          $scope.data = data;
+          resolve(data);
+        }, (error) => {
+          console.log(error);
+          reject(error);
+        });
+    });
+  };
+
+  productCount()
+  .then(product_list)
+  .then(($data) => {
+    res.json({
+      status: true,
+      data: $scope
+    });
+    connection.end();
+  })
+  .catch(($error) => {
+    res.json({
+      status: false,
+      error: $error
+    });
+    connection.end();
+  });
+});
+
 
 // productRouter.post('/product_list', (req, res, next) => { });
 /**
