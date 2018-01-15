@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { ApiService } from '../../../../service/api.service';
 import { RootscopeService } from '../../../../service/rootscope.service';
 import { AlertsService } from '../../../../service/alerts.service';
+import { ScrutinizeService } from '../../../../service/scrutinize.service';
 
 import { ProductStorageService } from '../../../../service/product-storage.service';
 
@@ -47,7 +48,8 @@ export class ProductListComponent implements OnInit {
     public $rootscope: RootscopeService,
     public _elRef: ElementRef,
     public productStoreService: ProductStorageService,
-    public alerts: AlertsService
+    public alerts: AlertsService,
+    public scrutinizeService: ScrutinizeService
   ) {
     title.setTitle('Product');
     meta.addTags([
@@ -67,37 +69,10 @@ export class ProductListComponent implements OnInit {
   }
 
   public search(event) {
-    this.pageNo = 1;
-    if (isPlatformBrowser(this.platformId)) {
-      // console.log(event);
-      if (this.delayID === null) {
-        this.delayID = setTimeout(() => {
-          const input_data = event;
-          this._getAllProduct();
-          this.delayID = null;
-        }, 1000);
-      } else {
-        if (this.delayID) {
-          clearTimeout(this.delayID);
-          this.delayID = setTimeout(() => {
-            const input_data = event;
-            this._getAllProduct();
-            this.delayID = null;
-          }, 1000);
-        }
-      }
-    }
+    this.scrutinizeService.scrutinize('filter', event, '/api/product/product_connect',
+    this.filterTexts, 'product_name', this.sort, 'asc', 1, 10 );
   }
 
-  public _getAllProduct() {
-    this.apiService
-      .get('/api/product/product_connect?filtertext='
-      + this.filterTexts + '&filterby=' + this.sort + '&page=' + this.pageNo + '&limit=10')
-      .subscribe(
-        data => console.log(data), // this.productLists = data.data,
-        error => console.log(error)
-      );
-  }
 
   /**
    * Get category list

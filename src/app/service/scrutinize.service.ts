@@ -11,7 +11,7 @@ export class ScrutinizeService {
   public filterText: any = '';
   public filterColumn: any = '';
   public sort: any = 'id';
-  public sortColumn: any = '';
+  public sortType: any = '';
   public pageNo: any = 1;
   public limit: any = 10;
 
@@ -22,12 +22,12 @@ export class ScrutinizeService {
     public apiService: ApiService,
   ) { }
 
-  public scrutinize(action, even, api, filterText, filterColumn, sort, sortColumn, pageNo, limit) {
+  public scrutinize(action, even, api, filterText, filterColumn, sort, sortType, pageNo, limit) {
     this.api = api;
     this.filterText = filterText;
     this.filterColumn = filterColumn;
     this.sort = sort;
-    this.sortColumn = sortColumn;
+    this.sortType = sortType;
     this.pageNo = pageNo;
     this.limit = limit;
 
@@ -60,8 +60,7 @@ export class ScrutinizeService {
   public getDataServer() {
     this.apiService
       .get(this.api + '?filtertext=' + this.filterText + '&filtercolumn=' + this.filterColumn
-      + '&sortby=' + this.sort + '&sortColumn=' + this.sortColumn +
-      + '&page=' + this.pageNo + '&limit=10')
+      + '&sortby=' + this.sort + '&sortType=' + this.sortType + '&page=' + this.pageNo + '&limit=' + this.limit)
       .subscribe(
         data => console.log(data), // this.productLists = data.data,
         error => console.log(error)
