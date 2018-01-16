@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { BrowserModule, Meta, Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
@@ -16,7 +16,7 @@ declare const $: any;
   templateUrl: './manager.component.html',
   styleUrls: ['./manager.component.scss']
 })
-export class ManagerComponent implements OnInit {
+export class ManagerComponent implements OnInit, OnDestroy {
   /**
    * public variable
    */
@@ -25,6 +25,10 @@ export class ManagerComponent implements OnInit {
   public storage: any;
   public imgLink: any = '';
   public picUrl: any = '';
+
+  public unsubRootScopeBlogUi: any;
+  public unsubRootScopeheadText: any;
+  public unsubMenuList: any;
 
   /**
    * Constructor
@@ -53,9 +57,9 @@ export class ManagerComponent implements OnInit {
    */
   public ngOnInit() {
     // console.log('ManagerSite');
-    this.$rootScope.doBlock$.subscribe(data => this.block(data));
-    this.$rootScope.headerText$.subscribe(text => this.headerText = text || '');
-    this.menuListService.menuList$.subscribe(data => this.menu(data));
+    this.unsubRootScopeBlogUi = this.$rootScope.doBlock$.subscribe(data => this.block(data));
+    this.unsubRootScopeheadText = this.$rootScope.headerText$.subscribe(text => this.headerText = text || '');
+    this.unsubMenuList = this.menuListService.menuList$.subscribe(data => this.menu(data));
 
     this.menuListService.getMenuList(true, 'system');
 
@@ -168,6 +172,16 @@ export class ManagerComponent implements OnInit {
         $.unblockUI();
       }
     }
+  }
+
+  /**
+   * Unsub data
+   * @access public
+   */
+  public ngOnDestroy() {
+    this.unsubRootScopeBlogUi.unsubscribe();
+    this.unsubRootScopeheadText.unsubscribe();
+    this.unsubMenuList.unsubscribe();
   }
 
 }

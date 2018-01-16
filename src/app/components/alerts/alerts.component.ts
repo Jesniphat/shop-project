@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, Inject, PLATFORM_ID} from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, Inject, PLATFORM_ID} from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { AlertsService } from '../../service/alerts.service';
 
@@ -7,7 +7,7 @@ import { AlertsService } from '../../service/alerts.service';
   templateUrl: './alerts.component.html',
   styleUrls: ['./alerts.component.scss']
 })
-export class AlertsComponent implements OnInit {
+export class AlertsComponent implements OnInit, OnDestroy {
   /** Varable */
   public success: any = 'none';
   public info: any = 'none';
@@ -16,13 +16,15 @@ export class AlertsComponent implements OnInit {
 
   public message: any = '';
 
+  public service: any;
+
   constructor(
     @Inject(PLATFORM_ID) private platformId: object, // Get platform is cliend and server
     private alertsService: AlertsService
   ) { }
 
   ngOnInit() {
-    this.alertsService.alerts$.subscribe(data => this.setAlerts(data));
+    this.service = this.alertsService.alerts$.subscribe(data => this.setAlerts(data));
   }
 
   /**
@@ -54,6 +56,14 @@ export class AlertsComponent implements OnInit {
         }, 5000);
       }
     }
+  }
+
+  /**
+   * When component has destroy
+   * @access public
+   */
+  ngOnDestroy() {
+    this.service.unsubscribe();
   }
 
 }

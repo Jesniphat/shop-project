@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
 import { ProductManagerComponent } from '../product/product-manager/product-manager.component';
@@ -17,7 +17,7 @@ declare var toastr: any;
   templateUrl: './stock-in.component.html',
   styleUrls: ['./stock-in.component.scss']
 })
-export class StockInComponent implements OnInit {
+export class StockInComponent implements OnInit, OnDestroy {
 
   /** Connect to child */
   @ViewChild(TableElementComponent) private tableElementComponent: TableElementComponent;
@@ -57,6 +57,9 @@ export class StockInComponent implements OnInit {
 
   /** Dialog */
   public addProductDialog: any;
+
+  /** Unsubscribe var */
+  public unsubProductList: any;
 
   /**
    * constructor of class
@@ -105,7 +108,7 @@ export class StockInComponent implements OnInit {
         this.stockInProduct.staffid = logindata.id;
       }
 
-      this.storages.$productList.subscribe(data => this.getProductNameList(data));
+      this.unsubProductList = this.storages.$productList.subscribe(data => this.getProductNameList(data));
       this.storages.productListGetting();
     }
     // this.addProductDialog = this.dialogService.build(document.getElementById('add-product')); **
@@ -220,8 +223,8 @@ export class StockInComponent implements OnInit {
       this.apiService
         .post('/api/productstore/saveStockIn', param)
         .subscribe(
-        res => this.saveStockDoneAction(res),
-        error => this.saveStockErrorAction(error)
+          res => this.saveStockDoneAction(res),
+          error => this.saveStockErrorAction(error)
       );
     }
   }
@@ -333,6 +336,14 @@ export class StockInComponent implements OnInit {
         console.log('can\'t save');
       }
     }
+  }
+
+  /**
+   * When component has destroy
+   * @access public
+   */
+  public ngOnDestroy() {
+    this.unsubProductList.unsubscribe();
   }
 
 }
