@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { ApiService } from '../../../../service/api.service';
 import { RootscopeService } from '../../../../service/rootscope.service';
 import { AlertsService } from '../../../../service/alerts.service';
-import { ScrutinizeService } from '../../../../service/scrutinize.service';
 
 import { ProductStorageService } from '../../../../service/product-storage.service';
 
@@ -28,9 +27,9 @@ export class ProductListComponent implements OnInit {
   public productList: any = [];
   public products: any = [];
   public filterText: any = '';
-  public filterTexts: any = '';
   public sort: any = 'id';
   public pageNo: any = 1;
+  public allPage: number[] = [];
   public uploadUrl: any = '/api/upload/product';
   public imgLink: any = '';
   public cols = ['product_name', 'product_description', 'product_qty', 'product_price'];
@@ -48,8 +47,7 @@ export class ProductListComponent implements OnInit {
     public $rootscope: RootscopeService,
     public _elRef: ElementRef,
     public productStoreService: ProductStorageService,
-    public alerts: AlertsService,
-    public scrutinizeService: ScrutinizeService
+    public alerts: AlertsService
   ) {
     title.setTitle('Product');
     meta.addTags([
@@ -68,11 +66,34 @@ export class ProductListComponent implements OnInit {
     // this._getAllProduct();
   }
 
-  public search(event) {
-    this.scrutinizeService.scrutinize('filter', event, '/api/product/product_connect',
-    this.filterTexts, 'product_name', this.sort, 'asc', 1, 10 );
+  public search(event, action) {
+    if (action === 'filter') {
+      this.pageNo = 1;
+      if (isPlatformBrowser(this.platformId)) {
+        if (this.delayID === null) {
+          this.delayID = setTimeout(() => {
+            const input_data = event;
+            this.getAllProduct();
+            this.delayID = null;
+          }, 1000);
+        } else {
+          if (this.delayID) {
+            clearTimeout(this.delayID);
+            this.delayID = setTimeout(() => {
+              const input_data = event;
+              this.getAllProduct();
+              this.delayID = null;
+            }, 1000);
+          }
+        }
+      }
+    } else if (action === 'sort') {
+      this.pageNo = 1;
+      this.getAllProduct();
+    } else if (action === 'page') {
+      this.getAllProduct();
+    }
   }
-
 
   /**
    * Get category list
@@ -109,10 +130,21 @@ export class ProductListComponent implements OnInit {
    * Get all Product
    * @access private
    */
+  // private getAllProduct() {
+  //   this.$rootscope.setBlock(true);
+  //   this.apiService
+  //     .get('/api/product')
+  //     .subscribe(
+  //       data => this.getAllProductDoneAction(data), // this.productLists = data.data,
+  //       error => this.getAllProductDoneAction(data)
+  //     );
+  // }
+
   private getAllProduct() {
     this.$rootscope.setBlock(true);
     this.apiService
-      .get('/api/product')
+      .get('/api/product' + '?filtertext=' + this.filterText + '&filtercolumn=' + 'product_name'
+      + '&sortby=' + this.sort + '&sortType=' + 'asc' + '&page=' + this.pageNo + '&limit=' + '10')
       .subscribe(
         data => this.getAllProductDoneAction(data), // this.productLists = data.data,
         error => this.getAllProductErrorAction(error)
@@ -124,8 +156,13 @@ export class ProductListComponent implements OnInit {
    * @param data
    * @access private
    */
-  private getAllProductDoneAction(data: any) {
-    this.productLists = data.data;
+  private getAllProductDoneAction(res: any) {
+    console.log(res);
+    this.productLists = res.data.data;
+    this.allPage = [];
+    for (let i = 0; i < res.data.row; i++) {
+      this.allPage.push(i + 1);
+    }
     this.$rootscope.setBlock(false);
   }
 

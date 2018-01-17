@@ -169,57 +169,10 @@ productRouter.use(function (req, res, next) {
 productRouter.get('/', (req, res, next) => {
   const connection = conn.init();
   const product = req.body;
-  // let $scope;
-
-  const product_list = function(){
-    return new Promise((resolve, reject) => {
-      const gets = {
-        fields: [
-          'p.*',
-          'max(pp.productpic_path) as img'
-        ],
-        table: 'product p left join product_pic pp on p.id = pp.product_id and pp.cover = \'Y\'',
-        where: {'p.status': 'Y'},
-        group: 'p.id'
-      };
-      // console.log('line 186: ', gets);
-      db.SelectAll(connection, gets, (data) => {
-          resolve(data);
-        }, (error) => {
-          console.log(error);
-          reject(error);
-        });
-    });
-  };
-
-  product_list()
-  .then(($data) => {
-    res.json({
-      status: true,
-      data: $data
-    });
-    connection.end();
-  })
-  .catch(($error) => {
-    res.json({
-      status: false,
-      error: $error
-    });
-    connection.end();
-  });
-});
-
-/**
- * Use for test filter **
- */
-productRouter.get('/product_connect', (req, res, next) => {
-  const connection = conn.init();
-  const product = req.body;
-  console.log('condition');
   const filter = req.query;
 
   const $scope = {
-    row: '',
+    row: 1,
     data: ''
   };
 
@@ -237,7 +190,14 @@ productRouter.get('/product_connect', (req, res, next) => {
       };
 
       db.SelectRow(connection, gets, (data) => {
-        $scope.row = data.row;
+        if (data.row <= filter.limit) {
+          $scope.row = 1;
+        } else if ((data.row % filter.limit) === 0) {
+          $scope.row = (data.row / filter.limit) ;
+        } else {
+          $scope.row = Math.ceil((data.row / filter.limit));
+        }
+
         resolve(data);
       }, (error) => {
         console.log(error);
@@ -248,6 +208,7 @@ productRouter.get('/product_connect', (req, res, next) => {
 
   const product_list = function(){
     return new Promise((resolve, reject) => {
+      const page_start = ((filter.limit * filter.page) - filter.limit);
       const gets = {
         fields: [
           'p.*',
@@ -256,7 +217,7 @@ productRouter.get('/product_connect', (req, res, next) => {
         table: 'product p left join product_pic pp on p.id = pp.product_id and pp.cover = \'Y\'',
         where: 'p.status = \'Y\'' + filterName ,
         order: filter.sort,
-        limit: (filter.page - 1) + ', ' + filter.limit,
+        limit: page_start + ', ' + filter.limit,
         group: 'p.id'
       };
       // console.log('line 186: ', gets);

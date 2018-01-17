@@ -8,11 +8,7 @@
   <div class="w3-row">
     <div class="w3-col l3 m6 s12">
       <input class="w3-input w3-border" placeholder="Search..." type="text" 
-       [(ngModel)]="filterText" (focus)="focusFilter()">
-    </div>
-    <div class="w3-col l3 m6 s12">
-      <input class="w3-input w3-border" placeholder="Search..." type="text" 
-       [(ngModel)]="filterTexts" (input)="search($event.target.value)">
+       [(ngModel)]="filterText" (input)="search($event.target.value, 'filter')"> <!-- (focus)="focusFilter()" -->
     </div>
   </div>
   <br/>
@@ -20,7 +16,8 @@
 
 <!-- Product grid -->
 <div class="w3-row">
-  <div class="w3-col l3 s6 s12" *ngFor="let item of productLists | tableFilter:filterText | pageNumber:{pageNo:pageNo, row: 9}">
+  <!-- <div class="w3-col l3 s6 s12" *ngFor="let item of productLists | tableFilter:filterText | pageNumber:{pageNo:pageNo, row: 9}"> -->
+  <div class="w3-col l3 s6 s12" *ngFor="let item of productLists">
     <div class="w3-container">
       <div class="w3-display-container">
         <img *ngIf="item.img" [src]="imgLink + item.img" style="width:100%">
@@ -37,8 +34,9 @@
 
 <div class="w3-container">
   <div class="w3-col l2 m3 s12">
-    <select class="w3-select" [(ngModel)]="pageNo">
-      <option *ngFor="let page of productLists | tableFilter:filterText | pageList:9" [value]='page'>{{page}}</option>
+    <select class="w3-select" [(ngModel)]="pageNo" (change)="search($event.target.value, 'page')">
+      <!-- <option *ngFor="let page of productLists | tableFilter:filterText | pageList:9" [value]='page'>{{page}}</option> -->
+      <option *ngFor="let page of allPage" [value]='page'>{{page}}</option>
     </select>
   </div>
   <br/>
@@ -51,6 +49,6 @@
   </div>
 </div>
 
-<div class="test" *ngFor="let item of productLists">
+<!-- <div class="test" *ngFor="let item of productLists">
   {{item.product_name}}
-</div>
+</div> -->
