@@ -36,6 +36,8 @@ export class ProductListComponent implements OnInit {
   public delete_id: any = '';
   public productId: any = 'create';
 
+  public request: any = null;
+
   public delayID = null;
 
   constructor(
@@ -130,19 +132,14 @@ export class ProductListComponent implements OnInit {
    * Get all Product
    * @access private
    */
-  // private getAllProduct() {
-  //   this.$rootscope.setBlock(true);
-  //   this.apiService
-  //     .get('/api/product')
-  //     .subscribe(
-  //       data => this.getAllProductDoneAction(data), // this.productLists = data.data,
-  //       error => this.getAllProductDoneAction(data)
-  //     );
-  // }
-
   private getAllProduct() {
     this.$rootscope.setBlock(true);
-    this.apiService
+    // if http pedding cancel when have new request.
+    if (this.request) {
+      this.request.unsubscribe();
+    }
+
+    this.request = this.apiService
       .get('/api/product' + '?filtertext=' + this.filterText + '&filtercolumn=' + 'product_name'
       + '&sortby=' + this.sort + '&sortType=' + 'asc' + '&page=' + this.pageNo + '&limit=' + '10')
       .subscribe(
@@ -157,12 +154,12 @@ export class ProductListComponent implements OnInit {
    * @access private
    */
   private getAllProductDoneAction(res: any) {
-    console.log(res);
     this.productLists = res.data.data;
     this.allPage = [];
     for (let i = 0; i < res.data.row; i++) {
       this.allPage.push(i + 1);
     }
+    this.request = null;
     this.$rootscope.setBlock(false);
   }
 
@@ -174,6 +171,7 @@ export class ProductListComponent implements OnInit {
    */
   private getAllProductErrorAction(error: any) {
     this.error = error.message;
+    this.request = null;
     this.$rootscope.setBlock(false);
   }
 
