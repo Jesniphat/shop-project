@@ -1,8 +1,6 @@
 import { Component, OnInit, Input, ElementRef, Output, EventEmitter, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
-import { ApiService } from '../../../service/api.service';
-import { RootscopeService } from '../../../service/rootscope.service';
 
 @Component({
   selector: 'app-table-element',
@@ -35,8 +33,8 @@ export class TableElementComponent implements OnInit {
   constructor(
     @Inject(PLATFORM_ID) private platformId: object, // Get platform is cliend and server
     public router: Router,
-    public apiService: ApiService,
-    public $rootScope: RootscopeService
+    // public apiService: ApiService,
+    // public $rootScope: RootscopeService
   ) { }
 
   ngOnInit() {

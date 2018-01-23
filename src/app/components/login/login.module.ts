@@ -3,7 +3,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 // import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 
-import { SharedModule } from '../../shared/shared.module';
+import { SharedServiceModule } from '../../shared/shared-service.module';
 import { LoginComponent } from './login.component';
 import { Routing } from './login.routing';
 
@@ -12,7 +12,7 @@ import { Routing } from './login.routing';
     CommonModule,
     // BrowserModule,
     FormsModule,
-    SharedModule,
+    SharedServiceModule,
     Routing
   ],
   declarations: [

@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, Inject, PLATFORM_ID } from '@a
 import { isPlatformBrowser } from '@angular/common';
 
 import { ProductManagerComponent } from '../product/product-manager/product-manager.component';
-import { TableElementComponent } from '../table-element/table-element.component';
+import { TableElementComponent } from '../../../element/table-element/table-element.component';
 
 import { ProductStorageService } from '../../../service/product-storage.service';
 import { ApiService } from '../../../service/api.service';

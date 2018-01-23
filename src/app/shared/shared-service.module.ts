@@ -9,16 +9,11 @@ import { MenuListService } from '../service/menu-list.service';
 import { AlertsService } from '../service/alerts.service';
 import { SocketService } from '../service/socket.service';
 
-import { TableFilterPipe } from '../pipes/table-filter.pipe';
-import { PageNumberPipe } from '../pipes/page-number.pipe';
-import { PageListPipe } from '../pipes/page-list.pipe';
-import { TableSortPipe } from '../pipes/table-sort.pipe';
-
 
 @NgModule({
   imports:      [ CommonModule ],
-  declarations: [ TableSortPipe, TableFilterPipe, PageNumberPipe, PageListPipe ],
-  exports:      [ TableSortPipe, TableFilterPipe, PageNumberPipe, PageListPipe ],
+  declarations: [ ],
+  exports:      [ ],
   providers:    [
     ApiService,
     RootscopeService,
@@ -30,4 +25,4 @@ import { TableSortPipe } from '../pipes/table-sort.pipe';
   ]
 })
 
-export class SharedModule {}
+export class SharedServiceModule {}

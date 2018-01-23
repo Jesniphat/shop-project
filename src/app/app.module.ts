@@ -6,14 +6,14 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { PLATFORM_ID, APP_ID, Inject } from '@angular/core';
 
-import { SharedModule } from './shared/shared.module';
+import { SharedServiceModule } from './shared/shared-service.module';
 import { Routing } from './app.routing';
 
 import { LoginModule } from './components/login/login.module';
 import { ManagerModule } from './components/manager/manager.module';
 
 import { AppComponent } from './app.component';
-import { AlertsComponent } from './components/alerts/alerts.component';
+import { AlertsComponent } from './element/alerts/alerts.component';
 
 
 @NgModule({
@@ -26,7 +26,7 @@ import { AlertsComponent } from './components/alerts/alerts.component';
     FormsModule,
     HttpClientModule,
     Routing,
-    SharedModule,
+    SharedServiceModule,
     LoginModule,
     ManagerModule
   ],

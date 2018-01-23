@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { ApiService } from '../../../../service/api.service';
 import { RootscopeService } from '../../../../service/rootscope.service';
 
-import { TableElementComponent } from '../../table-element/table-element.component';
+import { TableElementComponent } from '../../../../element/table-element/table-element.component';
 import { CategoryManagerComponent } from '../category-manager/category-manager.component';
 
 @Component({

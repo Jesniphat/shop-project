@@ -1,14 +1,13 @@
 import { NgModule, PLATFORM_ID, APP_ID, Inject } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-// import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 
 import { Uploader } from 'angular2-http-file-upload';
 
-import { SharedModule } from '../../shared/shared.module';
-import { Routing } from './manager.routing';
+import { ManagerRouting } from './manager.routing';
+import { TableElementModule } from '../../element/table-element/table-element.module';
+
 import { ManagerComponent } from './manager.component';
-import { TableElementComponent } from './table-element/table-element.component';
 import { ManagerDashboardComponent } from './dashboard/manager-dashboard/manager-dashboard.component';
 import { CategoryListComponent } from './category/category-list/category-list.component';
 import { CategoryManagerComponent } from './category/category-manager/category-manager.component';
@@ -21,14 +20,12 @@ import { StockInComponent } from './stock-in/stock-in.component';
 @NgModule({
   imports: [
     CommonModule,
-    // BrowserModule,
     FormsModule,
-    SharedModule,
-    Routing
+    TableElementModule,
+    ManagerRouting
   ],
   declarations: [
     ManagerComponent,
-    TableElementComponent,
     ManagerDashboardComponent,
     CategoryListComponent,
     CategoryManagerComponent,
