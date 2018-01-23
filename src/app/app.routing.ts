@@ -2,7 +2,9 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'manager', pathMatch: 'full' }
+  { path: '', redirectTo: 'manager', pathMatch: 'full' },
+  { path: 'manager', loadChildren: 'app/components/manager/manager.module#ManagerModule'},
+  { path: 'system-login', loadChildren: 'app/components/login/login.module#LoginModule'}
 ];
 
 @NgModule({

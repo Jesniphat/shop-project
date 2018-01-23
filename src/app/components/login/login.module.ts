@@ -1,6 +1,6 @@
 import { NgModule, PLATFORM_ID, APP_ID, Inject } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { BrowserModule } from '@angular/platform-browser';
+// import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 
 import { SharedModule } from '../../shared/shared.module';
@@ -10,7 +10,7 @@ import { Routing } from './login.routing';
 @NgModule({
   imports: [
     CommonModule,
-    BrowserModule,
+    // BrowserModule,
     FormsModule,
     SharedModule,
     Routing

@@ -1,6 +1,6 @@
 import { NgModule, PLATFORM_ID, APP_ID, Inject } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { BrowserModule } from '@angular/platform-browser';
+// import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 
 import { Uploader } from 'angular2-http-file-upload';
@@ -21,7 +21,7 @@ import { StockInComponent } from './stock-in/stock-in.component';
 @NgModule({
   imports: [
     CommonModule,
-    BrowserModule,
+    // BrowserModule,
     FormsModule,
     SharedModule,
     Routing

@@ -13,8 +13,9 @@ import { StaffEditComponent } from './setting/staff-edit/staff-edit.component';
 import { StockInComponent } from './stock-in/stock-in.component';
 
 const routes: Routes = [
-  { path: 'manager', component: ManagerComponent, children: [
-    { path: '', redirectTo: '/manager/(m:dashboard)', pathMatch: 'full' },
+  { path: '', redirectTo: 'page', pathMatch: 'full'},
+  { path: 'page', component: ManagerComponent, children: [
+    { path: '', redirectTo: '/manager/page/(m:dashboard)', pathMatch: 'full' },
     { path: 'dashboard', component: ManagerDashboardComponent, outlet: 'm' },
     { path: 'category', component: CategoryListComponent, outlet: 'm' },
     { path: 'category-manager/:id', component: CategoryManagerComponent, outlet: 'm' },
