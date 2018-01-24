@@ -2,9 +2,9 @@ import { NgModule, PLATFORM_ID, APP_ID, Inject } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-import { SharedPipeModule } from '../../shared/shared-pipe.module';
+import { SharedPipeModule } from './shared-pipe.module';
 
-import { TableElementComponent } from './table-element.component';
+import { TableElementComponent } from '../element/table-element/table-element.component';
 
 @NgModule({
   imports: [
@@ -17,4 +17,4 @@ import { TableElementComponent } from './table-element.component';
     TableElementComponent
   ]
 })
-export class TableElementModule { }
+export class SharedComponentModule { }

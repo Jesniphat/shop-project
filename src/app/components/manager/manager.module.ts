@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Uploader } from 'angular2-http-file-upload';
 
 import { ManagerRouting } from './manager.routing';
-import { TableElementModule } from '../../element/table-element/table-element.module';
+import { SharedComponentModule } from '../../shared/shared-component.module';
 
 import { ManagerComponent } from './manager.component';
 import { ManagerDashboardComponent } from './dashboard/manager-dashboard/manager-dashboard.component';
@@ -21,7 +21,7 @@ import { StockInComponent } from './stock-in/stock-in.component';
   imports: [
     CommonModule,
     FormsModule,
-    TableElementModule,
+    SharedComponentModule,
     ManagerRouting
   ],
   declarations: [
