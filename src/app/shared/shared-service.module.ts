@@ -9,7 +9,9 @@ import { MenuListService } from '../service/menu-list.service';
 import { AlertsService } from '../service/alerts.service';
 import { SocketService } from '../service/socket.service';
 
-
+/**
+ * This module mush be in app.module only.
+ */
 @NgModule({
   imports:      [ CommonModule ],
   declarations: [ ],

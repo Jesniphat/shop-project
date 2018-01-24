@@ -6,6 +6,9 @@ import { SharedPipeModule } from './shared-pipe.module';
 
 import { TableElementComponent } from '../element/table-element/table-element.component';
 
+/**
+ * This module mush be at module's want to use it.
+ */
 @NgModule({
   imports: [
     CommonModule,

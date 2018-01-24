@@ -6,7 +6,9 @@ import { PageNumberPipe } from '../pipes/page-number.pipe';
 import { PageListPipe } from '../pipes/page-list.pipe';
 import { TableSortPipe } from '../pipes/table-sort.pipe';
 
-
+/**
+ * This module mush be at module's want to use it.
+ */
 @NgModule({
   imports:      [ CommonModule ],
   declarations: [ TableSortPipe, TableFilterPipe, PageNumberPipe, PageListPipe ],
