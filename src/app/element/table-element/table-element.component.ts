@@ -2,6 +2,7 @@ import { Component, OnInit, Input, ElementRef, Output, EventEmitter, Inject, PLA
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 
+
 @Component({
   selector: 'app-table-element',
   templateUrl: './table-element.component.html',
@@ -32,9 +33,7 @@ export class TableElementComponent implements OnInit {
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: object, // Get platform is cliend and server
-    public router: Router,
-    // public apiService: ApiService,
-    // public $rootScope: RootscopeService
+    public router: Router
   ) { }
 
   ngOnInit() {

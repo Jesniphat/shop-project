@@ -15,6 +15,9 @@ import { TableElementComponent } from '../element/table-element/table-element.co
   declarations: [ TableElementComponent ],
   exports: [
     TableElementComponent
+  ],
+  providers: [
+
   ]
 })
 export class SharedComponentModule { }
