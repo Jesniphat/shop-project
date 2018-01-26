@@ -8,6 +8,8 @@ import { TableElementComponent } from '../element/table-element/table-element.co
 
 /**
  * This module mush be at module's want to use it.
+ *
+ * Service use it from app.module don't need to import in here.
  */
 @NgModule({
   imports: [
