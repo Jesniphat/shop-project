@@ -9,6 +9,8 @@ import { AutocompleteComponent } from '../element/autocomplete/autocomplete.comp
 
 /**
  * This module mush be at module's want to use it.
+ *
+ * Service use it from app.module don't need to import in here.
  */
 @NgModule({
   imports: [
