@@ -1,5 +1,14 @@
 .autocomplete-box {
   position: relative;
+  width: 87%;
+  display: inline-block;
+  margin-right: 3px;
+}
+
+.search-button {
+  width: 10%;
+  display: inline-block;
+  float: right;
 }
 
 .autocomplete-container {

@@ -5,7 +5,6 @@ import { ProductManagerComponent } from '../product/product-manager/product-mana
 import { TableElementComponent } from '../../../element/table-element/table-element.component';
 import { AutocompleteComponent } from '../../../element/autocomplete/autocomplete.component';
 
-import { ProductStorageService } from '../../../service/product-storage.service';
 import { ApiService } from '../../../service/api.service';
 import { RootscopeService } from '../../../service/rootscope.service';
 
@@ -87,9 +86,7 @@ export class StockInComponent implements OnInit, OnDestroy {
    */
   public constructor (
     @Inject(PLATFORM_ID) private platformId: object, // Get platform is cliend and server
-    public storages: ProductStorageService,
     public apiService: ApiService,
-    // public dialogService: DialogService,
     public $rootScope: RootscopeService,
   ) { }
 
@@ -100,36 +97,14 @@ export class StockInComponent implements OnInit, OnDestroy {
    * @access public
    */
   public ngOnInit() {
-    // console.log(this.storages.getProductNameList());
     if (isPlatformBrowser(this.platformId)) {
-      this.options = {
-        data: [],
-        getValue: 'name',
-        template: {
-          type: 'description',
-          fields: {
-            description: 'code'
-          }
-        },
-        list: {
-          onChooseEvent: function() {
-            const selectedItemValue = $('#product-name').getSelectedItemData().id;
-            $('#product-id').val(selectedItemValue).trigger('change');
-          }
-        }
-      };
-
       this.$rootScope.setBlock(false);
       this.storage = localStorage;
       if (this.storage.getItem('logindata')) {
         const logindata = JSON.parse(this.storage.getItem('logindata'));
         this.stockInProduct.staffid = logindata.id;
       }
-
-      this.unsubProductList = this.storages.$productList.subscribe(data => this.getProductNameList(data));
-      this.storages.productListGetting();
     }
-    // this.addProductDialog = this.dialogService.build(document.getElementById('add-product')); **
   }
 
 
@@ -143,7 +118,6 @@ export class StockInComponent implements OnInit, OnDestroy {
       console.log($('#product-id').val());
       if (!$('#product-id').val()) {
         this.productId = 'create';
-        // this.addProductDialog.showModal();
         document.getElementById('addproductmodel').style.display = 'block';
         this.productManagerComponent.reset();
         return;
@@ -153,7 +127,6 @@ export class StockInComponent implements OnInit, OnDestroy {
         product_id: $('#product-id').val()
       };
       this.apiService
-      // .post('/api/productstore/getproductbyid', param)
       .get('/api/productstore/' + param.product_id)
       .subscribe(
         res => this.getProductByidDoneAction(res),
@@ -210,13 +183,13 @@ export class StockInComponent implements OnInit, OnDestroy {
    *
    * @access public
    * @param data
-   * @return voie
+   * @return void
    */
   public getProductNameList(data: any) {
     if (isPlatformBrowser(this.platformId)) {
-      console.log(data);
-      this.options.data = data;
-      $('#product-name').easyAutocomplete(this.options);
+      // console.log(data);
+      // this.options.data = data;
+      // $('#product-name').easyAutocomplete(this.options);
     }
   }
 
@@ -249,7 +222,6 @@ export class StockInComponent implements OnInit, OnDestroy {
 
 /**
  * Save stock done.
- *
  * @param res
  * @access private
  */
@@ -260,11 +232,9 @@ export class StockInComponent implements OnInit, OnDestroy {
         this.reset();
         this.$rootScope.setBlock(false);
         this.searchProduct();
-        // toastr.success('บันทึกข้อมูลสำเร็จ', 'Success!');
       } else {
         console.log('can\'t save ', res.error);
         this.$rootScope.setBlock(false);
-        // toastr.warning('บันทึกข้อมูลไม่สำเร็จ', 'Warning!');
       }
     }
   }
@@ -272,7 +242,6 @@ export class StockInComponent implements OnInit, OnDestroy {
 
   /**
    * Save stock error
-   *
    * @param error
    * @access private
    */
@@ -280,23 +249,20 @@ export class StockInComponent implements OnInit, OnDestroy {
     if (isPlatformBrowser(this.platformId)) {
       console.log('can\'t save ', error);
       this.$rootScope.setBlock(false);
-      // toastr.warning('บันทึกข้อมูลไม่สำเร็จ', 'Warning!');
     }
   }
 
 
   /**
    * Get stock list
-   *
    * @access private
    */
   private getStockList(id: any) {
     if (isPlatformBrowser(this.platformId)) {
       const param = {
-        product_id: id // $('#product-id').val()
+        product_id: id
       };
       this.apiService
-      // .post('/api/productstore/getStockList', param)
       .get('/api/productstore/getStockList/' + param.product_id)
       .subscribe(
         (res) => {
@@ -323,7 +289,6 @@ export class StockInComponent implements OnInit, OnDestroy {
 
   /**
    * Reset every thing
-   *
    * @param none
    * @access public
    * @return void
@@ -338,14 +303,11 @@ export class StockInComponent implements OnInit, OnDestroy {
         staffid: this.stockInProduct.staffid
       };
     }
-    // this.options.data = [];
-    // $("#product-id").val('');
   }
 
   public createProductResult(result) {
     console.log(result);
     if (result) {
-      // this.getAllProduct();
       if (isPlatformBrowser(this.platformId)) {
         document.getElementById('addproductmodel').style.display = 'none';
       }
@@ -361,7 +323,7 @@ export class StockInComponent implements OnInit, OnDestroy {
    * @access public
    */
   public ngOnDestroy() {
-    this.unsubProductList.unsubscribe();
+    // this.unsubProductList.unsubscribe();
   }
 
 }

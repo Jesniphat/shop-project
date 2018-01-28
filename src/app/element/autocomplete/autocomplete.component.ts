@@ -15,6 +15,11 @@ export class AutocompleteComponent implements OnInit {
    */
   @Input() autoCompleteData: any;
 
+  /**
+   * Sent something to parent
+   */
+  @Output() autocompleteResultText: EventEmitter<number> = new EventEmitter();
+
   public request: any = null;
   public delayID = null;
 
@@ -59,6 +64,11 @@ export class AutocompleteComponent implements OnInit {
   }
 
 
+  /**
+   * Get data when typing in input bow from server
+   * @param text
+   * @access public
+   */
   public getDataList(text) {
     if (this.request) {
       this.request.unsubscribe();
@@ -72,24 +82,54 @@ export class AutocompleteComponent implements OnInit {
       );
   }
 
+  /**
+   * Get data from server done
+   * @param res
+   * @access private
+   */
   private getDataListDoneAction(res) {
+    this.request = null;
     this.show = true;
     this.autoCompleteDataList = res.data;
   }
 
+  /**
+   * Can't get data from server
+   * @param error
+   * @access private
+   */
   private getDataListErrorAction(error) {
     console.log(error);
+    this.request = null;
+    this.show = false;
   }
 
+  /**
+   * When click list of data list.
+   * @param text
+   * @access public
+   */
   public setText(text: any) {
     this.show = false;
     this.autocompleteText = text;
   }
 
+  /**
+   * When move out from input box not show list of data list
+   * @access public
+   */
   public blurAutocomplete() {
     setTimeout(() => {
       this.show = false;
-    }, 500);
+    }, 300);
+  }
+
+  /**
+   * Click search bt sent data text from input box to parant
+   */
+  public clickSearch() {
+    this.show = false;
+    this.autocompleteResultText.emit(this.autocompleteText);
   }
 
 }
