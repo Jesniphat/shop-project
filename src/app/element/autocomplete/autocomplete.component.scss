@@ -1,0 +1,35 @@
+.autocomplete-box {
+  position: relative;
+}
+
+.autocomplete-container {
+  left: 0;
+  position: absolute;
+  width: 100%;
+  z-index: 2;
+}
+
+.autocomplete-container-list {
+  background: none repeat scroll 0 0 #ffffff;
+  border-top: 1px dotted #ccc;
+  margin-top: 0;
+  padding-bottom: 0;
+  padding-left: 0;
+  position: relative;
+  top: -1px;
+}
+
+.autocomplete-container-item {
+  background: inherit;
+  border-color: #ccc;
+  border-image: none;
+  border-style: solid;
+  border-width: 0 1px;
+  display: block;
+  font-weight: normal;
+  padding: 4px 12px;
+  &:hover {
+    background-color: #ccc;
+    cursor: pointer;
+  }
+}

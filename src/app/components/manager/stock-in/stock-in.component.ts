@@ -3,10 +3,10 @@ import { isPlatformBrowser } from '@angular/common';
 
 import { ProductManagerComponent } from '../product/product-manager/product-manager.component';
 import { TableElementComponent } from '../../../element/table-element/table-element.component';
+import { AutocompleteComponent } from '../../../element/autocomplete/autocomplete.component';
 
 import { ProductStorageService } from '../../../service/product-storage.service';
 import { ApiService } from '../../../service/api.service';
-// import { DialogService } from '../../../service/dialog.service';
 import { RootscopeService } from '../../../service/rootscope.service';
 
 declare let $: any;
@@ -22,13 +22,25 @@ export class StockInComponent implements OnInit, OnDestroy {
   /** Connect to child */
   @ViewChild(TableElementComponent) private tableElementComponent: TableElementComponent;
   @ViewChild(ProductManagerComponent) public productManagerComponent: ProductManagerComponent;
+  @ViewChild(AutocompleteComponent) private autocompleteComponent: AutocompleteComponent;
+
+  /**
+   * Product id.
+   */
   public productId: any = 'create';
 
   /**
-   * Create var
+   * Send data to autocomplete child.
+   */
+  public autoCompleteData: any = {
+    api: '/api/product/name',
+    column: 'product_name'
+  };
+
+  /**
+   * Create var.
    */
   public productNameList: any[];
-  // public productId:number = 0;
   public productName: any = '';
   public storage: any;
 
@@ -40,7 +52,9 @@ export class StockInComponent implements OnInit, OnDestroy {
     staffid: 0
   };
 
-  /** Data table var */
+  /**
+   * Data table var
+   */
   public stockList: any[] = [];
   public columns = [
     { name: 'Code', prop: 'code' },
@@ -55,10 +69,14 @@ export class StockInComponent implements OnInit, OnDestroy {
    */
   public options: any = { };
 
-  /** Dialog */
+  /**
+   * Dialog
+   */
   public addProductDialog: any;
 
-  /** Unsubscribe var */
+  /**
+   * Unsubscribe var
+   */
   public unsubProductList: any;
 
   /**

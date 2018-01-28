@@ -1,0 +1,8 @@
+<div class="autocomplete-box">
+  <input type="text" class="w3-input w3-border" (input)="search($event.target.value)" [(ngModel)]="autocompleteText" (blur)="blurAutocomplete()">
+  <div class="autocomplete-container">
+    <ul class="autocomplete-container-list w3-border-bottom" *ngIf="autoCompleteDataList.length > 0 && show">
+      <li class="autocomplete-container-item" *ngFor="let item of autoCompleteDataList; let i = index" (click)="setText(item.product_name)">{{item.product_name}}</li>
+    </ul>
+  </div>
+</div>

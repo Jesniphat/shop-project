@@ -250,6 +250,55 @@ productRouter.get('/', (req, res, next) => {
 });
 
 
+productRouter.get('/name', (req, res, next) => {
+  const connection = conn.init();
+  const product = req.body;
+  const filter = req.query;
+
+  let filterName: any = '';
+  if (filter.keyword) {
+    filterName = ' and ' + filter.column + ' like \'%' + filter.keyword + '%\'';
+  }
+
+  const product_list = function(){
+    return new Promise((resolve, reject) => {
+      const page_start = ((filter.limit * filter.page) - filter.limit);
+      const gets = {
+        fields: [
+          'p.*'
+        ],
+        table: 'product p ',
+        where: 'p.status = \'Y\'' + filterName
+      };
+      // console.log('line 186: ', gets);
+      db.SelectAll(connection, gets, (data) => {
+          resolve(data);
+        }, (error) => {
+          console.log(error);
+          reject(error);
+        });
+    });
+  };
+
+  product_list()
+  .then(($data) => {
+    res.json({
+      status: true,
+      data: $data
+    });
+    connection.end();
+  })
+  .catch(($error) => {
+    res.json({
+      status: false,
+      error: $error
+    });
+    connection.end();
+  });
+
+});
+
+
 // productRouter.post('/product_list', (req, res, next) => { });
 /**
  * Get product by id

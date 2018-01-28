@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { SharedPipeModule } from './shared-pipe.module';
 
 import { TableElementComponent } from '../element/table-element/table-element.component';
+import { AutocompleteComponent } from '../element/autocomplete/autocomplete.component';
 
 /**
  * This module mush be at module's want to use it.
@@ -15,9 +16,10 @@ import { TableElementComponent } from '../element/table-element/table-element.co
     FormsModule,
     SharedPipeModule
   ],
-  declarations: [ TableElementComponent ],
+  declarations: [ TableElementComponent, AutocompleteComponent ],
   exports: [
-    TableElementComponent
+    TableElementComponent,
+    AutocompleteComponent
   ],
   providers: [
 
