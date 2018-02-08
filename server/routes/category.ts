@@ -1,7 +1,7 @@
 // const express = require('express');
 import * as express from 'express';
 import * as uuidv1 from 'uuid/v1';
-import * as promise from 'bluebird';
+// import * as Promise from 'bluebird';
 import { Config } from '../library/configs';
 import { Permission } from '../library/permissions';
 import { Database } from '../library/databases';
@@ -38,8 +38,8 @@ categoryRouter.get('/', (req: express.Request, res: express.Response, next: expr
   let $scope: any;
   // let sql = 'SELECT id, cate_name, cate_description, '' as product_qty FROM category WHERE status = \'Y\'';
   // let where = [];
-  const category_list: any = function(){
-    return new promise((resolve, reject) => {
+  function category_list(): Promise<any> {
+    return new Promise((resolve, reject) => {
       const gets: any = {
         fields: '*, \'\' as product_qty ',
         table: 'category',
@@ -55,23 +55,27 @@ categoryRouter.get('/', (req: express.Request, res: express.Response, next: expr
           reject(error);
       });
     });
-  };
+  }
 
-  category_list()
-  .then(function(data){
-    res.json({
-      status: true,
-      data: data
-    });
-    connection.end();
-  })
-  .catch(function(error){
-    res.json({
-      status: false,
-      error: error
-    });
-    connection.end();
-  });
+  async function getCategoryList(): Promise<any> {
+    try {
+      const result = await category_list();
+      const end = await connection.end();
+      await res.json({
+        status: true,
+        data: result
+      });
+    } catch (error) {
+      const end = await connection.end();
+      await res.json({
+        status: false,
+        error: error
+      });
+    }
+  }
+
+  getCategoryList();
+
 });
 
 // categoryRouter.post('/getcategorybyid', (req: express.Request, res: express.Response, next: express.NextFunction) => { });
@@ -88,8 +92,8 @@ categoryRouter.get('/:id', (req: express.Request, res: express.Response, next: e
   const category: any = req.body;
   let $scope: any;
 
-  const getcategorybyid: any = function(){
-    return new promise((resolve, reject) => {
+  function getcategorybyids(): Promise<any> {
+    return new Promise((resolve, reject) => {
       const where: any = {id: category_id};
       const gets: any = {
         fields: ['*'],
@@ -101,26 +105,31 @@ categoryRouter.get('/:id', (req: express.Request, res: express.Response, next: e
           $scope = data;
           resolve(data);
         }, (error) => {
-          console.log(error);
+          // console.log(error);
           reject(error);
       });
     });
-  };
+  }
 
-  getcategorybyid()
-  .then(function(data){
-    res.json({
-      status: true,
-      data: data
-    });
-    connection.end();
-  }).catch(function(e){
-    res.json({
-      status: false,
-      error: e
-    });
-    connection.end();
-  });
+  async function getCategoryById(): Promise<void> {
+    try {
+      const result = await getcategorybyids();
+      const end = await connection.end();
+      await res.json({
+        status: true,
+        data: result
+      });
+    } catch (error) {
+      const end = await connection.end();
+      await res.json({
+        status: false,
+        error: error
+      });
+    }
+  }
+
+  getCategoryById();
+
 });
 
 
@@ -137,7 +146,7 @@ categoryRouter.post('/', (req: express.Request, res: express.Response, next: exp
   let $scope: any = '';
 
   const savecetegory: any = function(transection) {
-    return new promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         const data = {
         query: {
           cate_name: category.cateName,
@@ -166,7 +175,7 @@ categoryRouter.post('/', (req: express.Request, res: express.Response, next: exp
   db.beginTransection(connection)
   .then(savecetegory)
   .then(function(d){
-    return new promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       db.Commit(connection, (success) => {
         console.log('create cate !!');
         res.json({
@@ -204,7 +213,7 @@ categoryRouter.put('/', (req: express.Request, res: express.Response, next: expr
   let $scope: any = '';
 
   const savecetegory: any = function() {
-    return new promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const data = {
         query: {
           cate_name: category.cateName,
@@ -233,7 +242,7 @@ categoryRouter.put('/', (req: express.Request, res: express.Response, next: expr
   db.beginTransection(connection)
   .then(savecetegory)
   .then(function(d){
-    return new promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       db.Commit(connection, (success) => {
         console.log('Update cate !!');
         res.json({

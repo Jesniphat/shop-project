@@ -42,6 +42,7 @@ export class StockInComponent implements OnInit, OnDestroy {
   public productNameList: any[];
   public productName: any = '';
   public storage: any;
+  public searchData: any;
 
   public stockInProduct: any = {
     id: '',
@@ -105,6 +106,11 @@ export class StockInComponent implements OnInit, OnDestroy {
         this.stockInProduct.staffid = logindata.id;
       }
     }
+  }
+
+  public clickSearch() {
+    this.searchData = this.autocompleteComponent.autocompleteText;
+    console.log(this.searchData);
   }
 
 

@@ -1,4 +1,4 @@
-import * as Promise from 'bluebird';
+// import * as Promise from 'bluebird';
 
 export class Database {
   // constructor(public conn: Config) { }
@@ -16,31 +16,62 @@ export class Database {
     });
   }
 
-  public Commit(connection, success, errors) {
-    connection.commit(function(e){
-      if (e) {
-        errors(e);
-      } else {
-        success('commit success');
-      }
+  public Commit(connection) {
+    return new Promise((resolve, reject) => {
+      connection.commit(function(e){
+        if (e) {
+          reject(e);
+        } else {
+          resolve('commit success');
+        }
+      });
     });
   }
 
-  public Rollback(connection, roll) {
-    connection.rollback(function() {
-     roll('rollback');
+  public Rollback(connection) {
+    return new Promise((resolve, reject) => {
+      connection.rollback(function() {
+        resolve('rollback');
+      });
     });
   }
 
-  public SelectAll(connection, data, success, errors) {
+  private _getSelectFields(data): Promise<any> {
+    return new Promise((resolve, reject) =>{
+      resolve((Array.isArray(data.fields)) ? (data.fields).toString() : (data.fields !== undefined) ? data.fields : ' * ');
+    });
+  }
+
+  private _getSelectOrder(data): Promise<any> {
+    return new Promise((resolve, reject) => {
+      resolve((Array.isArray(data.order)) ? ' ORDER BY ' + (data.order).toString() : (data.order !== undefined)
+      ? ' ORDER BY ' + data.order : '');
+    });
+  }
+
+  private _getSelectLimit(data): Promise<any> {
+    return new Promise((resolve, reject) => {
+      resolve((data.limit !== undefined) ? ' LIMIT ' + data.limit : '');
+    });
+  }
+
+  private _getSelectGroup(data): Promise<any> {
+    return new Promise((resolve, reject) => {
+      resolve((Array.isArray(data.group)) ? ' GROUP BY ' + (data.group).toString() : (data.group !== undefined)
+              ? ' GROUP BY ' + data.group : '');
+    });
+  }
+
+  public async SelectAll(connection, data) {
     let $scrope;
     // let select_data(){
-    let fields = ' * ';
+    let fields: any = ' * ';
     let where = ' 1 = 1 ';
     let group = '';
     let order = '';
     let limit = '';
 
+    // Manage Where data
     if (typeof(data.where) === 'object') {
       for (const keys in data.where) {
         if (keys) {
@@ -52,27 +83,39 @@ export class Database {
     } else if (data.where !== undefined) {
       where += ' AND ' + data.where;
     }
-    fields = (Array.isArray(data.fields)) ? (data.fields).toString() : (data.fields !== undefined) ? data.fields : ' * ';
-    order  = (Array.isArray(data.order)) ? ' ORDER BY ' + (data.order).toString() : (data.order !== undefined)
-           ? ' ORDER BY ' + data.order : '';
-    limit  = (data.limit !== undefined) ? ' LIMIT ' + data.limit : '';
+
+    // If fields is array change array to string else use *
+    // (Array.isArray(data.fields)) ? (data.fields).toString() : (data.fields !== undefined) ? data.fields : ' * ';
+    fields = await this._getSelectFields(data);
+
+    // Order query if data.order is array change array to string then use data string else use ''
+    order  = await this._getSelectOrder(data);
+
+    // Limit data if data.limit is not undefined use string data.limit
+    limit  = await this._getSelectLimit(data);
+
+    // Group data if data.group is array change data.group to string else use nomal data.group
     group  = (Array.isArray(data.group)) ? ' GROUP BY ' + (data.group).toString() : (data.group !== undefined)
            ? ' GROUP BY ' + data.group : '';
 
+    // Query string
     const select = 'SELECT ' + fields + ' FROM ' + data.table + ' WHERE ' + where + group + order + limit;
-    // console.log('select data = ', select);
-    connection.query(select, function(error, results, field){
-      if (error) {
-        console.log('error : ', error);
-        errors(error);
-      } else if (results.length === 0) {
-        console.log('Nodata => ', results);
-        $scrope = results;
-        success($scrope);
-      }else {
-        $scrope = results;
-        success($scrope);
-      }
+
+    // Main function for get data from database
+    return new Promise((resolve, reject) => {
+      connection.query(select, (error, results, field) => {
+        if (error) {
+          console.log('error : ', error);
+          reject(error);
+        } else if (results.length === 0) {
+          console.log('Nodata => ', results);
+          $scrope = results;
+          resolve($scrope);
+        }else {
+          $scrope = results;
+          resolve($scrope);
+        }
+      });
     });
   }
 
