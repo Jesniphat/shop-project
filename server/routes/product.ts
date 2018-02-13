@@ -1,143 +1,16 @@
 import * as express from 'express';
-import * as Promise from 'bluebird';
+// import * as Promise from 'bluebird';
 import * as uuidv1 from 'uuid/v1';
 
 import { Permission } from '../library/permissions';
 import { Config } from '../library/configs';
 import { Gencode } from '../library/gencodes';
-import { Database } from '../library/databases';
+import { Databases } from '../library/databases.1';
 
 const productRouter: express.Router = express.Router();
 
 const permission = new Permission();
-const conn = new Config();
 const gencode = new Gencode();
-const db = new Database();
-
-
-/**
- * Manage product picture
- *
- * @param product id
- * @return product id and error
- */
-const product_pic_manage = function(param: any) {
-  return new Promise((resolve, reject) => {
-    if ((param.product.pic_id).length > 0) {
-      const update = {
-        table: 'product_pic',
-        query: { status: 'N' },
-        where: { product_id: param.product.id }
-      };
-      const nPic = db.Update(param.connection, update, (success) => {
-        const updatePic = {
-          table: 'product_pic',
-          query: { product_id: param.product.id, status: 'Y' },
-          where: ' id IN (' + (param.product.pic_id).toString() + ')'
-        };
-        const aPic = db.Update(param.connection, updatePic, succes => resolve(param), errors => reject(errors));
-      }, errors => reject(errors));
-    } else {
-      const update = {
-        table: 'product_pic',
-        query: {
-          status: 'N',
-          cover: 'N'
-        },
-        where: { product_id: param.product.id }
-      };
-      const updatePicData = db.Update(param.connection, update, success => resolve(param), errors => reject(errors));
-    }
-  });
-};
-
-/**
- * Product reccommen
- * @param function connection
- * @param object product
- * @access public
- * @returns function connection
- * @returns object product
- */
-const product_recommend = function(param: any) {
-  return new Promise((resolve, reject) => {
-    if (param.product.recommend === true) {
-      const query = {
-        table: 'product',
-        fields: ['id'],
-        where: { recommend: 'Y' },
-        order: ['rec_row']
-      };
-      db.SelectAll(param.connection, query, (success) => {
-        const recommend_list = [];
-        const recs = [];
-        success.forEach((value, index) => {
-          recs.push(value);
-        });
-        const checkId = recs.indexOf(param.product.id);
-        success.forEach((value, index) => {
-          if (index === 0 && success.length === 3 && checkId === (-1)) {
-            return;
-          }
-          recommend_list.push(value.id);
-        });
-        recommend_list.push(param.product.id);
-        const updateNRecomment = {
-          table: 'product',
-          query: { recommend: 'N' },
-          where: { recommend: 'Y' }
-        };
-        db.Update(param.connection, updateNRecomment, (succes) => {
-          recommend_list.forEach((value, index) => {
-            const updateRecomment = {
-              table: 'product',
-              query: { recommend: 'Y', rec_row: index },
-              where: { id: value }
-            };
-            db.Update(param.connection, updateRecomment, successs => resolve(param), er => reject(er));
-          });
-        }, err => reject(err));
-      }, errers => reject(errers));
-    } else {
-      const updateRecomment = {
-        table: 'product',
-        query: { recommend: 'N', rec_row: '0' },
-        where: { id: param.product.id }
-      };
-      db.Update(param.connection, updateRecomment, success => resolve(param), errors => reject(errors));
-    }
-  });
-};
-
-/**
- * Set cover pic
- *
- * @param {*} product_id
- * @return product_id and error
- */
-const product_set_cover = function(param: any){
-  console.log('set cover');
-  return new Promise((resolve, reject) => {
-    if (param.product.coverId !== '0') {
-      const updateNCover = {
-        table: 'product_pic',
-        query: { cover: 'N'},
-        where: { product_id: param.product.id }
-      };
-      db.Update(param.connection, updateNCover, (success) => {
-        const updateCover = {
-          table: 'product_pic',
-          query: { cover: 'Y' },
-          where: { id: param.product.coverId }
-        };
-        db.Update(param.connection, updateCover, succes => resolve(param), error => reject(error));
-      }, errors => reject(errors));
-    } else {
-      resolve(param);
-    }
-  });
-};
-
 
 /**
  * Use functiion
@@ -167,440 +40,617 @@ productRouter.use(function (req, res, next) {
  * @return JSON
  */
 productRouter.get('/', (req, res, next) => {
-  const connection = conn.init();
-  const product = req.body;
-  const filter = req.query;
+  class GetProductAll {
+    private db = new Databases();
+    private product = req.body;
+    private filter = req.query;
 
-  const $scope = {
-    row: 1,
-    data: ''
-  };
+    private $scope = {
+      row: 1,
+      data: ''
+    };
 
-  let filterName: any = '';
-  if (filter.filtertext) {
-    filterName = ' and product_name like \'%' + filter.filtertext + '%\'';
-  }
+    private filterName: any = '';
 
-  const productCount = function(){
-    return new Promise((resolve, reject) => {
-      const gets = {
-        fields: 'count(id) as row ',
-        table: 'product',
-        where: 'status = \'Y\'' + filterName
-      };
+    private _genFilterByName() {
+      if (this.filter.filtertext) {
+        this.filterName = ' and product_name like \'%' + this.filter.filtertext + '%\'';
+      }
+    }
 
-      db.SelectRow(connection, gets, (data) => {
-        if (data.row <= filter.limit) {
-          $scope.row = 1;
-        } else if ((data.row % filter.limit) === 0) {
-          $scope.row = (data.row / filter.limit) ;
+    private _productCount(): Promise<any> {
+      return new Promise((resolve, reject) => {
+        const gets = {
+          fields: 'count(id) as row ',
+          table: 'product',
+          where: 'status = \'Y\'' + this.filterName
+        };
+        try {
+          const data: any = this.db.SelectRow(gets);
+          resolve(data);
+        } catch (error) {
+          reject (error);
+        }
+      });
+    }
+
+    private _productList(): Promise<any> {
+      return new Promise((resolve, reject) => {
+        const page_start = ((this.filter.limit * this.filter.page) - this.filter.limit);
+        const gets = {
+          fields: [
+            'p.*',
+            'max(pp.productpic_path) as img'
+          ],
+          table: 'product p left join product_pic pp on p.id = pp.product_id and pp.cover = \'Y\'',
+          where: 'p.status = \'Y\'' + this.filterName ,
+          order: this.filter.sort,
+          limit: page_start + ', ' + this.filter.limit,
+          group: 'p.id'
+        };
+        try {
+          const data: any = this.db.SelectAll(gets);
+          resolve(data);
+        } catch (error) {
+          reject(error);
+        }
+      });
+    }
+
+    public async getProductAll() {
+      try {
+        const filter = await this._genFilterByName();
+
+        const count = await this._productCount();
+        if (count.row <= this.filter.limit) {
+          this.$scope.row = 1;
+        } else if ((count.row % this.filter.limit) === 0) {
+          this.$scope.row = (count.row / this.filter.limit) ;
         } else {
-          $scope.row = Math.ceil((data.row / filter.limit));
+          this.$scope.row = Math.ceil((count.row / this.filter.limit));
         }
 
-        resolve(data);
-      }, (error) => {
-        console.log(error);
-        reject(error);
-      });
-    });
-  };
+        const list = await this._productList();
+        this.$scope.data = list;
 
-  const product_list = function(){
-    return new Promise((resolve, reject) => {
-      const page_start = ((filter.limit * filter.page) - filter.limit);
-      const gets = {
-        fields: [
-          'p.*',
-          'max(pp.productpic_path) as img'
-        ],
-        table: 'product p left join product_pic pp on p.id = pp.product_id and pp.cover = \'Y\'',
-        where: 'p.status = \'Y\'' + filterName ,
-        order: filter.sort,
-        limit: page_start + ', ' + filter.limit,
-        group: 'p.id'
-      };
-      // console.log('line 186: ', gets);
-      db.SelectAll(connection, gets, (data) => {
-          $scope.data = data;
-          resolve(data);
-        }, (error) => {
-          console.log(error);
-          reject(error);
+        const end = await this.db.EndConnect();
+        await res.json({
+          status: true,
+          data: this.$scope
         });
-    });
-  };
+      } catch (error) {
+        const end = await this.db.EndConnect();
+        await res.json({
+          status: false,
+          error: error
+        });
+      }
+    }
+  }
 
-  productCount()
-  .then(product_list)
-  .then(($data) => {
-    res.json({
-      status: true,
-      data: $scope
-    });
-    connection.end();
-  })
-  .catch(($error) => {
-    res.json({
-      status: false,
-      error: $error
-    });
-    connection.end();
-  });
+  const getProductAll = new GetProductAll();
+  getProductAll.getProductAll();
 });
 
 
 productRouter.get('/name', (req, res, next) => {
-  const connection = conn.init();
-  const product = req.body;
-  const filter = req.query;
+  class GetProductListByName {
+    private db = new Databases();
+    private product = req.body;
+    private filter = req.query;
 
-  let filterName: any = '';
-  if (filter.keyword) {
-    filterName = ' and ' + filter.column + ' like \'%' + filter.keyword + '%\'';
+    private filterName: any = '';
+
+    private _genFilterByName() {
+      if (this.filter.keyword) {
+        this.filterName = ' and ' + this.filter.column + ' like \'%' + this.filter.keyword + '%\'';
+      }
+    }
+
+    private _product_list(): Promise<any> {
+      return new Promise((resolve, reject) => {
+        const page_start = ((this.filter.limit * this.filter.page) - this.filter.limit);
+        const gets = {
+          fields: [
+            'p.*'
+          ],
+          table: 'product p ',
+          where: 'p.status = \'Y\'' + this.filterName
+        };
+        // console.log('line 186: ', gets);
+        try {
+          const data = this.db.SelectAll(gets);
+          resolve(data);
+        } catch (error) {
+          reject(error);
+        }
+      });
+    }
+
+    public async productListByName() {
+      try {
+        const filter = await this._genFilterByName();
+        const list = await this._product_list();
+        const end = await this.db.EndConnect();
+        await res.json({
+          status: true,
+          data: list
+        });
+      } catch (error) {
+        const end = await this.db.EndConnect();
+        await res.json({
+          status: false,
+        error: error
+        });
+      }
+    }
   }
 
-  const product_list = function(){
-    return new Promise((resolve, reject) => {
-      const page_start = ((filter.limit * filter.page) - filter.limit);
-      const gets = {
-        fields: [
-          'p.*'
-        ],
-        table: 'product p ',
-        where: 'p.status = \'Y\'' + filterName
-      };
-      // console.log('line 186: ', gets);
-      db.SelectAll(connection, gets, (data) => {
-          resolve(data);
-        }, (error) => {
-          console.log(error);
-          reject(error);
-        });
-    });
-  };
-
-  product_list()
-  .then(($data) => {
-    res.json({
-      status: true,
-      data: $data
-    });
-    connection.end();
-  })
-  .catch(($error) => {
-    res.json({
-      status: false,
-      error: $error
-    });
-    connection.end();
-  });
-
+  const productListByName = new GetProductListByName();
+  productListByName.productListByName();
 });
 
 
-// productRouter.post('/product_list', (req, res, next) => { });
-/**
- * Get product by id
- *
- * @access public
- * @param callbackfucnt(@pruduct id)
- * @return JSON
- */
-productRouter.get('/:id', (req, res, next) => {
-  const product_id = req.params.id;
-  const connection: any = conn.init();
-  const product: any = req.body;
-  // let $scope;
-  let product_data: any = {};
+// // productRouter.post('/product_list', (req, res, next) => { });
+// /**
+//  * Get product by id
+//  *
+//  * @access public
+//  * @param callbackfucnt(@pruduct id)
+//  * @return JSON
+//  */
+// productRouter.get('/:id', (req, res, next) => {
+//   const product_id = req.params.id;
+//   const connection: any = conn.init();
+//   const product: any = req.body;
+//   // let $scope;
+//   let product_data: any = {};
 
-  const get_product = function($id){
-    return new Promise((resolve, reject) => {
-      const get = {
-        table: 'product',
-        where: {
-          id: $id
-        }
-      };
-      db.SelectRow(connection, get, (data) => {
-        product_data = data;
-        resolve(data.id);
-      }, (error) => {
-        console.log(error);
-        reject('error');
-      });
-    });
-  };
+//   const get_product = function($id){
+//     return new Promise((resolve, reject) => {
+//       const get = {
+//         table: 'product',
+//         where: {
+//           id: $id
+//         }
+//       };
+//       db.SelectRow(connection, get, (data) => {
+//         product_data = data;
+//         resolve(data.id);
+//       }, (error) => {
+//         console.log(error);
+//         reject('error');
+//       });
+//     });
+//   };
 
-  const get_product_pic = function($id){
-    // console.log('$data = ', $data);
-    return new Promise((resolve, reject) => {
-      const gets = {
-        table: 'product_pic',
-        where: {
-          product_id: $id,
-          status: 'Y'
-        }
-      };
+//   const get_product_pic = function($id){
+//     // console.log('$data = ', $data);
+//     return new Promise((resolve, reject) => {
+//       const gets = {
+//         table: 'product_pic',
+//         where: {
+//           product_id: $id,
+//           status: 'Y'
+//         }
+//       };
 
-      db.SelectAll(connection, gets, (data) => {
-        product_data.pic = data;
-        resolve('success');
-      }, (error) => {
-        if (error === 'nodata') {
-          resolve('success');
-        } else {
-          reject(error);
-        }
-      });
-    });
+//       db.SelectAll(connection, gets, (data) => {
+//         product_data.pic = data;
+//         resolve('success');
+//       }, (error) => {
+//         if (error === 'nodata') {
+//           resolve('success');
+//         } else {
+//           reject(error);
+//         }
+//       });
+//     });
 
-  };
+//   };
 
-    get_product(product_id)
-    .then(get_product_pic)
-    .then(function($d){
-      res.json({
-        status: true,
-        data: product_data
-      });
-      connection.end();
-    }).catch(function($e){
-      res.json({
-        status: false,
-        error: $e
-      });
-      connection.end();
-    });
-});
+//     get_product(product_id)
+//     .then(get_product_pic)
+//     .then(function($d){
+//       res.json({
+//         status: true,
+//         data: product_data
+//       });
+//       connection.end();
+//     }).catch(function($e){
+//       res.json({
+//         status: false,
+//         error: $e
+//       });
+//       connection.end();
+//     });
+// });
 
 
-/**
- * Save product
- * @access public
- * @param {product object}
- * @return JSON
- */
-productRouter.post('/', (req, res, next) => {
-  const connection = conn.init();
-  console.log('save product = ', req.body);
-  const product = req.body;
-  const product_id = '';
-  let product_code = '';
+// /**
+//  * Save product
+//  * @access public
+//  * @param {product object}
+//  * @return JSON
+//  */
+// productRouter.post('/', (req, res, next) => {
+//   const connection = conn.init();
+//   console.log('save product = ', req.body);
+//   const product = req.body;
+//   const product_id = '';
+//   let product_code = '';
+
+//   /**
+//    * Gencode
+//    * @access public
+//    * @returns maxcode: string
+//    */
+//   const getCode = function() {
+//     return new Promise((resolve, reject) => {
+//       gencode.Code(connection, 'product', 'code', 'P', 5, 1,
+//         maxcode => {
+//           resolve(maxcode);
+//         },
+//         error => {
+//           reject(error);
+//         }
+//       );
+//     });
+//   };
+
+//   /**
+//    * Save product
+//    * @return product id and error
+//    */
+//   const saveProduct = function(code: any){
+//     return new Promise((resolve, reject) => {
+//       product_code = code;
+//       const insert = {
+//         table: 'product',
+//         query: {
+//           code: product_code,
+//           product_name: product.name,
+//           product_description: product.desc,
+//           product_price: product.price,
+//           product_cost: product.cost,
+//           created_by: product.staffid,
+//           category_id: product.category,
+//           uuid: uuidv1()
+//         }
+//       };
+//       const insertProduct = db.Insert(connection, insert,
+//         (results) => {
+//           product.id = results.insert_id;
+//           const result = {
+//             connection: connection,
+//             product: product
+//           };
+//           resolve(result);
+//         },
+//         (errors) => {
+//           reject(errors);
+//         }
+//       );
+//     });
+//   };
+
+//   db.beginTransection(connection)
+//   .then(getCode)
+//   .then(saveProduct)
+//   .then(product_pic_manage)
+//   .then(product_recommend)
+//   .then(product_set_cover)
+//   .then((product_ids) => {
+//     return new Promise((resolve, reject) => {
+//       console.log('commit');
+//       db.Commit(connection, (success) => {
+//         console.log('commited !!');
+//         res.json({
+//           status: true,
+//           data: success
+//         });
+//         resolve(success);
+//       }, errors => reject(errors));
+//       connection.end();
+//     });
+//   }).catch((errors) => {
+//     console.log('Roll back error is', errors);
+//     db.Rollback(connection, (roll) => {
+//       res.json({
+//         status: false,
+//         error: errors
+//       });
+//     });
+//     connection.end();
+//   });
+// });
+
+// /**
+//  * Edit product
+//  * @param url /
+//  * @param request
+//  * @access public
+//  * @return JSON
+//  */
+// productRouter.put('/', (req, res, next) => {
+//   const connection = conn.init();
+//   console.log('save product = ', req.body);
+//   const product = req.body;
+
+//   /**
+//    * Save product
+//    *
+//    * @return product id and error
+//    */
+//   const saveProduct = function(){
+//     return new Promise((resolve, reject) => {
+//       const update = {
+//         table: 'product',
+//         query: {
+//           product_name: product.name,
+//           product_description: product.desc,
+//           product_price: product.price,
+//           product_cost: product.cost,
+//           created_by: product.staffid,
+//           category_id: product.category
+//         },
+//         where: { id: product.id }
+//       };
+//       const updateProduct = db.Update(connection, update,
+//         results => resolve({connection: connection, product: product}),
+//         error => reject(error)
+//       );
+//     });
+//   };
+
+//   db.beginTransection(connection)
+//   .then(saveProduct)
+//   .then(product_pic_manage)
+//   .then(product_recommend)
+//   .then(product_set_cover)
+//   .then((product_ids) => {
+//     return new Promise((resolve, reject) => {
+//       console.log('commit');
+//       db.Commit(connection, (success) => {
+//         console.log('commited !!');
+//         res.json({
+//           status: true,
+//           data: success
+//         });
+//         resolve(success);
+//       }, errors => reject(errors));
+//       connection.end();
+//     });
+//   }).catch((errors) => {
+//     console.log('Roll back error is', errors);
+//     db.Rollback(connection, (roll) => {
+//       res.json({
+//         status: false,
+//         error: errors
+//       });
+//     });
+//     connection.end();
+//   });
+// });
+
+
+// /**
+//  * Delete product
+//  *
+//  * @access publict
+//  * @param product id
+//  * @return JSON
+//  */
+// productRouter.post('/delete_product', (req, res, next) => {
+//   const product = req.body;
+//   const connection = conn.init();
+
+//   /**
+//    * Delete product
+//    *
+//    * @return void
+//    */
+//   const deleteProd = function(){
+//     return new Promise((resolve, reject) => {
+//       const updateDelete = {
+//         table: 'product',
+//         query: { status: 'N' },
+//         where: { id: product.id }
+//       };
+//       const up = db.Update(connection, updateDelete, success => resolve(success), error => reject(error));
+//     });
+//   };
+
+
+//   /**
+//    * Blue bird start
+//    *
+//    * @return JSON
+//    */
+//   db.beginTransection(connection)
+//   .then(deleteProd)
+//   .then(function(){
+//     return new Promise((resolve, reject) => {
+//       console.log('commit');
+//       db.Commit(connection, (success) => {
+//         console.log('commited !!');
+//         res.json({
+//           status: true,
+//           data: success
+//         });
+//         resolve(success);
+//       }, errors => reject(errors));
+//       connection.end();
+//     });
+//   }).catch((errors) => {
+//     console.log('Roll back error is', errors);
+//     db.Rollback(connection, (roll) => {
+//       res.json({
+//         status: false,
+//         error: errors
+//       });
+//     });
+//     connection.end();
+//   });
+// });
+
+
+class ProductSaveStaff {
+  public constructor(private db, private param) { }
 
   /**
-   * Gencode
-   * @access public
-   * @returns maxcode: string
-   */
-  const getCode = function() {
-    return new Promise((resolve, reject) => {
-      gencode.Code(connection, 'product', 'code', 'P', 5, 1,
-        maxcode => {
-          resolve(maxcode);
-        },
-        error => {
-          reject(error);
-        }
-      );
-    });
-  };
-
-  /**
-   * Save product
-   * @return product id and error
-   */
-  const saveProduct = function(code: any){
-    return new Promise((resolve, reject) => {
-      product_code = code;
-      const insert = {
-        table: 'product',
-        query: {
-          code: product_code,
-          product_name: product.name,
-          product_description: product.desc,
-          product_price: product.price,
-          product_cost: product.cost,
-          created_by: product.staffid,
-          category_id: product.category,
-          uuid: uuidv1()
-        }
-      };
-      const insertProduct = db.Insert(connection, insert,
-        (results) => {
-          product.id = results.insert_id;
-          const result = {
-            connection: connection,
-            product: product
-          };
-          resolve(result);
-        },
-        (errors) => {
-          reject(errors);
-        }
-      );
-    });
-  };
-
-  db.beginTransection(connection)
-  .then(getCode)
-  .then(saveProduct)
-  .then(product_pic_manage)
-  .then(product_recommend)
-  .then(product_set_cover)
-  .then((product_ids) => {
-    return new Promise((resolve, reject) => {
-      console.log('commit');
-      db.Commit(connection, (success) => {
-        console.log('commited !!');
-        res.json({
-          status: true,
-          data: success
-        });
-        resolve(success);
-      }, errors => reject(errors));
-      connection.end();
-    });
-  }).catch((errors) => {
-    console.log('Roll back error is', errors);
-    db.Rollback(connection, (roll) => {
-      res.json({
-        status: false,
-        error: errors
-      });
-    });
-    connection.end();
-  });
-});
-
-/**
- * Edit product
- * @param url /
- * @param request
- * @access public
- * @return JSON
- */
-productRouter.put('/', (req, res, next) => {
-  const connection = conn.init();
-  console.log('save product = ', req.body);
-  const product = req.body;
-
-  /**
-   * Save product
+   * Manage product picture
    *
+   * @param product id
    * @return product id and error
    */
-  const saveProduct = function(){
-    return new Promise((resolve, reject) => {
+  public async product_pic_manage() {
+    let checkUpdate: any = false;
+    if (this.param.product.pic_id.length > 0) {
       const update = {
-        table: 'product',
-        query: {
-          product_name: product.name,
-          product_description: product.desc,
-          product_price: product.price,
-          product_cost: product.cost,
-          created_by: product.staffid,
-          category_id: product.category
-        },
-        where: { id: product.id }
-      };
-      const updateProduct = db.Update(connection, update,
-        results => resolve({connection: connection, product: product}),
-        error => reject(error)
-      );
-    });
-  };
-
-  db.beginTransection(connection)
-  .then(saveProduct)
-  .then(product_pic_manage)
-  .then(product_recommend)
-  .then(product_set_cover)
-  .then((product_ids) => {
-    return new Promise((resolve, reject) => {
-      console.log('commit');
-      db.Commit(connection, (success) => {
-        console.log('commited !!');
-        res.json({
-          status: true,
-          data: success
-        });
-        resolve(success);
-      }, errors => reject(errors));
-      connection.end();
-    });
-  }).catch((errors) => {
-    console.log('Roll back error is', errors);
-    db.Rollback(connection, (roll) => {
-      res.json({
-        status: false,
-        error: errors
-      });
-    });
-    connection.end();
-  });
-});
-
-
-/**
- * Delete product
- *
- * @access publict
- * @param product id
- * @return JSON
- */
-productRouter.post('/delete_product', (req, res, next) => {
-  const product = req.body;
-  const connection = conn.init();
-
-  /**
-   * Delete product
-   *
-   * @return void
-   */
-  const deleteProd = function(){
-    return new Promise((resolve, reject) => {
-      const updateDelete = {
-        table: 'product',
+        table: 'product_pic',
         query: { status: 'N' },
-        where: { id: product.id }
+        where: { product_id: this.param.product.id }
       };
-      const up = db.Update(connection, updateDelete, success => resolve(success), error => reject(error));
+      const nPic = await this.db.Update(update);
+      checkUpdate = nPic;
+
+      const updatePic = {
+        table: 'product_pic',
+        query: { product_id: this.param.product.id, status: 'Y' },
+        where: ' id IN (' + (this.param.product.pic_id).toString() + ')'
+      };
+      const aPic = await this.db.Update(updatePic);
+      checkUpdate = aPic;
+    } else {
+      const update = {
+        table: 'product_pic',
+        query: {
+          status: 'N',
+          cover: 'N'
+        },
+        where: { product_id: this.param.product.id }
+      };
+      const updatePicData = this.db.Update(update);
+      checkUpdate = updatePicData;
+    }
+
+    return new Promise((resolve, reject) => {
+      if (!checkUpdate) {
+        reject('Can \'t Update product pic.');
+      } else {
+        resolve(this.param);
+      }
     });
-  };
+  }
 
 
   /**
-   * Blue bird start
-   *
-   * @return JSON
+   * Product reccommen
+   * @param function connection
+   * @param object product
+   * @access public
+   * @returns function connection
+   * @returns object product
    */
-  db.beginTransection(connection)
-  .then(deleteProd)
-  .then(function(){
+  public product_recommend(param: any): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      if (param.product.recommend === true) {
+        const recommend_list = [];
+        const recs = [];
+        try {
+          const query = {
+            table: 'product',
+            fields: ['id'],
+            where: { recommend: 'Y' },
+            order: ['rec_row']
+          };
+          const product_data = await this.db.SelectAll(query);
+
+          if (product_data.length > 0) {
+            product_data.forEach((value, index) => {
+              recs.push(value);
+            });
+          }
+          const checkId = recs.indexOf(param.product.id);
+          product_data.forEach((value, index) => {
+            if (index === 0 && product_data.length === 3 && checkId === (-1)) {
+              return;
+            }
+            recommend_list.push(value.id);
+          });
+          recommend_list.push(param.product.id);
+
+          const updateNRecomment = {
+            table: 'product',
+            query: { recommend: 'N' },
+            where: { recommend: 'Y' }
+          };
+          await this.db.Update(updateNRecomment);
+
+          recommend_list.forEach(async (value, index) => {
+            const updateRecomment = {
+              table: 'product',
+              query: { recommend: 'Y', rec_row: index },
+              where: { id: value }
+            };
+            await this.db.Update(updateRecomment);
+          });
+          resolve(param);
+        } catch (error) {
+          reject(error);
+        }
+      } else {
+        const updateRecomment = {
+          table: 'product',
+          query: { recommend: 'N', rec_row: '0' },
+          where: { id: param.product.id }
+        };
+        try {
+          this.db.Update(updateRecomment);
+          resolve(param);
+        } catch (error) {
+          reject(error);
+        }
+      }
+    });
+  }
+
+  /**
+   * Set cover pic
+   *
+   * @param {*} product_id
+   * @return product_id and error
+   */
+  public async product_set_cover(): Promise<any> {
+    console.log('set cover');
+    let chack: any;
+    if (this.param.product.coverId !== '0') {
+      const updateNCover = {
+        table: 'product_pic',
+        query: { cover: 'N'},
+        where: { product_id: this.param.product.id }
+      };
+      chack = await this.db.Update(updateNCover);
+
+      const updateCover = {
+        table: 'product_pic',
+        query: { cover: 'Y' },
+        where: { id: this.param.product.coverId }
+      };
+      chack = await this.db.Update(updateCover);
+    } else {
+      chack = true;
+    }
     return new Promise((resolve, reject) => {
-      console.log('commit');
-      db.Commit(connection, (success) => {
-        console.log('commited !!');
-        res.json({
-          status: true,
-          data: success
-        });
-        resolve(success);
-      }, errors => reject(errors));
-      connection.end();
+      if (chack) {
+        resolve(this.param);
+      } else {
+        reject('Can\'t update cover pic.');
+      }
     });
-  }).catch((errors) => {
-    console.log('Roll back error is', errors);
-    db.Rollback(connection, (roll) => {
-      res.json({
-        status: false,
-        error: errors
-      });
-    });
-    connection.end();
-  });
-});
+  }
+}
 
 
 export { productRouter };
