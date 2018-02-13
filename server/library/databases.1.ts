@@ -9,6 +9,11 @@ export class Databases extends Config {
     this.connection = super.init();
   }
 
+  /**
+   * Begin transection for start some query
+   * @access public
+   * @return Promise
+   */
   public beginTransection(): Promise<any> {
     return new Promise((resolve, reject) => {
       this.connection.beginTransaction((err) => {
@@ -21,6 +26,11 @@ export class Databases extends Config {
     });
   }
 
+  /**
+   * Commit sql
+   * @access public
+   * @return Promise
+   */
   public Commit(): Promise<any> {
     return new Promise((resolve, reject) => {
       this.connection.commit(function(e){
@@ -33,6 +43,13 @@ export class Databases extends Config {
     });
   }
 
+
+  /**
+   * Rollback sql
+   *
+   * @access public
+   * @return Promise
+   */
   public Rollback(): Promise<any> {
     return new Promise((resolve, reject) => {
       this.connection.rollback(function() {
@@ -41,12 +58,25 @@ export class Databases extends Config {
     });
   }
 
+
+  /**
+   * End connect sql
+   * @access public
+   * @returns Promise
+   */
   public EndConnect(): Promise<any> {
     return new Promise((resolve, reject) => {
       resolve(this.connection.end());
     });
   }
 
+
+  /**
+   * select all data form my sql
+   * @param data
+   * @access public
+   * @returns Promise
+   */
   public async SelectAll(data): Promise<any> {
     let $scrope;
     // let select_data(){
@@ -56,7 +86,7 @@ export class Databases extends Config {
     let order = '';
     let limit = '';
 
-    // Manage Where data
+    // Genatator where string for mysql
     if (typeof(data.where) === 'object') {
       for (const keys in data.where) {
         if (keys) {
@@ -104,6 +134,12 @@ export class Databases extends Config {
   }
 
 
+  /**
+   * Select one row of data from mysql
+   * @param data
+   * @access public async
+   * @returns Promise
+   */
   public async SelectRow(data): Promise<any> {
     let $scrope;
     let fields = ' * ';
@@ -112,6 +148,7 @@ export class Databases extends Config {
     let order = '';
     let limit = '';
 
+    // Genatator where string for mysql
     if (typeof(data.where) === 'object') {
       for (const keys in data.where) {
         if (keys) {
@@ -124,13 +161,23 @@ export class Databases extends Config {
       where += ' AND ' + data.where;
     }
 
-    fields = await this._getSetectRowField(data);
-    group  = await this._getSetectRowGroup(data);
-    order  = await this._getSelectRowOrder(data);
-    limit  = await this._getSelectRowLimit(data);
+    // If fields is array change array to string else use *
+    fields = await this._getSelectFields(data);
+
+    // Group data if data.group is array change data.group to string else use nomal data.group
+    group  = await this._getSelectGroup(data);
+
+    // Order query if data.order is array change array to string then use data string else use ''
+    order  = await this._getSelectOrder(data);
+
+    // Limit data if data.limit is not undefined use string data.limit
+    limit  = await this._getSelectLimit(data);
 
     return new Promise((resolve, reject) => {
+      // Query string
       const select = 'SELECT ' + fields + ' FROM ' + data.table + ' WHERE ' + where + order + limit;
+
+      // Get data
       const select_row = this.connection.query(select, function(error, results, field){
         // console.log('sql select row = ', select_row.sql);
         if (error) {
@@ -148,6 +195,12 @@ export class Databases extends Config {
     });
   }
 
+  /**
+   * Insert data to data base
+   * @param data
+   * @access public
+   * @returns Promise
+   */
   public async Insert(data): Promise<any> {
     return new Promise((resolve, reject) => {
       let $scrope;
@@ -172,6 +225,12 @@ export class Databases extends Config {
     });
   }
 
+  /**
+   * Update data
+   * @param data
+   * @access public
+   * @returns Promise {}
+   */
   public async Update(data): Promise<any> {
     return new Promise((resolve, reject) => {
       let $scrope;
@@ -215,6 +274,13 @@ export class Databases extends Config {
     });
   }
 
+
+  /**
+   * Data data
+   * @param data
+   * @access public
+   * @returns Promise
+   */
   public async Delete(data): Promise<any> {
     return new Promise((resolve, reject) => {
       let $scrope;
@@ -245,60 +311,87 @@ export class Databases extends Config {
   }
 
 
+  /**
+   * Genarator query where string for select all
+   * @param data
+   * @access private
+   * @returns string where
+   */
   private _getSelectFields(data): Promise<any> {
     return new Promise((resolve, reject) => {
-      resolve((Array.isArray(data.fields)) ? (data.fields).toString() : (data.fields !== undefined) ? data.fields : ' * ');
+      let where_text: any = '';
+      if (Array.isArray(data.fields)) {
+        where_text = data.fields.toString();
+      } else if (data.fields !== undefined) {
+        where_text = data.fields;
+      } else {
+        where_text = ' * ';
+      }
+      resolve(where_text);
+      // resolve((Array.isArray(data.fields)) ? (data.fields).toString() : (data.fields !== undefined) ? data.fields : ' * ');
     });
   }
 
+  /**
+   * Genarator order string for select all
+   * @param data
+   * @access private
+   * @returns Promise string order
+   */
   private _getSelectOrder(data): Promise<any> {
     return new Promise((resolve, reject) => {
-      resolve((Array.isArray(data.order)) ? ' ORDER BY ' + (data.order).toString() : (data.order !== undefined)
-      ? ' ORDER BY ' + data.order : '');
+      let order_text = '';
+      if (Array.isArray(data.order)) {
+        order_text = ' ORDER BY ' + (data.order).toString();
+      } else if (data.order !== undefined) {
+        order_text = ' ORDER BY ' + data.order;
+      } else {
+        order_text = '';
+      }
+      resolve(order_text);
+      // resolve((Array.isArray(data.order)) ? ' ORDER BY ' + (data.order).toString() : (data.order !== undefined)
+      // ? ' ORDER BY ' + data.order : '');
     });
   }
 
+  /**
+   * Genarator limit string for select all
+   * @param data
+   * @access private
+   * @returns Promise limit string
+   */
   private _getSelectLimit(data): Promise<any> {
     return new Promise((resolve, reject) => {
-      resolve((data.limit !== undefined) ? ' LIMIT ' + data.limit : '');
+      let limit_text = '';
+      if (data.limit !== undefined) {
+        limit_text = ' LIMIT ' + data.limit;
+      }
+
+      resolve(limit_text);
+      // resolve((data.limit !== undefined) ? ' LIMIT ' + data.limit : '');
     });
   }
 
+  /**
+   * Genarator group string for select all
+   * @param data
+   * @access private
+   * @returns Promise group string
+   */
   private _getSelectGroup(data): Promise<any> {
     return new Promise((resolve, reject) => {
-      resolve((Array.isArray(data.group)) ? ' GROUP BY ' + (data.group).toString() : (data.group !== undefined)
-              ? ' GROUP BY ' + data.group : '');
+      let group_text = '';
+      if (Array.isArray(data.group)) {
+        group_text = ' GROUP BY ' + data.group.toString();
+      } else if (data.group !== undefined) {
+        group_text = ' GROUP BY ' + data.group;
+      }
+
+      resolve(group_text);
+      // resolve((Array.isArray(data.group)) ? ' GROUP BY ' + (data.group).toString() : (data.group !== undefined)
+      //         ? ' GROUP BY ' + data.group : '');
     });
   }
-
-
-  private _getSetectRowField(data): Promise<any> {
-    return new Promise((resolve, reject) => {
-      resolve((Array.isArray(data.fields)) ? (data.fields).toString() : (data.fields !== undefined) ? data.fields : ' * ');
-    });
-  }
-
-  private _getSetectRowGroup(data): Promise<any> {
-    return new Promise((resolve, reject) => {
-      resolve((Array.isArray(data.group)) ? ' GROUP BY ' + (data.group).toString() : (data.group !== undefined)
-              ? ' GROUP BY ' + data.group : '');
-    });
-  }
-
-  private _getSelectRowOrder(data): Promise<any> {
-    return new Promise((resolve, reject) => {
-      resolve((Array.isArray(data.order)) ? ' ORDER BY ' + (data.order).toString() : (data.order !== undefined)
-      ? ' ORDER BY ' + data.order : '');
-    });
-  }
-
-  private _getSelectRowLimit(data): Promise<any> {
-    return new Promise((resolve, reject) => {
-      resolve((data.limit !== undefined) ? ' LIMIT ' + data.limit : '');
-    });
-  }
-
-
 }
 
 // export { Database };

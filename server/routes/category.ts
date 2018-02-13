@@ -38,28 +38,18 @@ categoryRouter.get('/', (req: express.Request, res: express.Response, next: expr
 
     }
 
-    private _category_list(): Promise<any> {
-      return new Promise((resolve, reject) => {
-        const gets: any = {
-          fields: '*, \'\' as product_qty ',
-          table: 'category',
-          where: {
-            status: 'Y'
-          }
-        };
-
-        try {
-          const response = this.db.SelectAll(gets);
-          resolve(response);
-        } catch (error) {
-          reject(error);
-        }
-      });
-    }
-
     public async getCategoryList() {
+      const gets: any = {
+        fields: '*, \'\' as product_qty ',
+        table: 'category',
+        where: {
+          status: 'Y'
+        }
+      };
+
       try {
-        const result = await this._category_list();
+        // const result = await this._category_list();
+        const result = await this.db.SelectAll(gets);
         const end = await this.db.EndConnect();
         await res.json({
           status: true,
@@ -82,6 +72,7 @@ categoryRouter.get('/', (req: express.Request, res: express.Response, next: expr
 });
 
 // categoryRouter.post('/getcategorybyid', (req: express.Request, res: express.Response, next: express.NextFunction) => { });
+
 /**
  * Get Category by id
  * @param url/id/:id: strung

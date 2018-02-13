@@ -44,64 +44,52 @@ productRouter.get('/', (req, res, next) => {
     private db = new Databases();
     private product = req.body;
     private filter = req.query;
-
     private $scope = {
       row: 1,
       data: ''
     };
 
-    private filterName: any = '';
-
-    private _genFilterByName() {
-      if (this.filter.filtertext) {
-        this.filterName = ' and product_name like \'%' + this.filter.filtertext + '%\'';
+    private _filterName() {
+      let filtername = '';
+      if (this.filter.filtertext !== '') {
+        filtername = ' and product_name like \'%' + this.filter.filtertext + '%\'';
       }
+      return filtername;
     }
 
-    private _productCount(): Promise<any> {
-      return new Promise((resolve, reject) => {
-        const gets = {
-          fields: 'count(id) as row ',
-          table: 'product',
-          where: 'status = \'Y\'' + this.filterName
-        };
-        try {
-          const data: any = this.db.SelectRow(gets);
-          resolve(data);
-        } catch (error) {
-          reject (error);
-        }
-      });
+    private _pageStart() {
+      const page_start = (this.filter.limit * this.filter.page) - this.filter.limit;
+      return page_start;
     }
 
-    private _productList(): Promise<any> {
-      return new Promise((resolve, reject) => {
-        const page_start = ((this.filter.limit * this.filter.page) - this.filter.limit);
-        const gets = {
-          fields: [
-            'p.*',
-            'max(pp.productpic_path) as img'
-          ],
-          table: 'product p left join product_pic pp on p.id = pp.product_id and pp.cover = \'Y\'',
-          where: 'p.status = \'Y\'' + this.filterName ,
-          order: this.filter.sort,
-          limit: page_start + ', ' + this.filter.limit,
-          group: 'p.id'
-        };
-        try {
-          const data: any = this.db.SelectAll(gets);
-          resolve(data);
-        } catch (error) {
-          reject(error);
-        }
-      });
+    private _productCount() {
+      const productCount = {
+        fields: 'count(id) as row ',
+        table: 'product',
+        where: 'status = \'Y\'' + this._filterName()
+      };
+      return productCount;
+    }
+
+    private _productList() {
+      const productList = {
+        fields: [
+          'p.*',
+          'max(pp.productpic_path) as img'
+        ],
+        table: 'product p left join product_pic pp on p.id = pp.product_id and pp.cover = \'Y\'',
+        where: 'p.status = \'Y\'' + this._filterName() ,
+        order: this.filter.sort,
+        limit: this._pageStart() + ', ' + this.filter.limit,
+        group: 'p.id'
+      };
+
+      return productList;
     }
 
     public async getProductAll() {
       try {
-        const filter = await this._genFilterByName();
-
-        const count = await this._productCount();
+        const count = await this.db.SelectRow(this._productCount());
         if (count.row <= this.filter.limit) {
           this.$scope.row = 1;
         } else if ((count.row % this.filter.limit) === 0) {
@@ -110,7 +98,7 @@ productRouter.get('/', (req, res, next) => {
           this.$scope.row = Math.ceil((count.row / this.filter.limit));
         }
 
-        const list = await this._productList();
+        const list = await this.db.SelectAll(this._productList());
         this.$scope.data = list;
 
         const end = await this.db.EndConnect();
