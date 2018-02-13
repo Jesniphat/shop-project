@@ -245,16 +245,49 @@ export class Databases extends Config {
   }
 
 
+  /**
+   * Genarator format select stuff for select all
+   * @param data
+   * @access private
+   * @returns resolve let select_text
+   */
   private _getSelectFields(data): Promise<any> {
     return new Promise((resolve, reject) => {
-      resolve((Array.isArray(data.fields)) ? (data.fields).toString() : (data.fields !== undefined) ? data.fields : ' * ');
+      let select_text = '';
+      if (Array.isArray(data.fields)) {
+        select_text = data.fields.toString();
+      } else if (data.fields !== undefined) {
+        select_text = data.fields;
+      } else {
+        select_text = ' * ';
+      }
+
+      resolve(select_text);
+      // resolve((Array.isArray(data.fields)) ? (data.fields).toString() : (data.fields !== undefined) ? data.fields : ' * ');
     });
   }
 
+
+  /**
+   * Genarator format order stuff for select all
+   * @param data
+   * @access private
+   * @returns resolve let order_text
+   */
   private _getSelectOrder(data): Promise<any> {
     return new Promise((resolve, reject) => {
-      resolve((Array.isArray(data.order)) ? ' ORDER BY ' + (data.order).toString() : (data.order !== undefined)
-      ? ' ORDER BY ' + data.order : '');
+      let order_text = '';
+      if (Array.isArray(data.order)) {
+        order_text = ' ORDER BY ' + data.order.toString();
+      } else if (data.order !== undefined) {
+        order_text = ' ORDER BY ' + data.order;
+      } else {
+        order_text = '';
+      }
+
+      resolve(order_text);
+      // resolve((Array.isArray(data.order)) ? ' ORDER BY ' + (data.order).toString() : (data.order !== undefined)
+      // ? ' ORDER BY ' + data.order : '');
     });
   }
 
