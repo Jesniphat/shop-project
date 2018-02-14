@@ -32,13 +32,13 @@ categoryRouter.use((req: express.Request, res: express.Response, next: express.N
 categoryRouter.get('/', (req: express.Request, res: express.Response, next: express.NextFunction) => {
   class CategoryList {
     private db = new Databases();
-    private category: any = req.body;
+    private category: any;
 
-    public constructor() {
-
+    public constructor(private request, private response) {
+      this.category = this.request.body;
     }
 
-    public async getCategoryList() {
+    private _gets() {
       const gets: any = {
         fields: '*, \'\' as product_qty ',
         table: 'category',
@@ -46,18 +46,21 @@ categoryRouter.get('/', (req: express.Request, res: express.Response, next: expr
           status: 'Y'
         }
       };
+      return gets;
+    }
 
+    public async getCategoryList() {
       try {
         // const result = await this._category_list();
-        const result = await this.db.SelectAll(gets);
+        const result = await this.db.SelectAll(this._gets());
         const end = await this.db.EndConnect();
-        await res.json({
+        await this.response.json({
           status: true,
           data: result
         });
       } catch (error) {
         const end = await this.db.EndConnect();
-        await res.json({
+        await this.response.json({
           status: false,
           error: error
         });
@@ -66,7 +69,7 @@ categoryRouter.get('/', (req: express.Request, res: express.Response, next: expr
 
   }
 
-  const getCategoryList = new CategoryList();
+  const getCategoryList = new CategoryList(req, res);
   getCategoryList.getCategoryList();
 
 });
@@ -83,38 +86,35 @@ categoryRouter.get('/', (req: express.Request, res: express.Response, next: expr
 categoryRouter.get('/:id', (req: express.Request, res: express.Response, next: express.NextFunction) => {
   class CategoryById {
     private db = new Databases();
-    private category_id: any = req.params.id;
-    private category: any = req.body;
+    private category_id: any;
+    private category: any;
 
-    private _getcategorybyids(): Promise<any> {
-      return new Promise((resolve, reject) => {
-        const where: any = {id: this.category_id};
-        const gets: any = {
-          fields: ['*'],
-          table:  'category',
-          where:  where
-        };
+    constructor(private request, private response) {
+      this.category_id = this.request.params.id;
+      this.category = this.request.body;
+    }
 
-        try {
-          const response_data = this.db.SelectRow(gets);
-          resolve(response_data);
-        } catch (error) {
-          reject(error);
-        }
-      });
+    private _getcategorybyids() {
+      const where: any = {id: this.category_id};
+      const gets: any = {
+        fields: ['*'],
+        table:  'category',
+        where:  where
+      };
+      return gets;
     }
 
     public async getCategoryById() {
       try {
-        const result = await this._getcategorybyids();
+        const result = await this.db.SelectRow(this._getcategorybyids());
         const end = await this.db.EndConnect();
-        await res.json({
+        await this.response.json({
           status: true,
           data: result
         });
       } catch (error) {
         const end = await this.db.EndConnect();
-        await res.json({
+        await this.response.json({
           status: false,
           error: error
         });
@@ -123,7 +123,7 @@ categoryRouter.get('/:id', (req: express.Request, res: express.Response, next: e
 
   }
 
-  const getCategoryById = new CategoryById();
+  const getCategoryById = new CategoryById(req, res);
   getCategoryById.getCategoryById();
 });
 
@@ -138,46 +138,42 @@ categoryRouter.get('/:id', (req: express.Request, res: express.Response, next: e
 categoryRouter.post('/', (req: express.Request, res: express.Response, next: express.NextFunction) => {
   class SaveCategory {
     private db = new Databases();
-    private category: any = req.body;
+    private category: any;
 
-    private _savecetegory(): Promise<void> {
-      return new Promise((resolve, reject) => {
-          const data = {
-          query: {
-            cate_name: this.category.cateName,
-            cate_description: this.category.cateDescription,
-            status: this.category.selectedStatus,
-            cover_pic: this.category.coverPic,
-            created_by: permission.getID(req),
-            updated_by: permission.getID(req),
-            uuid: uuidv1()
-          },
-          table: 'category'
-        };
+    constructor(private request, private response) {
+      this.category = this.request.body;
+    }
 
-        try {
-          const save = this.db.Insert(data);
-          resolve(save);
-        } catch (error) {
-          reject(error);
-        }
-      });
+    private _saveCategoryData() {
+      const data = {
+        query: {
+          cate_name: this.category.cateName,
+          cate_description: this.category.cateDescription,
+          status: this.category.selectedStatus,
+          cover_pic: this.category.coverPic,
+          created_by: permission.getID(this.request),
+          updated_by: permission.getID(this.request),
+          uuid: uuidv1()
+        },
+        table: 'category'
+      };
+      return data;
     }
 
     public async saveCategory() {
       try {
         const begin = await this.db.beginTransection();
-        const result = await this._savecetegory();
+        const result = await this.db.Insert(this._saveCategoryData());
         const commit = await this.db.Commit();
         const end = await this.db.EndConnect();
-        await res.json({
+        await this.response.json({
           status: true,
           data: result
         });
       } catch (error) {
         const rollback = await this.db.Rollback();
         const end = await this.db.EndConnect();
-        await res.json({
+        await this.response.json({
           status: false,
           error: error
         });
@@ -185,7 +181,7 @@ categoryRouter.post('/', (req: express.Request, res: express.Response, next: exp
     }
   }
 
-  const saveCategory = new SaveCategory();
+  const saveCategory = new SaveCategory(req, res);
   saveCategory.saveCategory();
 });
 
@@ -201,45 +197,41 @@ categoryRouter.put('/', (req: express.Request, res: express.Response, next: expr
     private db = new Databases();
     private category: any = req.body;
 
-    private _savecetegory(): Promise<any> {
-      return new Promise((resolve, reject) => {
-        const data = {
-          query: {
-            cate_name: this.category.cateName,
-            cate_description: this.category.cateDescription,
-            status: this.category.selectedStatus,
-            cover_pic: this.category.coverPic
-          },
-          table: 'category',
-          where: {
-            id: this.category.cateId
-          }
-        };
+    constructor(private request, private response) {
+      this.category = request.body;
+    }
 
-        try {
-          const update = this.db.Update(data);
-          resolve(update);
-        } catch (error) {
-          reject(error);
+    private _savecetegory() {
+      const data = {
+        query: {
+          cate_name: this.category.cateName,
+          cate_description: this.category.cateDescription,
+          status: this.category.selectedStatus,
+          cover_pic: this.category.coverPic
+        },
+        table: 'category',
+        where: {
+          id: this.category.cateId
         }
-      });
+      };
+      return data;
     }
 
 
     public async updateCategory() {
       try {
         const begin = await this.db.beginTransection();
-        const result = await this._savecetegory();
+        const result = await this.db.Update(this._savecetegory());
         const commit = await this.db.Commit();
         const end = await this.db.EndConnect();
-        await res.json({
+        await this.response.json({
           status: true,
           data: result
         });
       } catch (error) {
         const rollback = await this.db.Rollback();
         const end = await this.db.EndConnect();
-        await res.json({
+        await this.response.json({
           status: false,
           error: error
         });
@@ -247,7 +239,7 @@ categoryRouter.put('/', (req: express.Request, res: express.Response, next: expr
     }
   }
 
-  const updateCategory = new UpdateCategory();
+  const updateCategory = new UpdateCategory(req, res);
   updateCategory.updateCategory();
 });
 

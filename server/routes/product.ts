@@ -42,13 +42,19 @@ productRouter.use(function (req, res, next) {
 productRouter.get('/', (req, res, next) => {
   class GetProductAll {
     private db = new Databases();
-    private product = req.body;
-    private filter = req.query;
+    private product: any;
+    private filter: any;
     private $scope = {
       row: 1,
       data: ''
     };
 
+    constructor(private request, private response) {
+      this.product = this.request.body;
+      this.filter = this.request.query;
+    }
+
+    /** Text for where product name by filter text */
     private _filterName() {
       let filtername = '';
       if (this.filter.filtertext !== '') {
@@ -57,11 +63,13 @@ productRouter.get('/', (req, res, next) => {
       return filtername;
     }
 
+    /** Page start number */
     private _pageStart() {
       const page_start = (this.filter.limit * this.filter.page) - this.filter.limit;
       return page_start;
     }
 
+    /** All product row */
     private _productCount() {
       const productCount = {
         fields: 'count(id) as row ',
@@ -71,6 +79,7 @@ productRouter.get('/', (req, res, next) => {
       return productCount;
     }
 
+    /** Text for get product lists */
     private _productList() {
       const productList = {
         fields: [
@@ -87,6 +96,7 @@ productRouter.get('/', (req, res, next) => {
       return productList;
     }
 
+    /** function for ger all data */
     public async getProductAll() {
       try {
         const count = await this.db.SelectRow(this._productCount());
@@ -102,13 +112,13 @@ productRouter.get('/', (req, res, next) => {
         this.$scope.data = list;
 
         const end = await this.db.EndConnect();
-        await res.json({
+        await this.response.json({
           status: true,
           data: this.$scope
         });
       } catch (error) {
         const end = await this.db.EndConnect();
-        await res.json({
+        await this.response.json({
           status: false,
           error: error
         });
@@ -116,7 +126,7 @@ productRouter.get('/', (req, res, next) => {
     }
   }
 
-  const getProductAll = new GetProductAll();
+  const getProductAll = new GetProductAll(req, res);
   getProductAll.getProductAll();
 });
 
@@ -492,7 +502,7 @@ class ProductSaveStaff {
    * @param product id
    * @return product id and error
    */
-  public async product_pic_manage() {
+  public async product_pic_manage(): Promise<any> {
     let checkUpdate: any = false;
     if (this.param.product.pic_id.length > 0) {
       const update = {
@@ -523,7 +533,7 @@ class ProductSaveStaff {
       checkUpdate = updatePicData;
     }
 
-    return new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
       if (!checkUpdate) {
         reject('Can \'t Update product pic.');
       } else {
@@ -541,67 +551,71 @@ class ProductSaveStaff {
    * @returns function connection
    * @returns object product
    */
-  public product_recommend(param: any): Promise<any> {
-    return new Promise(async (resolve, reject) => {
-      if (param.product.recommend === true) {
-        const recommend_list = [];
-        const recs = [];
-        try {
-          const query = {
-            table: 'product',
-            fields: ['id'],
-            where: { recommend: 'Y' },
-            order: ['rec_row']
-          };
-          const product_data = await this.db.SelectAll(query);
+  public async product_recommend(param: any): Promise<any> {
+    let updateRec: any;
+    if (param.product.recommend === true) {
+      const recommend_list = [];
+      const recs = [];
+      const query = {
+        table: 'product',
+        fields: ['id'],
+        where: { recommend: 'Y' },
+        order: ['rec_row']
+      };
+      const product_data = await this.db.SelectAll(query);
+      if (!product_data) {
+        throw Error('Can\'t get product');
+      }
 
-          if (product_data.length > 0) {
-            product_data.forEach((value, index) => {
-              recs.push(value);
-            });
-          }
-          const checkId = recs.indexOf(param.product.id);
-          product_data.forEach((value, index) => {
-            if (index === 0 && product_data.length === 3 && checkId === (-1)) {
-              return;
-            }
-            recommend_list.push(value.id);
-          });
-          recommend_list.push(param.product.id);
-
-          const updateNRecomment = {
-            table: 'product',
-            query: { recommend: 'N' },
-            where: { recommend: 'Y' }
-          };
-          await this.db.Update(updateNRecomment);
-
-          recommend_list.forEach(async (value, index) => {
-            const updateRecomment = {
-              table: 'product',
-              query: { recommend: 'Y', rec_row: index },
-              where: { id: value }
-            };
-            await this.db.Update(updateRecomment);
-          });
-          resolve(param);
-        } catch (error) {
-          reject(error);
+      if (product_data.length > 0) {
+        product_data.forEach((value, index) => {
+          recs.push(value);
+        });
+      }
+      const checkId = recs.indexOf(param.product.id);
+      product_data.forEach((value, index) => {
+        if (index === 0 && product_data.length === 3 && checkId === (-1)) {
+          return;
         }
-      } else {
+        recommend_list.push(value.id);
+      });
+      recommend_list.push(param.product.id);
+
+      const updateNRecomment = {
+        table: 'product',
+        query: { recommend: 'N' },
+        where: { recommend: 'Y' }
+      };
+      const updateNRec = await this.db.Update(updateNRecomment);
+      if (!updateNRec) {
+        throw Error('Can\'t update n redomment.');
+      }
+
+      recommend_list.forEach(async (value, index) => {
         const updateRecomment = {
           table: 'product',
-          query: { recommend: 'N', rec_row: '0' },
-          where: { id: param.product.id }
+          query: { recommend: 'Y', rec_row: index },
+          where: { id: value }
         };
-        try {
-          this.db.Update(updateRecomment);
-          resolve(param);
-        } catch (error) {
-          reject(error);
-        }
+        updateRec = await this.db.Update(updateRecomment);
+      });
+    } else {
+      const updateRecomment = {
+        table: 'product',
+        query: { recommend: 'N', rec_row: '0' },
+        where: { id: param.product.id }
+      };
+      updateRec = await this.db.Update(updateRecomment);
+    }
+
+    return await new Promise((resolve, reject) => {
+      if (!updateRec) {
+        reject('can\'t update recomment.');
+      } else {
+        resolve(this.param);
       }
     });
+
   }
 
   /**
@@ -630,7 +644,7 @@ class ProductSaveStaff {
     } else {
       chack = true;
     }
-    return new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
       if (chack) {
         resolve(this.param);
       } else {

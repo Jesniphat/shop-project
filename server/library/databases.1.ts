@@ -116,7 +116,7 @@ export class Databases extends Config {
     const select = 'SELECT ' + fields + ' FROM ' + data.table + ' WHERE ' + where + group + order + limit;
 
     // Main function for get data from database
-    return new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
       this.connection.query(select, (error, results, field) => {
         if (error) {
           console.log('error : ', error);
@@ -173,7 +173,7 @@ export class Databases extends Config {
     // Limit data if data.limit is not undefined use string data.limit
     limit  = await this._getSelectLimit(data);
 
-    return new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
       // Query string
       const select = 'SELECT ' + fields + ' FROM ' + data.table + ' WHERE ' + where + order + limit;
 
@@ -201,7 +201,7 @@ export class Databases extends Config {
    * @access public
    * @returns Promise
    */
-  public async Insert(data): Promise<any> {
+  public Insert(data): Promise<any> {
     return new Promise((resolve, reject) => {
       let $scrope;
       if (typeof(data) === 'object') {
@@ -231,7 +231,7 @@ export class Databases extends Config {
    * @access public
    * @returns Promise {}
    */
-  public async Update(data): Promise<any> {
+  public Update(data): Promise<any> {
     return new Promise((resolve, reject) => {
       let $scrope;
       const fields = [];
@@ -281,7 +281,7 @@ export class Databases extends Config {
    * @access public
    * @returns Promise
    */
-  public async Delete(data): Promise<any> {
+  public Delete(data): Promise<any> {
     return new Promise((resolve, reject) => {
       let $scrope;
       let where = ' WHERE 1 = 1 ';
