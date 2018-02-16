@@ -529,7 +529,7 @@ class ProductSaveStaff {
         },
         where: { product_id: this.param.product.id }
       };
-      const updatePicData = this.db.Update(update);
+      const updatePicData = await this.db.Update(update);
       checkUpdate = updatePicData;
     }
 
