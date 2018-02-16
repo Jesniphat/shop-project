@@ -533,13 +533,9 @@ class ProductSaveStaff {
       checkUpdate = updatePicData;
     }
 
-    return await new Promise((resolve, reject) => {
-      if (!checkUpdate) {
-        reject('Can \'t Update product pic.');
-      } else {
-        resolve(this.param);
-      }
-    });
+    if (!checkUpdate) {
+      throw Error('Can \'t Update product pic.');
+    }
   }
 
 
@@ -598,6 +594,9 @@ class ProductSaveStaff {
           where: { id: value }
         };
         updateRec = await this.db.Update(updateRecomment);
+        if (!updateRec) {
+          throw Error('Can\'t update redomment.');
+        }
       });
     } else {
       const updateRecomment = {
@@ -606,15 +605,10 @@ class ProductSaveStaff {
         where: { id: param.product.id }
       };
       updateRec = await this.db.Update(updateRecomment);
-    }
-
-    return await new Promise((resolve, reject) => {
       if (!updateRec) {
-        reject('can\'t update recomment.');
-      } else {
-        resolve(this.param);
+        throw Error('Can\'t update redomment.');
       }
-    });
+    }
 
   }
 
@@ -644,13 +638,10 @@ class ProductSaveStaff {
     } else {
       chack = true;
     }
-    return await new Promise((resolve, reject) => {
-      if (chack) {
-        resolve(this.param);
-      } else {
-        reject('Can\'t update cover pic.');
-      }
-    });
+
+    if (!chack) {
+      throw Error ('Can\'t update cover pic.');
+    }
   }
 }
 
