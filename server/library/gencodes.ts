@@ -1,9 +1,6 @@
-import { Database } from './databases';
-
-const db = new Database();
-
 export class Gencode {
-  public Code (connection, table, fld, prefix, size, start, callback_success, callback_error) {
+  constructor(private db) {}
+  public Code (table, fld, prefix, size, start, callback_success, callback_error) {
     let where = ' 1 = 1 ';
     if (prefix !== '') {
         where += ' AND `' + fld + '` LIKE \'' + prefix + '%\'';
@@ -14,7 +11,7 @@ export class Gencode {
       where: where
     };
     let next: any = '';
-    const maxCode = db.SelectRow(connection, sql, (result) => {
+    const maxCode = this.db.SelectRow(sql, (result) => {
       if (result.maxCode) {
         console.log('Maxcode 18 = ', result.maxCode);
         next = parseInt((result.maxCode).substr(prefix.length), null) + 1;

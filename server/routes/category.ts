@@ -38,7 +38,7 @@ categoryRouter.get('/', (req: express.Request, res: express.Response, next: expr
       this.category = this.request.body;
     }
 
-    private _gets() {
+    private _getsCategoryList(): Promise<any> {
       const gets: any = {
         fields: '*, \'\' as product_qty ',
         table: 'category',
@@ -46,13 +46,15 @@ categoryRouter.get('/', (req: express.Request, res: express.Response, next: expr
           status: 'Y'
         }
       };
-      return gets;
+      return new Promise((resolve, reject) => {
+        this.db.SelectAll(gets, results => resolve(results), error => reject(error));
+      });
     }
 
     public async getCategoryList() {
       try {
         // const result = await this._category_list();
-        const result = await this.db.SelectAll(this._gets());
+        const result = await this._getsCategoryList();
         const end = await this.db.EndConnect();
         await this.response.json({
           status: true,
@@ -94,19 +96,21 @@ categoryRouter.get('/:id', (req: express.Request, res: express.Response, next: e
       this.category = this.request.body;
     }
 
-    private _getcategorybyids() {
+    private _getcategorybyids(): Promise<any> {
       const where: any = {id: this.category_id};
       const gets: any = {
         fields: ['*'],
         table:  'category',
         where:  where
       };
-      return gets;
+      return new Promise((resolve, reject) => {
+        this.db.SelectRow(gets, results => resolve(results), error => reject(error));
+      });
     }
 
     public async getCategoryById() {
       try {
-        const result = await this.db.SelectRow(this._getcategorybyids());
+        const result = await this._getcategorybyids();
         const end = await this.db.EndConnect();
         await this.response.json({
           status: true,
@@ -144,7 +148,7 @@ categoryRouter.post('/', (req: express.Request, res: express.Response, next: exp
       this.category = this.request.body;
     }
 
-    private _saveCategoryData() {
+    private _saveCategoryData(): Promise<any> {
       const data = {
         query: {
           cate_name: this.category.cateName,
@@ -157,13 +161,15 @@ categoryRouter.post('/', (req: express.Request, res: express.Response, next: exp
         },
         table: 'category'
       };
-      return data;
+      return new Promise((resolve, reject) => {
+        this.db.Insert(data, result => resolve(result), error => reject(error));
+      });
     }
 
     public async saveCategory() {
       try {
         const begin = await this.db.beginTransection();
-        const result = await this.db.Insert(this._saveCategoryData());
+        const result = await this._saveCategoryData();
         const commit = await this.db.Commit();
         const end = await this.db.EndConnect();
         await this.response.json({
@@ -201,7 +207,7 @@ categoryRouter.put('/', (req: express.Request, res: express.Response, next: expr
       this.category = request.body;
     }
 
-    private _savecetegory() {
+    private _savecetegory(): Promise<any> {
       const data = {
         query: {
           cate_name: this.category.cateName,
@@ -214,14 +220,16 @@ categoryRouter.put('/', (req: express.Request, res: express.Response, next: expr
           id: this.category.cateId
         }
       };
-      return data;
+      return new Promise((resolve, reject) => {
+        this.db.Update(data, result => resolve(result), error => reject(error));
+      });
     }
 
 
     public async updateCategory() {
       try {
         const begin = await this.db.beginTransection();
-        const result = await this.db.Update(this._savecetegory());
+        const result = await this._savecetegory();
         const commit = await this.db.Commit();
         const end = await this.db.EndConnect();
         await this.response.json({

@@ -66,7 +66,8 @@ export class Databases extends Config {
    */
   public EndConnect(): Promise<any> {
     return new Promise((resolve, reject) => {
-      resolve(this.connection.end());
+      this.connection.end();
+      resolve('end connect');
     });
   }
 
@@ -77,7 +78,7 @@ export class Databases extends Config {
    * @access public
    * @returns Promise
    */
-  public async SelectAll(data): Promise<any> {
+  public async SelectAll(data, success, errors) {
     let $scrope;
     // let select_data(){
     let fields: any = ' * ';
@@ -116,20 +117,18 @@ export class Databases extends Config {
     const select = 'SELECT ' + fields + ' FROM ' + data.table + ' WHERE ' + where + group + order + limit;
 
     // Main function for get data from database
-    return await new Promise((resolve, reject) => {
-      this.connection.query(select, (error, results, field) => {
-        if (error) {
-          console.log('error : ', error);
-          reject(error);
-        } else if (results.length === 0) {
-          console.log('Nodata => ', results);
-          $scrope = results;
-          resolve($scrope);
-        }else {
-          $scrope = results;
-          resolve($scrope);
-        }
-      });
+    this.connection.query(select, function(error, results, field){
+      if (error) {
+        console.log('error : ', error);
+        errors(error);
+      } else if (results.length === 0) {
+        console.log('Nodata => ', results);
+        $scrope = results;
+        success($scrope);
+      }else {
+        $scrope = results;
+        success($scrope);
+      }
     });
   }
 
@@ -140,7 +139,7 @@ export class Databases extends Config {
    * @access public async
    * @returns Promise
    */
-  public async SelectRow(data): Promise<any> {
+  public async SelectRow(data, success, errors) {
     let $scrope;
     let fields = ' * ';
     let where = ' 1 = 1 ';
@@ -173,25 +172,22 @@ export class Databases extends Config {
     // Limit data if data.limit is not undefined use string data.limit
     limit  = await this._getSelectLimit(data);
 
-    return await new Promise((resolve, reject) => {
-      // Query string
-      const select = 'SELECT ' + fields + ' FROM ' + data.table + ' WHERE ' + where + order + limit;
-
-      // Get data
-      const select_row = this.connection.query(select, function(error, results, field){
-        // console.log('sql select row = ', select_row.sql);
-        if (error) {
-          console.log('error : ', error);
-          reject(error);
-        } else if (results.length === 0) {
-          console.log('Nodata => ', results);
-          $scrope = results;
-          resolve({});
-        } else {
-          $scrope = results;
-          resolve($scrope[0]);
-        }
-      });
+    // Query string
+    const select = 'SELECT ' + fields + ' FROM ' + data.table + ' WHERE ' + where + order + limit;
+    // Get data
+    const select_row = this.connection.query(select, function(error, results, field){
+      // console.log('sql select row = ', select_row.sql);
+      if (error) {
+        console.log('error : ', error);
+        errors(error);
+      } else if (results.length === 0) {
+        console.log('Nodata => ', results);
+        $scrope = results;
+        success({});
+      } else {
+        $scrope = results;
+        success($scrope[0]);
+      }
     });
   }
 
@@ -201,27 +197,23 @@ export class Databases extends Config {
    * @access public
    * @returns Promise
    */
-  public Insert(data): Promise<any> {
-    return new Promise((resolve, reject) => {
-      let $scrope;
-      if (typeof(data) === 'object') {
+  public Insert(data, success, errors): Promise<any> {
+    let $scrope;
+    if (typeof(data) !== 'object') {
+      errors('Is not object');
+      return;
+    }
 
+    const insert = 'INSERT INTO ' + data.table + ' SET ? ';
+    const querys = this.connection.query(insert, data.query, function(error, results, fields) {
+      // console.log(querys.sql);
+      if (error) {
+        errors(error);
       } else {
-        reject('Is not object');
-        return;
+        $scrope = {insert_id: results.insertId, effected_row: results.affectedRows, change_row: results.changedRows };
+        // console.log('INSERT SUCCESS = ', $scrope);
+        success($scrope);
       }
-
-      const insert = 'INSERT INTO ' + data.table + ' SET ? ';
-      const querys = this.connection.query(insert, data.query, function(error, results, fields) {
-        // console.log(querys.sql);
-        if (error) {
-          reject(error);
-        } else {
-          $scrope = {insert_id: results.insertId, effected_row: results.affectedRows, change_row: results.changedRows };
-          // console.log('INSERT SUCCESS = ', $scrope);
-          resolve($scrope);
-        }
-      });
     });
   }
 
@@ -231,46 +223,42 @@ export class Databases extends Config {
    * @access public
    * @returns Promise {}
    */
-  public Update(data): Promise<any> {
-    return new Promise((resolve, reject) => {
-      let $scrope;
-      const fields = [];
-      const set = [];
-      let where = ' WHERE 1 = 1 ';
+  public Update(data, success, errors) {
+    let $scrope;
+    const fields = [];
+    const set = [];
+    let where = ' WHERE 1 = 1 ';
+    for (const keys in data.query) {
+      if (keys) {
+        fields.push(keys + ' = ?');
+        set.push(data.query[keys]);
+      } else {
+        continue;
+      }
+    }
+    fields.toString();
 
-      for (const keys in data.query) {
+    if (typeof(data.where) === 'object') {
+      for (const keys in data.where) {
         if (keys) {
-          fields.push(keys + ' = ?');
-          set.push(data.query[keys]);
+          where += ' AND ' + keys + ' = ?';
+          set.push(data.where[keys]);
         } else {
           continue;
         }
       }
-
-      fields.toString();
-      if (typeof(data.where) === 'object') {
-        for (const keys in data.where) {
-          if (keys) {
-            where += ' AND ' + keys + ' = ?';
-            set.push(data.where[keys]);
-          } else {
-            continue;
-          }
-        }
-      } else if (data.where !== undefined) {
-        where += ' AND ' + data.where;
+    } else if (data.where !== undefined) {
+      where += ' AND ' + data.where;
+    }
+    const update = 'UPDATE ' + data.table + ' SET ' + fields + where;
+    const querys = this.connection.query(update, set, function(error, results, field) {
+      // console.log('Update is ', querys.sql);
+      if (error) {
+        errors(error);
+      } else {
+        $scrope = { effected_row: results.affectedRows, change_row: results.changedRows };
+        success($scrope);
       }
-
-      const update = 'UPDATE ' + data.table + ' SET ' + fields + where;
-      const querys = this.connection.query(update, set, function(error, results, field) {
-        // console.log('Update is ', querys.sql);
-        if (error) {
-          reject(error);
-        } else {
-          $scrope = { effected_row: results.affectedRows, change_row: results.changedRows };
-          resolve($scrope);
-        }
-      });
     });
   }
 
@@ -281,32 +269,30 @@ export class Databases extends Config {
    * @access public
    * @returns Promise
    */
-  public Delete(data): Promise<any> {
-    return new Promise((resolve, reject) => {
-      let $scrope;
-      let where = ' WHERE 1 = 1 ';
-      if (typeof(data.where) === 'object') {
-        for (const keys in data.where) {
-          if (keys) {
-            where += ' AND ' + keys + ' = \'' + data.where[keys] + '\'';
-          } else {
-            continue;
-          }
+  public Delete(data, success, errors) {
+    let $scrope;
+    let where = ' WHERE 1 = 1 ';
+    if (typeof(data.where) === 'object') {
+      for (const keys in data.where) {
+        if (keys) {
+          where += ' AND ' + keys + ' = \'' + data.where[keys] + '\'';
+        } else {
+          continue;
         }
-      } else if (data.where !== undefined) {
-        where += ' AND ' + data.where;
-      } else {
-        reject('You can\'t delete data by this query');
       }
-      const query = 'DELETE FROM ' + data.table + where;
-      this.connection.query(query, function(error, results, fields) {
-        if (error) {
-          console.log('Error : ', error);
-          reject(error);
-        }
-        $scrope = { effected_row: results.affectedRows, change_row: results.changedRows };
-        resolve($scrope);
-      });
+    } else if (data.where !== undefined) {
+      where += ' AND ' + data.where;
+    } else {
+      errors('You can\'t delete data by this query');
+    }
+    const query = 'DELETE FROM ' + data.table + where;
+    this.connection.query(query, function(error, results, fields) {
+      if (error) {
+        console.log('Error : ', error);
+        errors(error);
+      }
+      $scrope = { effected_row: results.affectedRows, change_row: results.changedRows };
+      success($scrope);
     });
   }
 

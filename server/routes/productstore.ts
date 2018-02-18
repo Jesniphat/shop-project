@@ -11,7 +11,7 @@ const productStoreRouter: express.Router = express.Router();
 
 const permission = new Permission();
 const conn = new Config();
-const gencode = new Gencode();
+// const gencode = new Gencode();
 const db = new Database();
 
 /**
