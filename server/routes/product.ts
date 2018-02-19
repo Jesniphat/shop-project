@@ -318,7 +318,8 @@ productRouter.post('/', (req, res, next) => {
             uuid: uuidv1()
           }
         };
-        const insertProduct = this.db.Insert(insert,
+
+        this.db.Insert(insert,
           (results) => {
             this._product.id = results.insert_id;
             resolve(this._product);
@@ -364,134 +365,139 @@ productRouter.post('/', (req, res, next) => {
   saveProduct.saveProduct();
 });
 
-// /**
-//  * Edit product
-//  * @param url /
-//  * @param request
-//  * @access public
-//  * @return JSON
-//  */
-// productRouter.put('/', (req, res, next) => {
-//   const connection = conn.init();
-//   console.log('save product = ', req.body);
-//   const product = req.body;
+/**
+ * Edit product
+ */
+productRouter.put('/', (req, res, next) => {
+  class EditProduct {
+    private db = new Databases();
+    private productStaff = new ProductSaveStaff(this.db);
+    private _product: any;
 
-//   /**
-//    * Save product
-//    *
-//    * @return product id and error
-//    */
-//   const saveProduct = function(){
-//     return new Promise((resolve, reject) => {
-//       const update = {
-//         table: 'product',
-//         query: {
-//           product_name: product.name,
-//           product_description: product.desc,
-//           product_price: product.price,
-//           product_cost: product.cost,
-//           created_by: product.staffid,
-//           category_id: product.category
-//         },
-//         where: { id: product.id }
-//       };
-//       const updateProduct = db.Update(connection, update,
-//         results => resolve({connection: connection, product: product}),
-//         error => reject(error)
-//       );
-//     });
-//   };
+    constructor(private request, private response) {
+      this._product = this.request.body;
+    }
 
-//   db.beginTransection(connection)
-//   .then(saveProduct)
-//   .then(product_pic_manage)
-//   .then(product_recommend)
-//   .then(product_set_cover)
-//   .then((product_ids) => {
-//     return new Promise((resolve, reject) => {
-//       console.log('commit');
-//       db.Commit(connection, (success) => {
-//         console.log('commited !!');
-//         res.json({
-//           status: true,
-//           data: success
-//         });
-//         resolve(success);
-//       }, errors => reject(errors));
-//       connection.end();
-//     });
-//   }).catch((errors) => {
-//     console.log('Roll back error is', errors);
-//     db.Rollback(connection, (roll) => {
-//       res.json({
-//         status: false,
-//         error: errors
-//       });
-//     });
-//     connection.end();
-//   });
-// });
+    /**
+     * Save product
+     *
+     * @return product id and error
+     */
+    private _saveProduct(): Promise<any> {
+      return new Promise((resolve, reject) => {
+        const update = {
+          table: 'product',
+          query: {
+            product_name: this._product.name,
+            product_description: this._product.desc,
+            product_price: this._product.price,
+            product_cost: this._product.cost,
+            created_by: this._product.staffid,
+            category_id: this._product.category
+          },
+          where: { id: this._product.id }
+        };
 
+        this.db.Update(update, results => resolve(this._product), error => reject(error));
+      });
+    }
 
-// /**
-//  * Delete product
-//  *
-//  * @access publict
-//  * @param product id
-//  * @return JSON
-//  */
-// productRouter.post('/delete_product', (req, res, next) => {
-//   const product = req.body;
-//   const connection = conn.init();
+    /**
+     * save update producr
+     * @access public
+     * @returns void
+     */
+    public async editProduct() {
+      try {
+        await this.db.beginTransection();
+        await this._saveProduct();
+        await this.productStaff.product_pic_manage(this._product);
+        await this.productStaff.product_recommend(this._product);
+        await this.productStaff.product_set_cover(this._product);
+        await this.db.Commit();
+        await this.db.EndConnect();
 
-//   /**
-//    * Delete product
-//    *
-//    * @return void
-//    */
-//   const deleteProd = function(){
-//     return new Promise((resolve, reject) => {
-//       const updateDelete = {
-//         table: 'product',
-//         query: { status: 'N' },
-//         where: { id: product.id }
-//       };
-//       const up = db.Update(connection, updateDelete, success => resolve(success), error => reject(error));
-//     });
-//   };
+        await this.response.json({
+          status: true,
+          data: 'Update Product success.'
+        });
+      } catch ($e) {
+        await this.db.Rollback();
+        await this.db.EndConnect();
+
+        await this.response.json({
+          status: false,
+          error: $e
+        });
+      }
+    }
+  }
+
+  const updateProduct = new EditProduct(req, res);
+  updateProduct.editProduct();
+});
 
 
-//   /**
-//    * Blue bird start
-//    *
-//    * @return JSON
-//    */
-//   db.beginTransection(connection)
-//   .then(deleteProd)
-//   .then(function(){
-//     return new Promise((resolve, reject) => {
-//       console.log('commit');
-//       db.Commit(connection, (success) => {
-//         console.log('commited !!');
-//         res.json({
-//           status: true,
-//           data: success
-//         });
-//         resolve(success);
-//       }, errors => reject(errors));
-//       connection.end();
-//     });
-//   }).catch((errors) => {
-//     console.log('Roll back error is', errors);
-//     db.Rollback(connection, (roll) => {
-//       res.json({
-//         status: false,
-//         error: errors
-//       });
-//     });
-//     connection.end();
-//   });
-// });
+/**
+ * Delete product
+ */
+productRouter.post('/delete_product', (req, res, next) => {
+  class DeleteProduct {
+    private db = new Databases();
+    private _product: any;
+
+    constructor (private request, private response) {
+      this._product = this.request;
+    }
+
+    /**
+     * Delete product
+     *
+     * @return void
+     */
+    private _deleteProd = function(){
+      return new Promise((resolve, reject) => {
+        const updateDelete = {
+          table: 'product',
+          query: { status: 'N' },
+          where: { id: this._product.id }
+        };
+        this.db.Update(updateDelete, success => resolve(success), error => reject(error));
+      });
+    };
+
+    /**
+     * Selete stuff
+     *
+     * @access public
+     * @return JSON
+     */
+    public async deleteProduct() {
+      try {
+        await this.db.beginTransection();
+        await this._deleteProd();
+        await this.db.Commit();
+        await this.db.EndConnect();
+
+        await this.response.json({
+          status: true,
+          data: 'Delete product success.'
+        });
+      } catch (error) {
+        await this.db.Rollback();
+        await this.db.EndConnect();
+
+        await this.response.json({
+          status: false,
+          error: error
+        });
+      }
+    }
+  }
+
+  const deleteProduct = new DeleteProduct(req, res);
+  deleteProduct.deleteProduct();
+});
 
 
 class ProductSaveStaff {
