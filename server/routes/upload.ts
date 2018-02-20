@@ -4,13 +4,11 @@ import * as promise from 'bluebird';
 
 import { Permission } from '../library/permissions';
 import { Config } from '../library/configs';
-import { Database } from '../library/databases';
+import { Databases } from '../library/databases.1';
 
 const uploadRouter: express.Router = express.Router();
 
 const permission: any = new Permission();
-const conn: any = new Config();
-const db: any = new Database();
 
 import * as fs from 'fs';
 import * as moment from 'moment';
@@ -22,182 +20,209 @@ if (!fs.existsSync(dir)) {
 }
 
 const uploadFile = multer({ dest: './dist/server/tmp/' });
-// console.log(uploadFile);
 
 /* GET users listing. */
 uploadRouter.post('/product', uploadFile.single('file'), function (req, res, next) {
-  let $scope: any = {};
-  const connection: any = conn.init();
-  // console.log("res product pic = ", req.file);
-  const save_file = function(){
-    const deferred = promise.pending();
-    const newName = moment().format('YYYY-MM-DD_hh-mm-ss') + '_' + req.file.originalname;
+  class PicProduct {
+    private $scope: any = {};
+    private db = new Databases();
 
-    const dirImg = './dist/public/images/product-img/';
-    if (!fs.existsSync(dirImg)) {
-      fs.mkdirSync(dirImg);
+    constructor(private request, private response) {}
+
+    private _save_file(): Promise<any> {
+      return new Promise((resolve, reject) => {
+        const newName = moment().format('YYYY-MM-DD_hh-mm-ss') + '_' + req.file.originalname;
+
+        const dirImg = './dist/public/images/product-img/';
+        if (!fs.existsSync(dirImg)) {
+          fs.mkdirSync(dirImg);
+        }
+        const filename = dirImg + newName;
+        const src = fs.createReadStream(this.request.file.path);
+        src.pipe(fs.createWriteStream(filename));
+        src.on('end', () => {
+          this.$scope.newName = newName;
+          resolve('Save file success');
+        });
+        src.on('error', (err) => {
+          reject(err);
+        });
+      });
     }
-    const filename = dirImg + newName;
-    const src = fs.createReadStream(req.file.path);
-    src.pipe(fs.createWriteStream(filename));
-    src.on('end', function () {
-      $scope.newName = newName;
-      deferred.resolve('Save file success');
-    });
-    src.on('error', function (err) {
-      deferred.reject(err);
-    });
-    return deferred.promise;
-  };
 
-  const insert_file_data = function(){
-    const deferred = promise.pending();
-    const pic = req.file;
-    const data = {
-      table: 'product_pic',
-      query: {
-        productpic_name: $scope.newName,
-        productpic_type: pic.mimetype,
-        productpic_size: pic.size,
-        productpic_path: 'public/images/product-img/' + $scope.newName,
-        uuid: uuidv1()
+
+    private _insert_file_data(): Promise<any> {
+      return new Promise((resolve, reject) => {
+        const pic = this.request.file;
+        const data = {
+          table: 'product_pic',
+          query: {
+            productpic_name: this.$scope.newName,
+            productpic_type: pic.mimetype,
+            productpic_size: pic.size,
+            productpic_path: 'public/images/product-img/' + this.$scope.newName,
+            uuid: uuidv1()
+          }
+        };
+
+      this. db.Insert(data, (results) => {
+          this.$scope.pic_id = results.insert_id;
+          resolve('Insert pic data success');
+        }, (errors) => {
+          console.log('error = ', errors);
+          reject(errors);
+        });
+      });
+    }
+
+    private _get_pic(): Promise<any> {
+      return new Promise((resolve, reject) => {
+        const query = {
+          table: 'product_pic',
+          where: {
+            id: this.$scope.pic_id
+          }
+        };
+        this.db.SelectRow(query, (results) => {
+          this.$scope = {};
+          this.$scope = results;
+          resolve('Can get data');
+        }, (errors) => {
+          console.log('Can\'t get data = ', errors);
+          reject(errors);
+        });
+      });
+    }
+
+    public async saveProductPic() {
+      try {
+        await this._save_file();
+        await this._insert_file_data();
+        await this._get_pic();
+        await this.db.EndConnect();
+
+        await this.response.json({
+          status: true,
+          data: this.$scope
+        });
+      } catch (error) {
+        await this.db.EndConnect();
+        await this.response.json({
+          status: false,
+          error: error
+        });
       }
-    };
+    }
+  }
 
-    db.Insert(connection, data, (results) => {
-      $scope.pic_id = results.insert_id;
-      deferred.resolve('Insert pic data success');
-    }, (errors) => {
-      console.log('error = ', errors);
-      deferred.reject(errors);
-    });
-    return deferred.promise;
-  };
-
-  const get_pic = function(){
-    const deferred = promise.pending();
-    const query = {
-      table: 'product_pic',
-      where: {
-        id: $scope.pic_id
-      }
-    };
-    db.SelectRow(connection, query, (results) => {
-      $scope = {};
-      $scope = results;
-      deferred.resolve('Can get data');
-    }, (errors) => {
-      console.log('Can\'t get data = ', errors);
-      deferred.reject(errors);
-    });
-    return deferred.promise;
-  };
-
-  save_file()
-  .then(insert_file_data)
-  .then(get_pic)
-  .then(function() {
-    res.json({
-      status: true,
-      data: $scope
-    });
-    connection.end();
-  }).catch(function(e) {
-    res.json({
-      status: false,
-      error: e
-    });
-    connection.end();
-  });
+  const updatePic = new PicProduct(req, res);
+  updatePic.saveProductPic();
 });
 
 
 uploadRouter.post('/category', uploadFile.single('file'), function (req, res, next) {
-  const $scope: any = {};
-  const connection = conn.init();
-  const save_file = function(){
-    const deferred = promise.pending();
-    const newName = moment().format('YYYY-MM-DD_hh-mm-ss') + '_' + req.file.originalname;
+  class PicCategory {
+    private $scope: any = {};
+    private db = new Databases(); private _newName: any;
 
-    const dirImg = './dist/public/images/category-img/';
-    if (!fs.existsSync(dirImg)) {
-      fs.mkdirSync(dirImg);
+    constructor(private request, private response) {}
+
+    private _save_file(): Promise<any> {
+      return new Promise ((resolve, reject) => {
+        this._newName = moment().format('YYYY-MM-DD_hh-mm-ss') + '_' + this.request.file.originalname;
+        const dirImg = './dist/public/images/category-img/';
+        if (!fs.existsSync(dirImg)) {
+          fs.mkdirSync(dirImg);
+        }
+        const filename = dirImg + this._newName;
+        const src = fs.createReadStream(this.request.file.path);
+        src.pipe(fs.createWriteStream(filename));
+        src.on('end', () => {
+          this.$scope.newName = this._newName;
+          resolve('Save file success');
+        });
+        src.on('error', (err) => {
+          reject(err);
+        });
+      });
     }
-    const filename = dirImg + newName;
-    const src = fs.createReadStream(req.file.path);
-    src.pipe(fs.createWriteStream(filename));
-    src.on('end', function () {
-      $scope.newName = newName;
-      deferred.resolve('Save file success');
-    });
-    src.on('error', function (err) {
-      deferred.reject(err);
-    });
-    return deferred.promise;
-  };
 
-  save_file()
-  .then(function() {
-    res.json({
-      status: true,
-      data: {
-        pic_name: $scope.newName,
-        pic_path: 'public/images/category-img/'  + $scope.newName
+    public async saveCatePic() {
+      try {
+        await this._save_file();
+        await this.db.EndConnect();
+        await this.response.json({
+          status: true,
+          data: {
+            pic_name: this.$scope.newName,
+            pic_path: 'public/images/category-img/'  + this.$scope.newName
+          }
+        });
+      } catch (error) {
+        await this.db.EndConnect();
+        await this.response.json({
+          status: false,
+          error: error
+        });
       }
-    });
-    connection.end();
-  }).catch(function(e) {
-    res.json({
-      status: false,
-      error: e
-    });
-    connection.end();
-  });
+    }
+  }
+
+  const picCategory = new PicCategory(req, res);
+  picCategory.saveCatePic();
 });
 
 
 uploadRouter.post('/staff', uploadFile.single('file'), function (req, res, next) {
-  const $scope: any = {};
-  const connection = conn.init();
-  // console.log("res product pic = ", req.file);
-  const save_file = function(){
-    const deferred = promise.pending();
-    const newName = moment().format('YYYY-MM-DD_hh-mm-ss') + '_' + req.file.originalname;
+  class StaffPic {
+    private $scope: any = {};
+    private db = new Databases();
 
-    const dirImg = './dist/public/images/staff-img/';
-    if (!fs.existsSync(dirImg)) {
-      fs.mkdirSync(dirImg);
+    constructor(private request, private response) {}
+
+    private _save_file(): Promise<any> {
+      return new Promise((resolve, reject) => {
+        const newName = moment().format('YYYY-MM-DD_hh-mm-ss') + '_' + this.request.file.originalname;
+        const dirImg = './dist/public/images/staff-img/';
+        if (!fs.existsSync(dirImg)) {
+          fs.mkdirSync(dirImg);
+        }
+        const filename = dirImg + newName;
+        const src = fs.createReadStream(this.request.file.path);
+        src.pipe(fs.createWriteStream(filename));
+        src.on('end', () => {
+          this.$scope.newName = newName;
+          resolve('Save file success');
+        });
+        src.on('error', (err) => {
+          reject(err);
+        });
+      });
     }
-    const filename = dirImg + newName;
-    const src = fs.createReadStream(req.file.path);
-    src.pipe(fs.createWriteStream(filename));
-    src.on('end', function () {
-      $scope.newName = newName;
-      deferred.resolve('Save file success');
-    });
-    src.on('error', function (err) {
-      deferred.reject(err);
-    });
-    return deferred.promise;
-  };
 
-  save_file()
-  .then(function() {
-    res.json({
-      status: true,
-      data: {
-        pic_name: $scope.newName,
-        pic_path: 'public/images/staff-img/'  + $scope.newName
+    public async picStaff() {
+      try {
+        await this._save_file();
+        await this.db.EndConnect();
+        await this.response.json({
+          status: true,
+          data: {
+            pic_name: this.$scope.newName,
+            pic_path: 'public/images/staff-img/'  + this.$scope.newName
+          }
+        });
+      } catch (error) {
+        await this.db.EndConnect();
+        this.response.json({
+          status: false,
+          error: error
+        });
       }
-    });
-    connection.end();
-  }).catch(function(e) {
-    res.json({
-      status: false,
-      error: e
-    });
-    connection.end();
-  });
+    }
+  }
+
+  const picStaff = new StaffPic(req, res);
+  picStaff.picStaff();
 });
 
 export { uploadRouter };
