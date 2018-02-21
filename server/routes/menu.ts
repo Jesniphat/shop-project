@@ -3,16 +3,12 @@ import * as express from 'express';
 import * as promise from 'bluebird';
 import { Config } from '../library/configs';
 import { Permission } from '../library/permissions';
-import { Database } from '../library/databases';
+import { Databases } from '../library/databases.1';
 
 const menuRouter: express.Router = express.Router();
-
-const conn: any = new Config();
 const permission: any = new Permission();
-const db: any = new Database();
 
 menuRouter.use((req, res, next) => {
-  // console.log("perrmission : ", permission.readToken(req));
   if (permission.isLogin(req)) {
     next();
   }else {
@@ -32,44 +28,58 @@ menuRouter.post('/ping', (req, res, next) => {
 });
 
 menuRouter.post('/menulist', (req, res, next) => {
-  const connection = conn.init();
-  const param = req.body;
-  let $scope;
+  class MenuList {
+    private db = new Databases();
+    private param = req.body;
+    private $scope;
 
-  const menu_list = function(){
-    return new promise((resolve, reject) => {
-      const gets = {
-        fields: ' * ',
-        table: 'menu',
-        where: {
-          page: param.page
-        }
-      };
-      db.SelectAll(connection, gets, (data) => {
-          $scope = data;
-          resolve(data);
-      }, (error) => {
-          console.log(error);
-          reject(error);
+    constructor(private request, private response) {
+      this.param = this.request.body;
+    }
+
+    /**
+     * Get menu list
+     * @access private
+     * @return Promise
+     */
+    private _menu_list(): Promise<any> {
+      return new promise((resolve, reject) => {
+        const gets = {
+          fields: ' * ',
+          table: 'menu',
+          where: {
+            page: this.param.page
+          }
+        };
+        this.db.SelectAll(gets, (data) => {
+            this.$scope = data;
+            resolve(data);
+        }, (error) => {
+            reject(error);
+        });
       });
-    });
-  };
+    }
 
-  menu_list()
-  .then(function(data){
-    res.json({
-      status: true,
-      data: data
-    });
-    connection.end();
-  })
-  .catch(function(error){
-    res.json({
-      status: false,
-      error: error
-    });
-    connection.end();
-  });
+    public async menuList() {
+      try {
+        await this._menu_list();
+        await this.db.EndConnect();
+        await this.response.json({
+          status: true,
+          data: this.$scope
+        });
+      } catch (error) {
+        await this.db.EndConnect();
+        await this.response.json({
+          status: false,
+          error: error
+        });
+      }
+    }
+  }
+
+  const menu = new MenuList(req, res);
+  menu.menuList();
 });
 
 export { menuRouter };
