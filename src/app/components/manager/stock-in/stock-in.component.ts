@@ -110,7 +110,7 @@ export class StockInComponent implements OnInit, OnDestroy {
 
   public clickSearch() {
     this.searchData = this.autocompleteComponent.autocompleteText;
-    console.log(this.searchData);
+    this.searchProduct();
   }
 
 
@@ -121,22 +121,15 @@ export class StockInComponent implements OnInit, OnDestroy {
    */
   public searchProduct() {
     if (isPlatformBrowser(this.platformId)) {
-      console.log($('#product-id').val());
-      if (!$('#product-id').val()) {
-        this.productId = 'create';
-        document.getElementById('addproductmodel').style.display = 'block';
-        this.productManagerComponent.reset();
-        return;
-      }
       this.$rootScope.setBlock(true);
       const param = {
-        product_id: $('#product-id').val()
+        product_name: this.searchData
       };
       this.apiService
-      .get('/api/productstore/' + param.product_id)
+      .get('/api/productstore/productname/' + param.product_name)
       .subscribe(
-        res => this.getProductByidDoneAction(res),
-        error => this.getProductByidErrorAction(error)
+        res => this.getProductByNameDoneAction(res),
+        error => this.getProductByNameErrorAction(error)
       );
     }
   }
@@ -148,7 +141,7 @@ export class StockInComponent implements OnInit, OnDestroy {
    * @access public
    * @return void
    */
-  public getProductByidDoneAction(res: any) {
+  public getProductByNameDoneAction(res: any) {
     this.stockInProduct.id = res.data.id;
     this.stockInProduct.code = res.data.code;
     this.stockInProduct.name = res.data.product_name;
@@ -166,7 +159,7 @@ export class StockInComponent implements OnInit, OnDestroy {
    * @access public
    * @return void
    */
-  public getProductByidErrorAction(error: any) {
+  public getProductByNameErrorAction(error: any) {
     if (isPlatformBrowser(this.platformId)) {
       console.log(error);
       this.$rootScope.setBlock(false);

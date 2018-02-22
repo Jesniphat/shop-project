@@ -3,7 +3,7 @@ import * as express from 'express';
 import * as promise from 'bluebird';
 import { Config } from '../library/configs';
 import { Permission } from '../library/permissions';
-import { Databases } from '../library/databases.1';
+import { Databases } from '../library/databases';
 
 const menuRouter: express.Router = express.Router();
 const permission: any = new Permission();

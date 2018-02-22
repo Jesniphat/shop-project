@@ -1,7 +1,7 @@
 import * as express from 'express';
 import * as md5 from 'md5';
 import { Permission } from '../library/permissions';
-import { Databases } from '../library/databases.1';
+import { Databases } from '../library/databases';
 
 const authenRouter: express.Router = express.Router();
 const permission: any = new Permission();

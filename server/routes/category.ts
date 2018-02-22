@@ -4,7 +4,7 @@ import * as uuidv1 from 'uuid/v1';
 // import * as Promise from 'bluebird';
 import { Config } from '../library/configs';
 import { Permission } from '../library/permissions';
-import { Databases } from '../library/databases.1';
+import { Databases } from '../library/databases';
 
 const categoryRouter: express.Router = express.Router();
 const permission = new Permission();

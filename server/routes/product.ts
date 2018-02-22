@@ -5,7 +5,7 @@ import * as uuidv1 from 'uuid/v1';
 import { Permission } from '../library/permissions';
 import { Config } from '../library/configs';
 import { Gencode } from '../library/gencodes';
-import { Databases } from '../library/databases.1';
+import { Databases } from '../library/databases';
 
 const productRouter: express.Router = express.Router();
 

@@ -4,7 +4,7 @@ import * as uuidv1 from 'uuid/v1';
 import { Permission } from '../library/permissions';
 import { Config } from '../library/configs';
 import { Gencode } from '../library/gencodes';
-import { Databases } from '../library/databases.1';
+import { Databases } from '../library/databases';
 
 const productStoreRouter: express.Router = express.Router();
 
@@ -318,6 +318,66 @@ productStoreRouter.get('/:id', (req, res, next) => {
   getProduct.getData();
 });
 
+/** Get Product by name */
+productStoreRouter.get('/productname/:name', (req, res, next) => {
+  class GetProductByName {
+    private db: any = new Databases();
+    private _product_name: any;
+    private _product: any;
+    private _product_data: any = {};
+
+    constructor(private _req, private _res) {
+      this._product_name = this._req.params.name;
+      this._product = this._req.body;
+    }
+
+    /**
+     * Get product where name
+     * @access private
+     * @returns Promise
+     */
+    private _get_product(): Promise<any> {
+      return new Promise((resolve, reject) => {
+        const get = {
+          table: 'product',
+          where: {
+            product_name: this._product_name
+          }
+        };
+        this.db.SelectRow(get, (data) => {
+          this._product_data = data;
+          resolve(data.id);
+        }, (error) => {
+          console.log(error);
+          reject('error');
+        });
+      });
+    }
+
+    public async getData() {
+      try {
+        await this._get_product();
+        await this.db.EndConnect();
+
+        await this._res.json({
+          status: true,
+          data: this._product_data
+        });
+      } catch (error) {
+        await this.db.EndConnect();
+
+        await this._res.json({
+          status: false,
+          error: error
+        });
+      }
+    }
+  }
+
+  const getProductByName = new GetProductByName(req, res);
+  getProductByName.getData();
+});
+
 
 /**
  * Save stock in
@@ -373,8 +433,6 @@ productStoreRouter.post('/saveStockIn', (req, res, next) => {
   const saveStockIn = new SavestockIn(req, res);
   saveStockIn.saveData();
 });
-
-
 
 
 productStoreRouter.get('/getStockList/:id', (req, res, next) => {

@@ -4,7 +4,7 @@ import * as promise from 'bluebird';
 
 import { Permission } from '../library/permissions';
 import { Config } from '../library/configs';
-import { Databases } from '../library/databases.1';
+import { Databases } from '../library/databases';
 
 const uploadRouter: express.Router = express.Router();
 

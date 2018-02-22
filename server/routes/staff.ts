@@ -4,7 +4,7 @@ import * as md5 from 'md5';
 
 import { Permission } from '../library/permissions';
 import { Config } from '../library/configs';
-import { Databases } from '../library/databases.1';
+import { Databases } from '../library/databases';
 
 const staffRouter: express.Router = express.Router();
 const permission = new Permission();
