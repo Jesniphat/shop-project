@@ -11,6 +11,7 @@ import { Routing } from './app.routing';
 
 import { LoginModule } from './components/login/login.module';
 import { ManagerModule } from './components/manager/manager.module';
+import { GlobalModule } from './components/global/global.module';
 
 import { AppComponent } from './app.component';
 import { AlertsComponent } from './element/alerts/alerts.component';
@@ -28,6 +29,7 @@ import { AlertsComponent } from './element/alerts/alerts.component';
     Routing,
     SharedServiceModule,
     LoginModule,
+    GlobalModule,
     ManagerModule
   ],
   // providers: [],
