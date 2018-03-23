@@ -6,6 +6,26 @@ import { Databases } from '../library/databases';
 const authenRouter: express.Router = express.Router();
 const permission: any = new Permission();
 
+authenRouter.get('/', function(req, res, next){
+  class CheckLogin {
+    private _isLogin: any;
+
+    constructor (private request, private response) {
+      this._isLogin = permission.isLogin(this.request);
+    }
+
+    public responseData() {
+      this.response.json({
+        status: true,
+        data: this._isLogin
+      });
+    }
+  }
+
+  const checkLogin = new CheckLogin(req, res);
+  checkLogin.responseData();
+});
+
 authenRouter.post('/checklogin', function(req, res, next){
   class CheckLogin {
     private _isLogin: any;

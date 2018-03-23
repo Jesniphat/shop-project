@@ -9,6 +9,8 @@ import { MenuListService } from '../service/menu-list.service';
 import { AlertsService } from '../service/alerts.service';
 import { SocketService } from '../service/socket.service';
 
+import { ManagerGuard } from '../_guards/manager.guard';
+
 /**
  * This module mush be in app.module only.
  */
@@ -17,6 +19,7 @@ import { SocketService } from '../service/socket.service';
   declarations: [ ],
   exports:      [ ],
   providers:    [
+    ManagerGuard,
     ApiService,
     RootscopeService,
     CookieService,

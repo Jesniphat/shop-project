@@ -59,8 +59,7 @@ export class ApiService {
   public get(url: string): Observable<ResponseData> {
     return this.http
       .get<ResponseData>( this.api + url, httpOptions)
-      .pipe(
-        tap((res: ResponseData) => this.access(res)),
+      .pipe(// ถ้าต้องการใช้ response data ** tap((res: ResponseData) => this.access(res)),
         catchError(this.handleError<ResponseData>('GetApi'))
       );
     }
@@ -78,7 +77,6 @@ export class ApiService {
     return this.http
     .post<ResponseData>(this.api + url, JSON.stringify(param), httpOptions)
     .pipe(
-      tap((res: ResponseData) => this.access(res)),
       catchError(this.handleError<ResponseData>('PostApi'))
     );
   }
@@ -93,8 +91,7 @@ export class ApiService {
     return this.http
     .put<ResponseData>(this.api + url, JSON.stringify(param), httpOptions)
     .pipe(
-      tap((res: ResponseData) => this.access(res)),
-      catchError(this.handleError<ResponseData>('PostApi'))
+      catchError(this.handleError<ResponseData>('PutApi'))
     );
   }
 
@@ -124,7 +121,8 @@ export class ApiService {
   private handleError<T> (operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
       if (error.status === 401) {
-        this.router.navigate(['/system-login']);
+        // this.router.navigate(['/system-login']);
+        console.log('Access denied');
       }
       // TODO: send the error to remote logging infrastructure
       // console.error(error); // log to console instead
