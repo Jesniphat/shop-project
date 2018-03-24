@@ -94,6 +94,15 @@
 
     <div class="w3-row">
       <div class="w3-col l5 m6 s12">
+        <input class="w3-check" id="header" type="checkbox" name="header" [(ngModel)]="product.header">
+        <label for="header">header product</label>
+      </div>
+    </div>
+
+    <br/>
+
+    <div class="w3-row">
+      <div class="w3-col l5 m6 s12">
         <label>Product image</label>
         <input type="file" class="w3-input w3-border" id="productImage" placeholder="Product image" 
         [(ngModel)]="product.productImage" (change)="uploadFile($event)" name="productImage" #productImage />

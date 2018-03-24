@@ -26,6 +26,26 @@ authenRouter.get('/', function(req, res, next){
   checkLogin.responseData();
 });
 
+authenRouter.get('/access', function(req, res, next){
+  class GetAccess {
+    private _accesee: any;
+
+    constructor (private request, private response) {
+      this._accesee = permission.getAccess(this.request);
+    }
+
+    public responseData() {
+      this.response.json({
+        status: true,
+        data: this._accesee
+      });
+    }
+  }
+
+  const getAccess = new GetAccess(req, res);
+  getAccess.responseData();
+});
+
 authenRouter.post('/checklogin', function(req, res, next){
   class CheckLogin {
     private _isLogin: any;
@@ -90,9 +110,10 @@ authenRouter.post('/login', function(req, res, next) {
           if (data.id === undefined) {
             reject('Can\'t login');
           }
+
           const id = data.id;
           if (id !== 0 || id !== '0') {
-            permission.writeToken(res, id);
+            permission.writeToken(res, id, data.can_create, data.can_edit, data.can_delete);
             this.$scope = data;
             resolve(data);
           } else {

@@ -6,7 +6,9 @@ import { ApiService } from '../service/api.service';
 
 @Injectable()
 export class ManagerGuard implements CanActivate {
+  
   constructor(private router: Router, public apiService: ApiService) { }
+
   public async canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     try {
       await this._checkLogin();

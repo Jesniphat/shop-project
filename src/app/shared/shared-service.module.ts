@@ -8,6 +8,7 @@ import { ProductStorageService } from '../service/product-storage.service';
 import { MenuListService } from '../service/menu-list.service';
 import { AlertsService } from '../service/alerts.service';
 import { SocketService } from '../service/socket.service';
+import { AccessService } from '../service/access.service';
 
 import { ManagerGuard } from '../_guards/manager.guard';
 
@@ -26,7 +27,8 @@ import { ManagerGuard } from '../_guards/manager.guard';
     ProductStorageService,
     MenuListService,
     AlertsService,
-    SocketService
+    SocketService,
+    AccessService
   ]
 })
 

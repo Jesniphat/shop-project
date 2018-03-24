@@ -101,14 +101,7 @@ export class ApiService {
    * @access private
    */
   private access(res: any) {
-      if (res.nologin) {
-        // console.log('go to new login.');
-        this.router.navigate(['/system-login']);
-        return res || { };
-      }else {
-        // console.log('body = ', body);
-        return res || { };
-      }
+    return res || { };
   }
 
   /**

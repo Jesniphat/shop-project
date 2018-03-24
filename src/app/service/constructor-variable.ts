@@ -3,5 +3,6 @@ export class ResponseData {
     public status: any,
     public data: any,
     public error: any,
-    public nologin: any ) { }
+    public nologin: any,
+    public access: any ) { }
 }

@@ -345,6 +345,7 @@ productRouter.post('/', (req, res, next) => {
         await this.productStaff.product_pic_manage(this._product);
         await this.productStaff.product_recommend(this._product);
         await this.productStaff.product_set_cover(this._product);
+        await this.productStaff.product_set_header(this._product);
         await this.db.Commit();
         await this.db.EndConnect();
         await this.response.json({
@@ -414,6 +415,7 @@ productRouter.put('/', (req, res, next) => {
         await this.productStaff.product_pic_manage(this._product);
         await this.productStaff.product_recommend(this._product);
         await this.productStaff.product_set_cover(this._product);
+        await this.productStaff.product_set_header(this._product);
         await this.db.Commit();
         await this.db.EndConnect();
 
@@ -640,6 +642,31 @@ class ProductSaveStaff {
       } else {
         resolve(product);
       }
+    });
+  }
+
+  public product_set_header(product: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (!product.head) {
+        resolve(product);
+      }
+
+      const updateHeadBack = {
+        table: 'product',
+        query: { header: false },
+        where: { header: true }
+      };
+      /** Updata old header product = false */
+      this.db.Update(updateHeadBack, success => {
+        const updateHeader = {
+          table: 'product',
+          query: { header: true },
+          where: { id: product.id }
+        };
+
+        /** Update herder product */
+        this.db.Update(updateHeader, success => resolve(product), error => reject(error));
+      }, error => reject(error));
     });
   }
 }

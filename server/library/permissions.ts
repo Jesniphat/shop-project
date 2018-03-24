@@ -3,7 +3,7 @@ import * as jwt from 'jwt-simple';
 
 export class Permission {
   public secret     = 'xxx';
-  public cookieName = 'user';
+  public cookieName = '_ucsj';
 
   constructor() { }
 /**
@@ -15,7 +15,7 @@ export class Permission {
   public readToken(req) {
     let token = req.cookies[this.cookieName];
     if (token === undefined) {
-      token = {id: 0};
+      token = {id: 0, create: 0, edit: 0, delete: 0};
     }else {
       token = jwt.decode(token, this.secret, true, '');
     }
@@ -29,8 +29,14 @@ export class Permission {
  * @access public
  * @return resposnt cookie
  */
-  public writeToken(res, id) {
-    let token: any = {id: id};
+  public writeToken(res, id, canCreate, canEdit, canDelete) {
+    let token: any = {
+      id: id,
+      create: canCreate,
+      edit: canEdit,
+      delete: canDelete
+    };
+
     token = jwt.encode(token, this.secret, '', '');
     res.cookie(this.cookieName, token);
   }
@@ -41,7 +47,7 @@ export class Permission {
  * @access public
  */
   public clearToken(res) {
-    this.writeToken(res, 0);
+    this.writeToken(res, 0, 0, 0, 0);
   }
 
 /**
@@ -52,7 +58,6 @@ export class Permission {
  */
   public isLogin(req): boolean {
     const token = this.readToken(req);
-    // console.log("token is : ", token);
     if (token.id !== 0) {
       return true;
     }else {
@@ -70,6 +75,19 @@ export class Permission {
     const token = this.readToken(req);
     return token.id;
   }
+
+/**
+ * Get access
+ * @param req
+ * @access public
+ * @return number
+ */
+  public getAccess(req) {
+    const token = this.readToken(req);
+    return token;
+  }
+
+
 
 /**
  * Check can access

@@ -44,7 +44,8 @@ export class ProductManagerComponent implements OnInit {
     category: '',
     productImage: <any>null,
     coverId: '0',
-    recommend: false
+    recommend: false,
+    header: false
   };
   public categoryLists = [];
   public selectedStatus: any = 'Y';
@@ -173,6 +174,7 @@ export class ProductManagerComponent implements OnInit {
       this.product.cost = prodResData.product_cost;
       this.product.category = prodResData.category_id;
       this.product.code = 'Product code: ' + prodResData.code;
+      this.product.header = prodResData.header;
 
       if (prodResData.recommend === 'Y') {
         this.product.recommend = true;
@@ -421,7 +423,8 @@ export class ProductManagerComponent implements OnInit {
       category: this.categoryLists[0].id,
       productImage: <any>null,
       coverId: '0',
-      recommend: false
+      recommend: false,
+      header: false
     };
     this.uploadedFiles = [];
   }
