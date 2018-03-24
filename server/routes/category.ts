@@ -9,18 +9,17 @@ import { Databases } from '../library/databases';
 const categoryRouter: express.Router = express.Router();
 const permission = new Permission();
 
-categoryRouter.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
-//   console.log('perrmission : ', permission.readToken(req));
-  if (permission.isLogin(req)) {
-    next();
-  }else {
-    res.status(401).json({
-      status: true,
-      nologin: true,
-      error: 'Access Denied'
-    });
-  }
-});
+// categoryRouter.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+//   if (permission.isLogin(req)) {
+//     next();
+//   }else {
+//     res.status(401).json({
+//       status: true,
+//       nologin: true,
+//       error: 'Access Denied'
+//     });
+//   }
+// });
 
 /**
  * Get All Category
@@ -30,9 +29,6 @@ categoryRouter.use((req: express.Request, res: express.Response, next: express.N
  * @returns data: JSON
  */
 categoryRouter.get('/', (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  if (!permission.canAccess(req, res)) {
-    return;
-  }
   class CategoryList {
     private db = new Databases();
     private category: any;
@@ -65,7 +61,7 @@ categoryRouter.get('/', (req: express.Request, res: express.Response, next: expr
         });
       } catch (error) {
         const end = await this.db.EndConnect();
-        await this.response.json({
+        await this.response.status(400).json({
           status: false,
           error: error
         });
@@ -79,7 +75,6 @@ categoryRouter.get('/', (req: express.Request, res: express.Response, next: expr
 
 });
 
-// categoryRouter.post('/getcategorybyid', (req: express.Request, res: express.Response, next: express.NextFunction) => { });
 
 /**
  * Get Category by id
@@ -121,7 +116,7 @@ categoryRouter.get('/:id', (req: express.Request, res: express.Response, next: e
         });
       } catch (error) {
         const end = await this.db.EndConnect();
-        await this.response.json({
+        await this.response.status(400).json({
           status: false,
           error: error
         });
@@ -143,6 +138,9 @@ categoryRouter.get('/:id', (req: express.Request, res: express.Response, next: e
  * @returns data: JSON
  */
 categoryRouter.post('/', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  if (!permission.canAccess(req, res)) {
+    return;
+  }
   class SaveCategory {
     private db = new Databases();
     private category: any;
@@ -182,7 +180,7 @@ categoryRouter.post('/', (req: express.Request, res: express.Response, next: exp
       } catch (error) {
         const rollback = await this.db.Rollback();
         const end = await this.db.EndConnect();
-        await this.response.json({
+        await this.response.status(400).json({
           status: false,
           error: error
         });
@@ -202,6 +200,9 @@ categoryRouter.post('/', (req: express.Request, res: express.Response, next: exp
  * @returns data: JSON
  */
 categoryRouter.put('/', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  if (!permission.canAccess(req, res)) {
+    return;
+  }
   class UpdateCategory {
     private db = new Databases();
     private category: any = req.body;
@@ -242,7 +243,7 @@ categoryRouter.put('/', (req: express.Request, res: express.Response, next: expr
       } catch (error) {
         const rollback = await this.db.Rollback();
         const end = await this.db.EndConnect();
-        await this.response.json({
+        await this.response.status(400).json({
           status: false,
           error: error
         });
