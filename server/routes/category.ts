@@ -30,6 +30,9 @@ categoryRouter.use((req: express.Request, res: express.Response, next: express.N
  * @returns data: JSON
  */
 categoryRouter.get('/', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  if (!permission.canAccess(req, res)) {
+    return;
+  }
   class CategoryList {
     private db = new Databases();
     private category: any;
