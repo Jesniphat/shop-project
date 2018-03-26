@@ -8,6 +8,9 @@ import { GlobalRouting } from './global.routing';
 import { SharedComponentModule } from '../../shared/shared-component.module';
 
 import { GlobalComponent } from './global.component';
+import { SidebarComponent } from './sidebar/sidebar.component';
+import { IndexComponent } from './index/index.component';
+import { AddEditCategoryComponent } from './add-edit-category/add-edit-category.component';
 
 @NgModule({
   imports: [
@@ -17,7 +20,10 @@ import { GlobalComponent } from './global.component';
     GlobalRouting
   ],
   declarations: [
-  	GlobalComponent
+  	GlobalComponent,
+  	SidebarComponent,
+  	IndexComponent,
+  	AddEditCategoryComponent
   ],
   providers: [
     Uploader

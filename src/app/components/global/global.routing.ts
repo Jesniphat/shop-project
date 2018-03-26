@@ -3,7 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { GlobalComponent } from './global.component';
 
-// import { ManagerDashboardComponent } from './dashboard/manager-dashboard/manager-dashboard.component';
+import { IndexComponent } from './index/index.component';
 // import { CategoryListComponent } from './category/category-list/category-list.component';
 // import { CategoryManagerComponent } from './category/category-manager/category-manager.component';
 // import { ProductListComponent } from './product/product-list/product-list.component';
@@ -14,7 +14,10 @@ import { GlobalComponent } from './global.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'g', pathMatch: 'full'},
-  { path: 'g', component: GlobalComponent}
+  { path: 'g', component: GlobalComponent, children: [
+  	{ path: '', redirectTo: '/global/g/(g:index)', pathMatch: 'full' },
+    { path: 'index', component: IndexComponent, outlet: 'g' },
+  ]}
 ];
 
 @NgModule({
