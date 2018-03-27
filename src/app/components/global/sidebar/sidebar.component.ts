@@ -4,7 +4,6 @@ import { BrowserModule, Meta, Title } from '@angular/platform-browser';
 
 import { ApiService } from '../../../service/api.service';
 import { AlertsService } from '../../../service/alerts.service';
-import { AccessService } from '../../../service/access.service';
 import { RootscopeService } from '../../../service/rootscope.service';
 
 import { AddEditCategoryComponent } from '../add-edit-category/add-edit-category.component';
@@ -29,12 +28,11 @@ export class SidebarComponent implements OnInit {
   	@Inject(PLATFORM_ID) private platformId: object,
   	private _apiService: ApiService, 
   	private _alertsService: AlertsService,
-  	private _access: AccessService,
   	private _rootScope: RootscopeService
   ) { }
 
   ngOnInit() {
-  	this.unsubaccesses = this._access.accessSitdBar$.subscribe(accesses => this.accessSitebars = accesses);
+  	this.unsubaccesses = this._rootScope.accessSitdBar$.subscribe(accesses => this.accessSitebars = accesses);
   	this._getCategoryList();
   }
 
@@ -51,7 +49,6 @@ export class SidebarComponent implements OnInit {
 
 /**
  * Add category function
- *
  * @access public
  * @param data
  * @return void

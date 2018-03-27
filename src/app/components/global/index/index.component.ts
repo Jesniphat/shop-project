@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { AccessService } from '../../../service/access.service';
+import { RootscopeService } from '../../../service/rootscope.service';
 import { AlertsService } from '../../../service/alerts.service';
 
 @Component({
@@ -15,11 +15,11 @@ export class IndexComponent implements OnInit {
 
   constructor(
   	private _alertsService: AlertsService,
-  	private _access: AccessService
+    private _rootScope: RootscopeService
   ) { }
 
   ngOnInit() {
-  	this.ucaccess = this._access.accessIndex$.subscribe(accesses => this.accesses = accesses);
+  	this.ucaccess = this._rootScope.accessIndex$.subscribe(accesses => this.accesses = accesses);
   }
 
 /**

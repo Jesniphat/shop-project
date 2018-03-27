@@ -11,6 +11,8 @@ export class RootscopeService {
   public showNav$: Observable<any>;
   public headerText$: Observable<any>;
   public scrollBar$: Observable<any>;
+  public accessSitdBar$: Observable<any>;
+  public accessIndex$: Observable<any>;
 
 /**
  * var for observer
@@ -19,12 +21,16 @@ export class RootscopeService {
   private _showNav: any;
   private _headerText: any;
   private _scrollBar:any;
+  private _accessSitdBar: any;
+  private _accessIndex: any;
 
   constructor() {
     this.doBlock$ = new Observable(observer => this._blockUI = observer);
     this.showNav$ = new Observable(observer => this._showNav = observer);
     this.headerText$ = new Observable(observer => this._headerText = observer);
     this.scrollBar$ = new Observable(observer => this._scrollBar = observer);
+    this.accessSitdBar$ = new Observable(observer => this._accessSitdBar = observer);
+    this.accessIndex$ = new Observable(observer => this._accessIndex = observer);
   }
 
 /**
@@ -64,5 +70,15 @@ export class RootscopeService {
  */
  public setScrollBar(set: string) {
    this._scrollBar.next(set);
+ }
+
+/**
+ * Set access data to shows
+ * @param response
+ * @access private
+ */
+ public setAccessData(response) {
+   this._accessSitdBar.next(response);
+   this._accessIndex.next(response);
  }
 }
