@@ -57,7 +57,7 @@ productRouter.get('/', (req, res, next) => {
     /** Text for where product name by filter text */
     private _filterName() {
       let filtername = '';
-      if (this.filter.filtertext !== '') {
+      if (this.filter.filtertext) {
         filtername = ' and product_name like \'%' + this.filter.filtertext + '%\'';
       }
       return filtername;

@@ -20,7 +20,7 @@ export class RootscopeService {
   private _blockUI: any;
   private _showNav: any;
   private _headerText: any;
-  private _scrollBar:any;
+  private _scrollBar: any;
   private _accessSitdBar: any;
   private _accessIndex: any;
 

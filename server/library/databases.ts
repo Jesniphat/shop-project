@@ -115,7 +115,7 @@ export class Databases extends Config {
 
     // Query string
     const select = 'SELECT ' + fields + ' FROM ' + data.table + ' WHERE ' + where + group + order + limit;
-
+console.log('line 118 ', select);
     // Main function for get data from database
     this.connection.query(select, function(error, results, field){
       if (error) {
