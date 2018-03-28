@@ -96,6 +96,20 @@ export class ApiService {
   }
 
   /**
+   * DELETE: Delete some record
+   * @param url: string
+   * @param param: any
+   * @access public
+   */
+  public delete(url: string): Observable<ResponseData> {
+    return this.http
+    .delete<ResponseData>(this.api + url, httpOptions)
+    .pipe(
+      catchError(this.handleError<ResponseData>('PutApi'))
+    );
+  }
+
+  /**
    * If data not error we need to check permistion or something
    * @param res
    * @access private

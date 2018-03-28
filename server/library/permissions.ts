@@ -108,4 +108,68 @@ export class Permission {
       return false;
     }
   }
+
+
+/**
+ * Check can create
+ * @param request req
+ * @param response res
+ * @access public
+ * @return boolean
+ */
+ public canCreate(req: any, res: any): boolean {
+   const token = this.getAccess(req);
+   if (token.create !== 1) {
+     res.status(401).json({
+        status: false,
+        error: 'Access Denied'
+      });
+      return false;
+   }
+
+   return true;
+ }
+
+
+/**
+ * Check can edit
+ * @param request req
+ * @param response res
+ * @access public
+ * @return boolean
+ */
+ public canEdit(req: any, res: any): boolean {
+   const token = this.getAccess(req);
+   if (token.edit !== 1) {
+     res.status(401).json({
+        status: false,
+        error: 'Access Denied'
+      });
+      return false;
+   }
+
+   return true;
+ }
+
+
+/**
+ * Check can delete
+ * @param request req
+ * @param response res
+ * @access public
+ * @return boolean
+ */
+ public canDelete(req: any, res: any): boolean {
+   const token = this.getAccess(req);
+   if (token.delete !== 1) {
+     res.status(401).json({
+        status: false,
+        error: 'Access Denied'
+      });
+      return false;
+   }
+
+   return true;
+ }
+
 }

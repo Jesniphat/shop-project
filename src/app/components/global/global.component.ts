@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { BrowserModule, Meta, Title } from '@angular/platform-browser';
 
 import { ApiService } from '../../service/api.service';
 import { AlertsService } from '../../service/alerts.service';
@@ -14,17 +15,17 @@ declare const $: any;
   templateUrl: './global.component.html',
   styleUrls: ['./global.component.scss']
 })
-export class GlobalComponent implements OnInit {
+export class GlobalComponent implements OnInit, OnDestroy {
   public unsubRootScopeBlogUi: any;
   public unsubScrollBar: any;
-  public scroll: any = 'scroll';
+  public scroll: any = 'auto';
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: object, // Get platform is cliend and server
-  	private _apiService: ApiService, 
-  	private _alertsService: AlertsService,
-  	private _accessService: AccessService,
-    public $rootScope: RootscopeService
+    private _apiService: ApiService,
+    private _alertsService: AlertsService,
+    private _accessService: AccessService,
+    private _rootScope: RootscopeService
   ) { }
 
 /**
@@ -32,9 +33,9 @@ export class GlobalComponent implements OnInit {
  * @access public
  */
   public ngOnInit() {
-  	this._accessService.access();
-    this.unsubRootScopeBlogUi = this.$rootScope.doBlock$.subscribe(data => this.block(data));
-    this.unsubScrollBar = this.$rootScope.scrollBar$.subscribe(data => this.scroll = data);
+    this.unsubRootScopeBlogUi = this._rootScope.doBlock$.subscribe(data => this.block(data));
+    this.unsubScrollBar = this._rootScope.scrollBar$.subscribe(data => this.scroll = data);
+    this._accessService.access();
   }
 
 
@@ -69,16 +70,18 @@ export class GlobalComponent implements OnInit {
  * @param string error
  * @access private
  */
- private _showError(error) {
- 	this._alertsService.warning(error);
- }
+  private _showError(error) {
+    this._alertsService.warning(error);
+  }
 
-/** ng on destroy for destroy subscribe
+/**
+ * Unsub
  * @access public
+ * @return void
  */
- public ngOnDestroy() {
-  this.unsubRootScopeBlogUi.unsubscribe();
-  this.unsubScrollBar.unsubscribe();
- }
+  public ngOnDestroy() {
+    this.unsubRootScopeBlogUi.unsubscribe();
+    this.unsubScrollBar.unsubscribe();
+  }
 
 }

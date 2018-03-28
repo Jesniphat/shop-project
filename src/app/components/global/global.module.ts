@@ -20,10 +20,10 @@ import { AddEditCategoryComponent } from './add-edit-category/add-edit-category.
     GlobalRouting
   ],
   declarations: [
-  	GlobalComponent,
-  	SidebarComponent,
-  	IndexComponent,
-  	AddEditCategoryComponent
+    GlobalComponent,
+    SidebarComponent,
+    IndexComponent,
+    AddEditCategoryComponent
   ],
   providers: [
     Uploader

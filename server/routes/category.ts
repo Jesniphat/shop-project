@@ -9,18 +9,6 @@ import { Databases } from '../library/databases';
 const categoryRouter: express.Router = express.Router();
 const permission = new Permission();
 
-// categoryRouter.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
-//   if (permission.isLogin(req)) {
-//     next();
-//   }else {
-//     res.status(401).json({
-//       status: true,
-//       nologin: true,
-//       error: 'Access Denied'
-//     });
-//   }
-// });
-
 /**
  * Get All Category
  * @param url: string
@@ -138,7 +126,7 @@ categoryRouter.get('/:id', (req: express.Request, res: express.Response, next: e
  * @returns data: JSON
  */
 categoryRouter.post('/', (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  if (!permission.canAccess(req, res)) {
+  if (!permission.canCreate(req, res)) {
     return;
   }
   class SaveCategory {
@@ -200,7 +188,7 @@ categoryRouter.post('/', (req: express.Request, res: express.Response, next: exp
  * @returns data: JSON
  */
 categoryRouter.put('/', (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  if (!permission.canAccess(req, res)) {
+  if (!permission.canEdit(req, res)) {
     return;
   }
   class UpdateCategory {
@@ -254,5 +242,72 @@ categoryRouter.put('/', (req: express.Request, res: express.Response, next: expr
   const updateCategory = new UpdateCategory(req, res);
   updateCategory.updateCategory();
 });
+
+/**
+ * Delete category
+ */
+ categoryRouter.delete('/:id', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  if (!permission.canDelete(req, res)) {
+    return;
+  }
+
+  class DeleteCAtegory {
+    private db = new Databases();
+    private category: any = req.body;
+    private category_id: any;
+
+    constructor(private request, private response) {
+      this.category_id = this.request.params.id;
+      this.category = request.body;
+    }
+
+  /**
+   * Delete category by id from data base
+   * @access private
+   */
+    private _deletecetegory(): Promise<any> {
+      const data = {
+        query: {
+          status: 'N',
+        },
+        table: 'category',
+        where: {
+          id: this.category_id
+        }
+      };
+      return new Promise((resolve, reject) => {
+        this.db.Update(data, result => resolve(result), error => reject(error));
+      });
+    }
+
+   /**
+    * Delete category steping
+    * @access public
+    */
+    public async deleteCategory() {
+      try {
+        const begin = await this.db.beginTransection();
+        const result = await this._deletecetegory();
+        const commit = await this.db.Commit();
+        const end = await this.db.EndConnect();
+        await this.response.status(200).json({
+          status: true,
+          data: result
+        });
+      } catch (error) {
+        const rollback = await this.db.Rollback();
+        const end = await this.db.EndConnect();
+        await this.response.status(400).json({
+          status: false,
+          error: error
+        });
+      }
+    }
+  }
+
+  const deleteCategory = new DeleteCAtegory(req, res);
+  deleteCategory.deleteCategory();
+ });
+
 
 export { categoryRouter };

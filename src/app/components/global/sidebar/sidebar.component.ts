@@ -19,6 +19,9 @@ export class SidebarComponent implements OnInit {
 	public unsubaccesses;
 	public categoryId: any = 'create';
 
+  private _deleteCategoryId: any = 0;
+  public cateName: string = '';
+
 	/**
 	 * Set view child from category manage
 	 */
@@ -80,9 +83,73 @@ export class SidebarComponent implements OnInit {
         document.getElementById('addcatemodel').style.display = 'none';
       }
       this._getCategoryList();
-      this._rootScope.setScrollBar('scroll');
+      this._rootScope.setScrollBar('auto');
     }
   }
+
+/**
+ * confirm delete category
+ * @param id
+ * @param string cateName
+ * @access public
+ */
+ public confirmDelete(id: any, cateName: string) {
+   this._deleteCategoryId = id;
+   this.cateName = cateName;
+   if (isPlatformBrowser(this.platformId)) {
+     document.getElementById('confirmDeleteCategory').style.display = 'block';
+   }
+ }
+
+
+
+/**
+ * Delete category
+ * @access public
+ */
+ public deleteCategory() {
+   this._rootScope.setBlock(true, 'Deleting...');
+   this._apiService.delete('/api/category/' + this._deleteCategoryId).subscribe(
+     response => this._deleteCategoryDone(response),
+     error => this._alertsService.warning('Can not detet category ' + error)
+   );
+ }
+
+
+/**
+ * Delete category done
+ * @param response
+ * @access private
+ */
+ private _deleteCategoryDone(response: any) {
+   this._rootScope.setBlock(false);
+   this._alertsService.success('Delete category success');
+   this._getCategoryList();
+   this.closeModel();
+ }
+
+
+/**
+ * Delete category done
+ * @param response
+ * @access private
+ */
+ private _deleteCategoryError(error: any) {
+   this._rootScope.setBlock(false);
+   this._alertsService.warning('Can not detet category ' + error);
+ }
+
+
+/**
+ * close model delete
+ * @access public
+ */
+ public closeModel() {
+   if (isPlatformBrowser(this.platformId)) {
+     document.getElementById('confirmDeleteCategory').style.display = 'none';
+   }
+ }
+
 
 /** ng on destroy for destroy subscribe
  * @access public
