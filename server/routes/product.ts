@@ -665,7 +665,7 @@ class ProductSaveStaff {
         };
 
         /** Update herder product */
-        this.db.Update(updateHeader, success => resolve(product), error => reject(error));
+        this.db.Update(updateHeader, successes => resolve(product), error => reject(error));
       }, error => reject(error));
     });
   }

@@ -16,7 +16,8 @@ export class IndexComponent implements OnInit, OnDestroy {
   public accesses = { create: 0, edit: 0, delete: 0 };
   public ucaccess;
 
-  public productList: any[];
+  public imgLink: any = '';
+  public productLists: any[];
 
   constructor(
     private _alertsService: AlertsService,
@@ -31,6 +32,7 @@ export class IndexComponent implements OnInit, OnDestroy {
    */
   public ngOnInit(): void {
     this.ucaccess = this._rootScope.accessIndex$.subscribe(accesses => this.accesses = accesses);
+    this.imgLink = this._api.img;
     this._getProductFirst();
   }
 
@@ -41,7 +43,7 @@ export class IndexComponent implements OnInit, OnDestroy {
    * @return void
    */
   private _getProductFirst(): void {
-    this._api.get('/api/product?page=1&limit=12')
+    this._api.get('/api/product?page=1&limit=12&sort=id desc')
     .subscribe(
       response => this._getProductDone(response),
       error => this._getProductError(error)
@@ -55,8 +57,7 @@ export class IndexComponent implements OnInit, OnDestroy {
    * @return void
    */
   private _getProductDone(response: any): void {
-    console.log(response);
-    this.productList = response.data;
+    this.productLists = response.data;
   }
 
   /**
