@@ -18,6 +18,7 @@ declare const $: any;
 export class GlobalComponent implements OnInit, OnDestroy {
   public unsubRootScopeBlogUi: any;
   public unsubScrollBar: any;
+  public unsubMenu: any;
   public scroll: any = 'auto';
 
   constructor(
@@ -35,17 +36,18 @@ export class GlobalComponent implements OnInit, OnDestroy {
   public ngOnInit() {
     this.unsubRootScopeBlogUi = this._rootScope.doBlock$.subscribe(data => this.block(data));
     this.unsubScrollBar = this._rootScope.scrollBar$.subscribe(data => this.scroll = data);
+    this.unsubMenu = this._rootScope.menu$.subscribe(data => this._showMenu(data));
     this._accessService.access();
   }
 
 
 /**
  * Block Ui action
- *
  * @param obj
  * @access public
+ * @return void
  */
-  public block(obj: any) {
+  public block(obj: any): void {
     if (isPlatformBrowser(this.platformId)) {
       if (obj.block === true && obj.block !== undefined) {
         if (obj.text) {
@@ -69,9 +71,41 @@ export class GlobalComponent implements OnInit, OnDestroy {
  * Error thing
  * @param string error
  * @access private
+ * @return void
  */
-  private _showError(error) {
+  private _showError(error): void {
     this._alertsService.warning(error);
+  }
+
+/**
+ * Set show or hide side bar
+ * @param string data
+ * @access private
+ * @return void
+ */
+  private _showMenu(data: string): void {
+    if (isPlatformBrowser(this.platformId)) {
+      document.getElementById('mySidebar').style.display = data;
+      document.getElementById('myOverlay').style.display = data;
+    }
+  }
+
+/**
+ * Open side bar
+ * @access public
+ * @return void
+ */
+  public w3_open(): void {
+    this._rootScope.setMenu('block');
+  }
+
+/**
+ * Close side bar
+ * @access public
+ * @return void
+ */
+  public w3_close(): void {
+    this._rootScope.setMenu('none');
   }
 
 /**
@@ -79,7 +113,7 @@ export class GlobalComponent implements OnInit, OnDestroy {
  * @access public
  * @return void
  */
-  public ngOnDestroy() {
+  public ngOnDestroy(): void {
     this.unsubRootScopeBlogUi.unsubscribe();
     this.unsubScrollBar.unsubscribe();
   }

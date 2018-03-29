@@ -13,6 +13,7 @@ export class RootscopeService {
   public scrollBar$: Observable<any>;
   public accessSitdBar$: Observable<any>;
   public accessIndex$: Observable<any>;
+  public menu$: Observable<any>;
 
 /**
  * var for observer
@@ -23,6 +24,7 @@ export class RootscopeService {
   private _scrollBar: any;
   private _accessSitdBar: any;
   private _accessIndex: any;
+  private _menu: any;
 
   constructor() {
     this.doBlock$ = new Observable(observer => this._blockUI = observer);
@@ -31,6 +33,7 @@ export class RootscopeService {
     this.scrollBar$ = new Observable(observer => this._scrollBar = observer);
     this.accessSitdBar$ = new Observable(observer => this._accessSitdBar = observer);
     this.accessIndex$ = new Observable(observer => this._accessIndex = observer);
+    this.menu$ = new Observable(observer => this._menu = observer);
   }
 
 /**
@@ -81,4 +84,14 @@ export class RootscopeService {
    this._accessSitdBar.next(response);
    this._accessIndex.next(response);
  }
+
+/**
+ * Hide or show index menu
+ * @param string param
+ * @access public
+ * @return void
+ */
+  public setMenu(param: string): void {
+    this._menu.next(param);
+  }
 }

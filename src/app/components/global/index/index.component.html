@@ -16,16 +16,16 @@
 </div>
 
 <div class="w3-container w3-text-grey" id="jeans">
-  <p>8 items</p>
+  <p>{{productLists.length}} items</p>
 </div>
 
 <!-- Product grid -->
-<div class="w3-row w3-grayscale" *ngFor="let prod of productLists">
-  <div class="w3-col l3 s6">
+<div class="w3-row">
+  <div class="w3-col l3 m4 s7" *ngFor="let item of productLists">
     <div class="w3-container">
-      <img *ngIf="item.img" [src]="imgLink + prod.img" style="width:100%">
-      <img *ngIf="!item.img" [src]="imgLink + 'public/images/empty-image.png'" style="width:100%">
-      <p>{{prod.product_name}}
+      <img class="prod-img" *ngIf="item.img" [src]="imgLink + item.img" style="width:100%">
+      <img class="prod-img" *ngIf="!item.img" [src]="imgLink + 'public/images/empty-image.png'" style="width:100%">
+      <p>{{item.product_name}}
         <br>
         <b>$24.99</b>
       </p>

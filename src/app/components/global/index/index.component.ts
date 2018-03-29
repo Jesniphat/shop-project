@@ -17,7 +17,7 @@ export class IndexComponent implements OnInit, OnDestroy {
   public ucaccess;
 
   public imgLink: any = '';
-  public productLists: any[];
+  public productLists: any[] = [];
 
   constructor(
     private _alertsService: AlertsService,
@@ -57,7 +57,7 @@ export class IndexComponent implements OnInit, OnDestroy {
    * @return void
    */
   private _getProductDone(response: any): void {
-    this.productLists = response.data;
+    this.productLists = response.data.data;
   }
 
   /**

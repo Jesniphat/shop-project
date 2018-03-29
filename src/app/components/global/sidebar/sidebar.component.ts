@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ElementRef, Inject, PLATFORM_ID, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, ElementRef, Inject, PLATFORM_ID, AfterViewInit, ViewChild } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { BrowserModule, Meta, Title } from '@angular/platform-browser';
 
@@ -13,30 +13,30 @@ import { AddEditCategoryComponent } from '../add-edit-category/add-edit-category
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss']
 })
-export class SidebarComponent implements OnInit {
-	public accessSitebars = { create: 0, edit: 0, delete: 0 };
-	public categoryLists;
-	public unsubaccesses;
-	public categoryId: any = 'create';
+export class SidebarComponent implements OnInit, OnDestroy {
+  public accessSitebars = { create: 0, edit: 0, delete: 0 };
+  public categoryLists;
+  public unsubaccesses;
+  public categoryId: any = 'create';
 
   private _deleteCategoryId: any = 0;
-  public cateName: string = '';
+  public cateName: any = '';
 
-	/**
-	 * Set view child from category manage
-	 */
+/**
+ * Set view child from category manage
+ */
   @ViewChild(AddEditCategoryComponent) private addEditCategoryComponent: AddEditCategoryComponent;
 
   constructor(
-  	@Inject(PLATFORM_ID) private platformId: object,
-  	private _apiService: ApiService, 
-  	private _alertsService: AlertsService,
-  	private _rootScope: RootscopeService
+    @Inject(PLATFORM_ID) private platformId: object,
+    private _apiService: ApiService,
+    private _alertsService: AlertsService,
+    private _rootScope: RootscopeService
   ) { }
 
   ngOnInit() {
-  	this.unsubaccesses = this._rootScope.accessSitdBar$.subscribe(accesses => this.accessSitebars = accesses);
-  	this._getCategoryList();
+    this.unsubaccesses = this._rootScope.accessSitdBar$.subscribe(accesses => this.accessSitebars = accesses);
+    this._getCategoryList();
   }
 
 /**
@@ -44,10 +44,10 @@ export class SidebarComponent implements OnInit {
  * @access private
  */
  private _getCategoryList() {
- 	this._apiService.get('/api/category').subscribe(
- 		response => this.categoryLists = response.data,
- 		error => this._alertsService.success(error)
- 	);
+  this._apiService.get('/api/category').subscribe(
+    response => this.categoryLists = response.data,
+    error => this._alertsService.success(error)
+  );
  }
 
 /**
@@ -57,11 +57,11 @@ export class SidebarComponent implements OnInit {
  * @return void
  */
   public add_new_category(id: any) {
-  	this._rootScope.setScrollBar('hidden');
+    this._rootScope.setScrollBar('hidden');
     if (isPlatformBrowser(this.platformId)) {
       document.getElementById('addcatemodel').style.display = 'block';
     }
-    
+
     if (id === 'create') {
       this.categoryId = id;
       this.addEditCategoryComponent.reset();
@@ -150,12 +150,21 @@ export class SidebarComponent implements OnInit {
    }
  }
 
+/**
+ * Close side bar
+ * @access public
+ * @return void
+ */
+  public w3_close(): void {
+    this._rootScope.setMenu('none');
+  }
+
 
 /** ng on destroy for destroy subscribe
  * @access public
  */
  public ngOnDestroy() {
-	this.unsubaccesses.unsubscribe();
+  this.unsubaccesses.unsubscribe();
  }
 
 }
