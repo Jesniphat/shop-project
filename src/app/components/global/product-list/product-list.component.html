@@ -1,3 +1,19 @@
-<p>
-  product-list works!
-</p>
+<!-- Product grid -->
+<div class="w3-row">
+  <div class="w3-col l3 m4 s7" *ngFor="let item of productLists">
+    <div class="w3-container">
+      <div class="w3-display-container">
+        <img class="prod-img" *ngIf="item.img" [src]="imgLink + item.img" style="width:100%">
+        <img class="prod-img" *ngIf="!item.img" [src]="imgLink + 'public/images/empty-image.png'" style="width:100%">
+        <!-- <span class="w3-tag w3-display-topleft">Sale</span> -->
+        <div class="w3-display-middle w3-display-hover">
+          <button class="w3-button w3-tiny w3-black">Buy now <i class="fa fa-shopping-cart"></i></button>
+        </div>
+      </div>
+      <p>{{item.product_name}}
+        <br>
+        <b>$24.99</b>
+      </p>
+    </div>
+  </div>
+</div>

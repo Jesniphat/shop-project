@@ -10,8 +10,8 @@ import { ProductListComponent } from './product-list/product-list.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'g', pathMatch: 'full'},
-  { path: 'g', component: GlobalComponent, children: [
-    { path: '', redirectTo: '/global/g/(g:index)', pathMatch: 'full' },
+  { path: 'page', component: GlobalComponent, children: [
+    { path: '', redirectTo: '/global/page/(g:index)', pathMatch: 'full' },
     { path: 'index', component: IndexComponent, outlet: 'g' },
     { path: 'product-list/:id',
       component: ProductListComponent,

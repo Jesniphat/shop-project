@@ -14,6 +14,7 @@ import { ApiService } from '../../../service/api.service';
 })
 export class ProductListComponent implements OnInit, OnDestroy {
   public filterText = '';
+  public imgLink: any = '';
   public sort: any = 'id';
   public pageNo: any = 1;
   public categoryId: any;
@@ -35,6 +36,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
   public ngOnInit() {
     this.unsubAccess = this._rootScope.accessPage$.subscribe(data => this.access);
+    this.imgLink = this._api.img;
     // this.categoryId = this.route.snapshot.paramMap.get('id');
     this.route.data
     .subscribe((data: any) => {
@@ -50,10 +52,10 @@ export class ProductListComponent implements OnInit, OnDestroy {
    */
   private _getProduct() {
     this._api.get('/api/product/category/' + this.categoryId + '?filtertext=' + this.filterText
-    + '&filtercolumn=' + 'product_name' + '&sortby=' + this.sort + '&sortType=' + 'asc'
+    + '&filtercolumn=' + 'product_name' + '&sortby=' + this.sort + '&sortType=' + 'desc'
     + '&page=' + this.pageNo + '&limit=' + '10')
     .subscribe(
-      response => this.productLists = response.data,
+      response => this.productLists = response.data.data,
       error => this._alert.warning('Can not get data ' + error)
     );
   }
