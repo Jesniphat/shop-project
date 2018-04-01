@@ -13,7 +13,9 @@ export class RootscopeService {
   public scrollBar$: Observable<any>;
   public accessSitdBar$: Observable<any>;
   public accessPage$: Observable<any>;
+  public accessIndex$: Observable<any>;
   public menu$: Observable<any>;
+  public setCategoryId$: Observable<any>;
 
 /**
  * var for observer
@@ -24,7 +26,9 @@ export class RootscopeService {
   private _scrollBar: any;
   private _accessSitdBar: any;
   private _accessPage: any;
+  private _accessIndex: any;
   private _menu: any;
+  private _setCategoryId: any;
 
   constructor() {
     this.doBlock$ = new Observable(observer => this._blockUI = observer);
@@ -33,7 +37,9 @@ export class RootscopeService {
     this.scrollBar$ = new Observable(observer => this._scrollBar = observer);
     this.accessSitdBar$ = new Observable(observer => this._accessSitdBar = observer);
     this.accessPage$ = new Observable(observer => this._accessPage = observer);
+    this.accessIndex$ = new Observable(observer => this._accessIndex = observer);
     this.menu$ = new Observable(observer => this._menu = observer);
+    this.setCategoryId$ = new Observable(observer => this._setCategoryId = observer);
   }
 
 /**
@@ -85,6 +91,9 @@ export class RootscopeService {
     if (this._accessPage != null) {
       this._accessPage.next(response);
     }
+    if (this._accessIndex != null) {
+      this._accessIndex.next(response);
+    }
   }
 
 /**
@@ -95,5 +104,18 @@ export class RootscopeService {
  */
   public setMenu(param: string): void {
     this._menu.next(param);
+  }
+
+
+/**
+ * Set category id for product lists page
+ * @param int categoryId
+ * @access public
+ * @return void
+ */
+  public setCategoryId(id: any): void {
+    if (this._setCategoryId != null) {
+      this._setCategoryId.next(id);
+    }
   }
 }

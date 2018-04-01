@@ -40,6 +40,16 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
 /**
+ * Set category id for product lists page
+ * @param int categoryId
+ * @access public
+ * @return void
+ */
+  public setCategoryId(categoryId: any): void {
+    this._rootScope.setCategoryId(categoryId);
+  }
+
+/**
  * Get category list datas
  * @access private
  */

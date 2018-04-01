@@ -9,7 +9,11 @@
     <h1 class="w3-hide-large w3-hide-medium">New arrivals</h1>
     <h1 class="w3-hide-small">COLLECTION 2016</h1>
     <p>
-      <a href="#jeans" class="w3-button w3-black w3-padding-large w3-large">SHOP NOW</a>
+      <a class="w3-button w3-black w3-padding-large w3-large"
+        [routerLink]="['/global/g', {outlets: {'g': ['product-list', 0]}}]"
+      >
+        SHOP NOW
+      </a>
       <a href="#jeans" *ngIf="accesses.edit" class="w3-button w3-black w3-padding-large w3-large">EDIT</a>
     </p>
   </div>
@@ -23,8 +27,14 @@
 <div class="w3-row">
   <div class="w3-col l3 m4 s7" *ngFor="let item of productLists">
     <div class="w3-container">
-      <img class="prod-img" *ngIf="item.img" [src]="imgLink + item.img" style="width:100%">
-      <img class="prod-img" *ngIf="!item.img" [src]="imgLink + 'public/images/empty-image.png'" style="width:100%">
+      <div class="w3-display-container">
+        <img class="prod-img" *ngIf="item.img" [src]="imgLink + item.img" style="width:100%">
+        <img class="prod-img" *ngIf="!item.img" [src]="imgLink + 'public/images/empty-image.png'" style="width:100%">
+        <!-- <span class="w3-tag w3-display-topleft">Sale</span> -->
+        <div class="w3-display-middle w3-display-hover">
+          <button class="w3-button w3-tiny w3-black">Buy now <i class="fa fa-shopping-cart"></i></button>
+        </div>
+      </div>
       <p>{{item.product_name}}
         <br>
         <b>$24.99</b>

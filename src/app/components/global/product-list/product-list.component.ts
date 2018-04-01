@@ -21,6 +21,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
   public access: any;
 
   public unsubAccess: any;
+  public unsuCategoryId: any;
 
   constructor(
     public meta: Meta,
@@ -34,9 +35,12 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
   public ngOnInit() {
     this.unsubAccess = this._rootScope.accessPage$.subscribe(data => this.access);
-    this.categoryId = this.route.snapshot.queryParamMap.get('category');
-    console.log(this.categoryId);
-    this._getProduct();
+    // this.categoryId = this.route.snapshot.paramMap.get('id');
+    this.route.data
+    .subscribe((data: any) => {
+      this.categoryId = data.categoryId;
+      this._getProduct();
+    });
   }
 
   /**

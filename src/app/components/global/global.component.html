@@ -20,11 +20,19 @@
   <div class="w3-main" style="margin-left:250px">
     <!-- Top header -->
     <header class="w3-container w3-xlarge">
-      <p class="w3-left">Jeans</p>
-      <p class="w3-right">
+      <div class="p w3-left">Jeans</div>
+      <div class="p w3-right">
         <i class="fa fa-shopping-cart w3-margin-right"></i>
-        <i class="fa fa-search"></i>
-      </p>
+        <i class="fa fa-search w3-margin-right"></i>
+        <div class="w3-right w3-dropdown-hover">
+          <i class="fa fa-user pointer"></i>
+          <div class="w3-left w3-dropdown-content w3-bar-block w3-card-4">
+            <button *ngIf="!accesses.id" class="w3-bar-item w3-button w3-medium" (click)="showLogin()"><i class="fa fa-user w3-margin-right"></i><span>Login</span></button>
+            <button *ngIf="accesses.id" class="w3-bar-item w3-button w3-medium"><i class="fa fa-user w3-margin-right"></i><span>Wellcome</span></button>
+            <button *ngIf="accesses.id"class="w3-bar-item w3-button w3-medium" (click)="logout()"><i class="fa fa-power-off w3-margin-right"></i><span>Logout</span></button>
+          </div>
+        </div>
+      </div>
     </header>
     
     <!-- Page content -->
@@ -140,30 +148,31 @@
     </div>
   </div>
 
-  <script>
-    // Accordion 
-    function myAccFunc() {
-      var x = document.getElementById("demoAcc");
-      if (x.className.indexOf("w3-show") == -1) {
-        x.className += " w3-show";
-      } else {
-        x.className = x.className.replace(" w3-show", "");
-      }
-    }
 
-    // Click on the "Jeans" link on page load to open the accordion for demo purposes
-    document.getElementById("myBtn").click();
+  <!-- Model login -->
+  <div id="login" class="w3-modal">
+    <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:600px">
+  
+      <div class="w3-center"><br>
+        <span onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-xlarge w3-transparent w3-display-topright" title="Close Modal">×</span>
+      </div>
 
+      <form class="w3-container" action="/action_page.php">
+        <div class="w3-section">
+          <label><b>Username</b></label>
+          <input class="w3-input w3-border w3-margin-bottom" type="text" [(ngModel)]="username" placeholder="Enter Username" name="usrname" required>
+          <label><b>Password</b></label>
+          <input class="w3-input w3-border" type="password" [(ngModel)]="password" placeholder="Enter Password" name="psw" required>
+          <button class="w3-button w3-block w3-green w3-section w3-padding" type="submit" (click)="login()">Login</button>
+          <input class="w3-check w3-margin-top" type="checkbox" checked="checked"> Remember me
+        </div>
+      </form>
 
-    // Script to open and close sidebar
-    function w3_open() {
-      document.getElementById("mySidebar").style.display = "block";
-      document.getElementById("myOverlay").style.display = "block";
-    }
+      <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
+        <button (click)="cancelLogin()" type="button" class="w3-button w3-red">Cancel</button>
+        <span class="w3-right w3-padding w3-hide-small">Forgot <a href="#">password?</a></span>
+      </div>
 
-    function w3_close() {
-      document.getElementById("mySidebar").style.display = "none";
-      document.getElementById("myOverlay").style.display = "none";
-    }
-  </script>
+    </div>
+  </div>
 </body>

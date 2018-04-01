@@ -171,10 +171,10 @@ productRouter.get('/category/:id', (req, res, next) => {
      * @param string
      */
     private _filterCategory() {
-      if (this.categoryId !== 0 || this.categoryId !== '0') {
-        return ' and category_id = \'' + this.categoryId + '\'';
+      if (this.categoryId === 0 || this.categoryId === '0') {
+        return '';
       }
-      return '';
+      return ' and category_id = \'' + this.categoryId + '\'';
     }
 
     /**

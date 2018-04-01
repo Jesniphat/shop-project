@@ -9,6 +9,7 @@ import { MenuListService } from '../service/menu-list.service';
 import { AlertsService } from '../service/alerts.service';
 import { SocketService } from '../service/socket.service';
 import { AccessService } from '../service/access.service';
+import { ProductListResolverService } from '../service/product-list-resolver.service';
 
 import { ManagerGuard } from '../_guards/manager.guard';
 
@@ -28,7 +29,8 @@ import { ManagerGuard } from '../_guards/manager.guard';
     MenuListService,
     AlertsService,
     SocketService,
-    AccessService
+    AccessService,
+    ProductListResolverService
   ]
 })
 

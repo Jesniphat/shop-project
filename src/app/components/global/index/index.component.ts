@@ -5,6 +5,7 @@ import { BrowserModule, Meta, Title } from '@angular/platform-browser';
 import { RootscopeService } from '../../../service/rootscope.service';
 import { AlertsService } from '../../../service/alerts.service';
 import { ApiService } from '../../../service/api.service';
+import { AccessService } from '../../../service/access.service';
 
 @Component({
   selector: 'app-index',
@@ -22,7 +23,8 @@ export class IndexComponent implements OnInit, OnDestroy {
   constructor(
     private _alertsService: AlertsService,
     private _rootScope: RootscopeService,
-    private _api: ApiService
+    private _api: ApiService,
+    private _access: AccessService
   ) { }
 
   /**
@@ -32,8 +34,20 @@ export class IndexComponent implements OnInit, OnDestroy {
    */
   public ngOnInit(): void {
     this.ucaccess = this._rootScope.accessPage$.subscribe(accesses => this.accesses = accesses);
+    this._access.access();
     this.imgLink = this._api.img;
     this._getProductFirst();
+  }
+
+
+/**
+ * Set category id for product lists page
+ * @param int categoryId
+ * @access public
+ * @return void
+ */
+  public setCategoryId(categoryId: any): void {
+    this._rootScope.setCategoryId(categoryId);
   }
 
 
@@ -50,6 +64,7 @@ export class IndexComponent implements OnInit, OnDestroy {
     );
   }
 
+
   /**
    * Can get data
    * @param response
@@ -59,6 +74,7 @@ export class IndexComponent implements OnInit, OnDestroy {
   private _getProductDone(response: any): void {
     this.productLists = response.data.data;
   }
+
 
   /**
    * Show error when get product lists
@@ -70,6 +86,7 @@ export class IndexComponent implements OnInit, OnDestroy {
     console.log(error);
     this._alertsService.warning('Can \'t get data list.');
   }
+
 
   /**
    * ng on destroy for destroy subscribe
