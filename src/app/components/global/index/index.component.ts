@@ -31,7 +31,7 @@ export class IndexComponent implements OnInit, OnDestroy {
    * @return void
    */
   public ngOnInit(): void {
-    this.ucaccess = this._rootScope.accessIndex$.subscribe(accesses => this.accesses = accesses);
+    this.ucaccess = this._rootScope.accessPage$.subscribe(accesses => this.accesses = accesses);
     this.imgLink = this._api.img;
     this._getProductFirst();
   }

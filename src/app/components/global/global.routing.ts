@@ -4,6 +4,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { GlobalComponent } from './global.component';
 
 import { IndexComponent } from './index/index.component';
+import { ProductListComponent } from './product-list/product-list.component';
 // import { CategoryListComponent } from './category/category-list/category-list.component';
 // import { CategoryManagerComponent } from './category/category-manager/category-manager.component';
 // import { ProductListComponent } from './product/product-list/product-list.component';
@@ -15,13 +16,14 @@ import { IndexComponent } from './index/index.component';
 const routes: Routes = [
   { path: '', redirectTo: 'g', pathMatch: 'full'},
   { path: 'g', component: GlobalComponent, children: [
-  	{ path: '', redirectTo: '/global/g/(g:index)', pathMatch: 'full' },
+    { path: '', redirectTo: '/global/g/(g:index)', pathMatch: 'full' },
     { path: 'index', component: IndexComponent, outlet: 'g' },
+    { path: 'product-list', component: ProductListComponent, outlet: 'g'}
   ]}
 ];
 
 @NgModule({
   imports: [ RouterModule.forChild(routes) ],
-  exports: [RouterModule]
+  exports: [ RouterModule ]
 })
 export class GlobalRouting { }

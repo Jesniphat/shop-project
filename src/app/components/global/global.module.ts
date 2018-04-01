@@ -11,6 +11,8 @@ import { GlobalComponent } from './global.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { IndexComponent } from './index/index.component';
 import { AddEditCategoryComponent } from './add-edit-category/add-edit-category.component';
+import { AddEditProductComponent } from './add-edit-product/add-edit-product.component';
+import { ProductListComponent } from './product-list/product-list.component';
 
 @NgModule({
   imports: [
@@ -23,7 +25,9 @@ import { AddEditCategoryComponent } from './add-edit-category/add-edit-category.
     GlobalComponent,
     SidebarComponent,
     IndexComponent,
-    AddEditCategoryComponent
+    AddEditCategoryComponent,
+    AddEditProductComponent,
+    ProductListComponent
   ],
   providers: [
     Uploader

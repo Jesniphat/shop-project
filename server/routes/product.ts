@@ -12,25 +12,25 @@ const productRouter: express.Router = express.Router();
 const permission = new Permission();
 // const gencode = new Gencode();
 
-/**
- * Use functiion
- *
- * @access public
- * @param callback function req res next
- * @return JSON
- */
-productRouter.use(function (req, res, next) {
-  // console.log('perrmission : ', permission.readToken(req));
-  if (permission.isLogin(req)) {
-    next();
-  } else {
-    res.status(401).json({
-      status: true,
-      nologin: true,
-      error: 'Access Denied'
-    });
-  }
-});
+// /**
+//  * Use functiion
+//  *
+//  * @access public
+//  * @param callback function req res next
+//  * @return JSON
+//  */
+// productRouter.use(function (req, res, next) {
+//   // console.log('perrmission : ', permission.readToken(req));
+//   if (permission.isLogin(req)) {
+//     next();
+//   } else {
+//     res.status(401).json({
+//       status: true,
+//       nologin: true,
+//       error: 'Access Denied'
+//     });
+//   }
+// });
 
 /**
  * product list
@@ -48,51 +48,50 @@ productRouter.get('/', (req, res, next) => {
       row: 1,
       data: ''
     };
+    private queryData: any;
 
     constructor(private request, private response) {
+      this.queryData = new QueryParams(this.request.query);
       this.product = this.request.body;
       this.filter = this.request.query;
     }
 
-    /** Text for where product name by filter text */
-    private _filterName() {
-      let filtername = '';
-      if (this.filter.filtertext) {
-        filtername = ' and product_name like \'%' + this.filter.filtertext + '%\'';
-      }
-      return filtername;
-    }
-
-    /** Page start number */
-    private _pageStart() {
-      const page_start = (this.filter.limit * this.filter.page) - this.filter.limit;
-      return page_start;
-    }
-
-    /** All product row */
+    /** All product row
+     * @access private
+     * @return Promise
+     */
     private _productCount(): Promise<any> {
       const productCount = {
         fields: 'count(id) as row ',
         table: 'product',
-        where: 'status = \'Y\'' + this._filterName()
+        where: 'status = \'Y\'' + this.queryData.filterName()
       };
       return new Promise((resolve, reject) => {
         this.db.SelectRow(productCount, (result) => {
-          if (result.row <= this.filter.limit) {
+          if (this.filter.limit == null) {
             this.$scope.row = 1;
-          } else if ((result.row % this.filter.limit) === 0) {
-            this.$scope.row = (result.row / this.filter.limit) ;
+            resolve(this.$scope.row);
           } else {
-            this.$scope.row = Math.ceil((result.row / this.filter.limit));
+            if (result.row <= this.filter.limit) {
+              this.$scope.row = 1;
+            } else if ((result.row % this.filter.limit) === 0) {
+              this.$scope.row = (result.row / this.filter.limit) ;
+            } else {
+              this.$scope.row = Math.ceil((result.row / this.filter.limit));
+            }
+            resolve(this.$scope.row);
           }
-          resolve(this.$scope.row);
+
         }, (error) => {
           reject(error);
         });
       });
     }
 
-    /** get product lists */
+    /** get product lists
+     * @access private
+     * @return Promise
+     */
     private _productList(): Promise<any> {
       const productList = {
         fields: [
@@ -100,9 +99,9 @@ productRouter.get('/', (req, res, next) => {
           'max(pp.productpic_path) as img'
         ],
         table: 'product p left join product_pic pp on p.id = pp.product_id and pp.cover = \'Y\'',
-        where: 'p.status = \'Y\'' + this._filterName() ,
+        where: 'p.status = \'Y\'' + this.queryData.filterName() ,
         order: this.filter.sort,
-        limit: this._pageStart() + ', ' + this.filter.limit,
+        limit: this.queryData.fliterLimit(),
         group: 'p.id'
       };
       return new Promise((resolve, reject) => {
@@ -115,7 +114,10 @@ productRouter.get('/', (req, res, next) => {
       });
     }
 
-    /** function for ger all data */
+    /** function for ger all data
+     * @access public
+     * @return void
+     */
     public async getProductAll() {
       try {
         const count = await this._productCount();
@@ -141,6 +143,130 @@ productRouter.get('/', (req, res, next) => {
 });
 
 
+/**
+ * product list by category
+ */
+productRouter.get('/category/:id', (req, res, next) => {
+  class GetProductAll {
+    private db = new Databases();
+    private categoryId: any;
+    private product: any;
+    private filter: any;
+    private $scope = {
+      row: 1,
+      data: ''
+    };
+    private queryData: any;
+
+    constructor(private request, private response) {
+      this.queryData = new QueryParams(this.request.query);
+      this.categoryId = this.request.params.id;
+      this.product = this.request.body;
+      this.filter = this.request.query;
+    }
+
+    /**
+     * Gen filter by category id
+     * @access private
+     * @param string
+     */
+    private _filterCategory() {
+      if (this.categoryId !== 0 || this.categoryId !== '0') {
+        return ' and category_id = \'' + this.categoryId + '\'';
+      }
+      return '';
+    }
+
+    /**
+     * Count product
+     * @access private
+     * @return Primise
+     */
+    private _productCount(): Promise<any> {
+      const productCount = {
+        fields: 'count(id) as row ',
+        table: 'product',
+        where: 'status = \'Y\'' + this.queryData.filterName() + this._filterCategory()
+      };
+      return new Promise((resolve, reject) => {
+        this.db.SelectRow(productCount, (result) => {
+          if (this.filter.limit == null) {
+            this.$scope.row = 1;
+            resolve(this.$scope.row);
+          } else {
+            if (result.row <= this.filter.limit) {
+              this.$scope.row = 1;
+            } else if ((result.row % this.filter.limit) === 0) {
+              this.$scope.row = (result.row / this.filter.limit) ;
+            } else {
+              this.$scope.row = Math.ceil((result.row / this.filter.limit));
+            }
+            resolve(this.$scope.row);
+          }
+
+        }, (error) => {
+          reject(error);
+        });
+      });
+    }
+
+    /**
+     * Get category list
+     * @access private
+     * @return Promise
+     */
+    private _productList(): Promise<any> {
+      const productList = {
+        fields: [
+          'p.*',
+          'max(pp.productpic_path) as img'
+        ],
+        table: 'product p left join product_pic pp on p.id = pp.product_id and pp.cover = \'Y\'',
+        where: 'p.status = \'Y\'' + this.queryData.filterName() + this._filterCategory(),
+        order: this.filter.sort,
+        limit: this.queryData.fliterLimit(),
+        group: 'p.id'
+      };
+      return new Promise((resolve, reject) => {
+        this.db.SelectAll(productList, (results) => {
+          this.$scope.data = results;
+          resolve(this.$scope.data);
+        }, (error) => {
+          reject(error);
+        });
+      });
+    }
+
+    /** function for ger all data
+     * @access public
+     * @return void
+     */
+    public async getProductAll() {
+      try {
+        const count = await this._productCount();
+        const list = await this._productList();
+        const end = await this.db.EndConnect();
+        await this.response.json({
+          status: true,
+          data: this.$scope
+        });
+      } catch (error) {
+        const end = await this.db.EndConnect();
+        await this.response.json({
+          status: false,
+          error: error
+        });
+      }
+    }
+  }
+
+  const getProductAll = new GetProductAll(req, res);
+  getProductAll.getProductAll();
+});
+
+/**
+ * Get product by name
+ */
 productRouter.get('/name', (req, res, next) => {
   class GetProductListByName {
     private db = new Databases();
@@ -199,10 +325,6 @@ productRouter.get('/name', (req, res, next) => {
 
 /**
  * Get product by id
- *
- * @access public
- * @param callbackfucnt(@pruduct id)
- * @return JSON
  */
 productRouter.get('/:id', (req, res, next) => {
   class GetProductById {
@@ -268,11 +390,12 @@ productRouter.get('/:id', (req, res, next) => {
 
 /**
  * Save product
- * @access public
- * @param {product object}
- * @return JSON
  */
 productRouter.post('/', (req, res, next) => {
+  if (!permission.canCreate(req, res)) {
+    return;
+  }
+
   class SaveProduct {
     private db = new Databases();
     private gencode = new Gencode(this.db);
@@ -366,10 +489,14 @@ productRouter.post('/', (req, res, next) => {
   saveProduct.saveProduct();
 });
 
+
 /**
  * Edit product
  */
 productRouter.put('/', (req, res, next) => {
+  if (!permission.canEdit(req, res)) {
+    return;
+  }
   class EditProduct {
     private db = new Databases();
     private productStaff = new ProductSaveStaff(this.db);
@@ -444,6 +571,10 @@ productRouter.put('/', (req, res, next) => {
  * Delete product
  */
 productRouter.post('/delete_product', (req, res, next) => {
+  if (!permission.canDelete(req, res)) {
+    return;
+  }
+
   class DeleteProduct {
     private db = new Databases();
     private _product: any;
@@ -502,6 +633,9 @@ productRouter.post('/delete_product', (req, res, next) => {
 });
 
 
+/**
+ * Class for product stuff
+ */
 class ProductSaveStaff {
   public constructor(private db) { }
 
@@ -668,6 +802,33 @@ class ProductSaveStaff {
         this.db.Update(updateHeader, successes => resolve(product), error => reject(error));
       }, error => reject(error));
     });
+  }
+}
+
+
+/**
+ * Gen query param for filter data
+ */
+class QueryParams {
+  public constructor(private _filter) { }
+
+  /** Text for where product name by filter text */
+  public filterName() {
+    let filtername = '';
+    if (this._filter.filtertext != null) {
+      filtername = ' and product_name like \'%' + this._filter.filtertext + '%\'';
+    }
+    return filtername;
+  }
+
+  /** Page start number */
+  public fliterLimit() {
+    let page_limit = ' 0, 18446744073709551615';
+    if (this._filter.limit != null || this._filter.page != null) {
+      const page_start = (this._filter.limit * this._filter.page) - this._filter.limit;
+      page_limit = page_start + ', ' + this._filter.limit;
+    }
+    return page_limit;
   }
 }
 

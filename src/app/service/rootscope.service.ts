@@ -12,7 +12,7 @@ export class RootscopeService {
   public headerText$: Observable<any>;
   public scrollBar$: Observable<any>;
   public accessSitdBar$: Observable<any>;
-  public accessIndex$: Observable<any>;
+  public accessPage$: Observable<any>;
   public menu$: Observable<any>;
 
 /**
@@ -23,7 +23,7 @@ export class RootscopeService {
   private _headerText: any;
   private _scrollBar: any;
   private _accessSitdBar: any;
-  private _accessIndex: any;
+  private _accessPage: any;
   private _menu: any;
 
   constructor() {
@@ -32,7 +32,7 @@ export class RootscopeService {
     this.headerText$ = new Observable(observer => this._headerText = observer);
     this.scrollBar$ = new Observable(observer => this._scrollBar = observer);
     this.accessSitdBar$ = new Observable(observer => this._accessSitdBar = observer);
-    this.accessIndex$ = new Observable(observer => this._accessIndex = observer);
+    this.accessPage$ = new Observable(observer => this._accessPage = observer);
     this.menu$ = new Observable(observer => this._menu = observer);
   }
 
@@ -80,10 +80,12 @@ export class RootscopeService {
  * @param response
  * @access private
  */
- public setAccessData(response) {
-   this._accessSitdBar.next(response);
-   this._accessIndex.next(response);
- }
+  public setAccessData(response) {
+    this._accessSitdBar.next(response);
+    if (this._accessPage != null) {
+      this._accessPage.next(response);
+    }
+  }
 
 /**
  * Hide or show index menu

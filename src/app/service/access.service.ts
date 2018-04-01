@@ -15,12 +15,12 @@ export class AccessService {
  * @access public
  */
   public access() {
-  	this.api
-  	.get('/api/authen/access')
-  	.subscribe(
-  		response => this._rootScope.setAccessData(response.data),
-  		error => this._accessError(error)
-  	)
+    this.api
+    .get('/api/authen/access')
+    .subscribe(
+      response => this._rootScope.setAccessData(response.data),
+      error => this._accessError(error)
+    );
   }
 
 /**
@@ -29,7 +29,7 @@ export class AccessService {
  * @access private
  */
   private _accessError(error: any) {
-  	console.log(error);
+    console.log(error);
   }
 
 }
