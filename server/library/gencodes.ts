@@ -13,10 +13,10 @@ export class Gencode {
     let next: any = '';
     const maxCode = this.db.SelectRow(sql, (result) => {
       if (result.maxCode) {
-        console.log('Maxcode 18 = ', result.maxCode);
         next = parseInt((result.maxCode).substr(prefix.length), null) + 1;
-        console.log('20 => ', prefix + '0000000000000' + next);
         callback_success(prefix + (('0000000000000' + next).substr(-size)));
+      } else if (result.maxCode == null) {
+        callback_success('P00001');
       } else {
         next = start + 0;
       }

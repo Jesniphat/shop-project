@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID, ViewChild } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { BrowserModule, Meta, Title } from '@angular/platform-browser';
 
@@ -7,12 +7,20 @@ import { AlertsService } from '../../../service/alerts.service';
 import { ApiService } from '../../../service/api.service';
 import { AccessService } from '../../../service/access.service';
 
+import { AddEditProductComponent } from '../add-edit-product/add-edit-product.component';
+
 @Component({
   selector: 'app-index',
   templateUrl: './index.component.html',
   styleUrls: ['./index.component.scss']
 })
 export class IndexComponent implements OnInit, OnDestroy {
+  /**
+	 * Set view child from product manage
+	 */
+  @ViewChild(AddEditProductComponent) public addEditProductComponent: AddEditProductComponent;
+  public productId: any = 'create';
+
   /** var */
   public accesses = { create: 0, edit: 0, delete: 0 };
   public ucaccess;
@@ -21,6 +29,7 @@ export class IndexComponent implements OnInit, OnDestroy {
   public productLists: any[] = [];
 
   constructor(
+    @Inject(PLATFORM_ID) private platformId: object,
     private _alertsService: AlertsService,
     private _rootScope: RootscopeService,
     private _api: ApiService,
@@ -87,6 +96,45 @@ export class IndexComponent implements OnInit, OnDestroy {
     this._alertsService.warning('Can \'t get data list.');
   }
 
+
+  /**
+   * Add new Product by dialog
+   * @param data
+   * @access public
+   * @returns void
+   */
+  public add_new_product(data: any) {
+    if (isPlatformBrowser(this.platformId)) {
+      document.getElementById('addproductmodel').style.display = 'block';
+    }
+    if (data === 'create') {
+      this.productId = data;
+      this.addEditProductComponent.reset();
+    } else {
+      this.productId = data.id;
+      this.addEditProductComponent.getProductByid(data.id);
+    }
+  }
+
+
+  /**
+   * Return result from child
+   * @param result
+   * @access public
+   * @returns void
+   */
+  public createProductResult(result) {
+    if (result) {
+      this._getProductFirst();
+      if (isPlatformBrowser(this.platformId)) {
+        document.getElementById('addproductmodel').style.display = 'none';
+      }
+    } else {
+      if (isPlatformBrowser(this.platformId)) {
+        console.log('can\'t save');
+      }
+    }
+  }
 
   /**
    * ng on destroy for destroy subscribe

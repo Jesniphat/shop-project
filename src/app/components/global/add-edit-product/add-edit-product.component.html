@@ -1,3 +1,143 @@
-<p>
-  add-edit-product works!
-</p>
+<form class="ui form" #productForm="ngForm">
+  <div class="w3-container">
+    <div class="w3-row" *ngIf="product.code != ''">
+      <div class="w3-col l5 m6 s12">
+        <span>{{product.code}}</span>
+      </div>
+    </div>
+    
+    <br/>
+
+    <div class="w3-row">
+      <div class="w3-col l5 m6 s12">
+        <label>Category lists <span style="color:red;">*</span></label>
+        <label [hidden]="categoryList.valid || categoryList.pristine" style="color: red;">
+          Category is required
+        </label>
+        <select class="w3-select w3-border" id="categoryList" name="categoryList" [(ngModel)]="product.category" 
+        #categoryList="ngModel" required>
+          <option *ngFor="let item of categoryLists" [value]='item.value'>
+              {{item.label}}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <br/>
+
+    <div class="w3-row">
+      <div class="w3-col l5 m6 s12">
+        <label>Product Name <span style="color:red;">*</span></label>
+        <label *ngIf="name.errors && (name.dirty || name.touched)" style="color: red;">
+          <label [hidden]="!name.errors.required">
+            Name is required
+          </label>
+          <label [hidden]="!name.errors.minlength">
+            Name must be at least 4 long.
+          </label>
+          <label [hidden]="!name.errors.maxlength">
+            Name cannot be more than 20 long.
+          </label>
+        </label>
+        <input class="w3-input w3-border" type="text" id="productName" placeholder="Product Name" 
+        [(ngModel)]="product.name" name="name" #name="ngModel" required minlength="4" maxlength="20">
+      </div>
+    </div>
+
+    <br/>
+
+    <div class="w3-row">
+      <div class="w3-col l5 m6 s12">
+        <label>Product Price <span style="color:red;">*</span></label>
+        <label [hidden]="price.valid || price.pristine" style="color: red;">
+          price is required and must by number
+        </label>
+        <input type="number" class="w3-input w3-border" id="productPrice" placeholder="Product price" 
+        [(ngModel)]="product.price" name="price" #price="ngModel" required />
+      </div>
+    </div>
+
+    <br/>
+
+    <div class="w3-row">
+      <div class="w3-col l5 m6 s12">
+        <label>Product Cost <span style="color:red;">*</span></label>
+        <label [hidden]="cost.valid || cost.pristine" style="color: red;">
+          Cost is required and must by number
+        </label>
+        <input type="number" class="w3-input w3-border" id="productCost" placeholder="Product cost" 
+        [(ngModel)]="product.cost" name="cost" #cost="ngModel" required />
+      </div>
+    </div>
+
+    <br/>
+
+    <div class="w3-row">
+      <div class="w3-col l5 m6 s12">
+          <label>Product Description</label>
+          <textarea class="w3-input w3-border" id="productDesc" type="text" rows="1" placeholder="Description"  
+          [(ngModel)]="product.desc" name="desc"></textarea>
+      </div>
+    </div>
+    
+    <br/>
+
+    <div class="w3-row">
+      <div class="w3-col l5 m6 s12">
+        <input class="w3-check" id="recommend" type="checkbox" name="recommend" [(ngModel)]="product.recommend" (change)="checkRecommend()">
+        <label for="recommend">Recommend product</label>
+      </div>
+    </div>
+
+    <br/>
+
+    <div class="w3-row">
+      <div class="w3-col l5 m6 s12">
+        <input class="w3-check" id="header" type="checkbox" name="header" [(ngModel)]="product.header">
+        <label for="header">header product</label>
+      </div>
+    </div>
+
+    <br/>
+
+    <div class="w3-row">
+      <div class="w3-col l5 m6 s12">
+        <label>Product image</label>
+        <input type="file" class="w3-input w3-border" id="productImage" placeholder="Product image" 
+        [(ngModel)]="product.productImage" (change)="uploadFile($event)" name="productImage" #productImage />
+      </div>
+    </div>
+
+  </div>
+
+  <br/>
+
+  <div class="w3-row">
+    <div class="w3-col l3 s6" *ngFor="let file of uploadedFiles; let x = index;">
+      <div class="w3-container">
+        <div class="w3-display-container">
+          <img [src]="imgLink + file.productpic_path" style="width:100%">
+          <!-- <span class="w3-tag w3-display-topleft" *ngIf="item.recommend=='Y'">Recommend</span> -->
+          <div class="w3-display-middle w3-display-hover">
+            <button class="w3-button w3-black" (click)="removeImg(file.id, x)">Delete <i class="fa fa-close"></i></button>
+          </div>
+        </div>
+        <p>
+          <input class="w3-radio" type="radio" name="cover" [value]="file.id" (change)="setCoverPic(file.id)" [checked]="file.cover=='Y'">
+          <label>Cover</label>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="w3-row">
+    <div class="w3-container w3-padding-16" [ngClass]="{'w3-border-top':modelOpen, 'w3-border-bottom':modelOpen, 'w3-light-grey':modelOpen}">
+      <button class="w3-button w3-blue" id="saveProduct" type="submit" 
+      [disabled]="productForm.form.invalid" (click)="saveProduct()">Submit</button>
+      <button (click)="close()" 
+      type="button" class="w3-button w3-red w3-right">Cancel</button>
+    </div>
+  </div>
+
+</form>
+  

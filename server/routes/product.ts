@@ -10,27 +10,6 @@ import { Databases } from '../library/databases';
 const productRouter: express.Router = express.Router();
 
 const permission = new Permission();
-// const gencode = new Gencode();
-
-// /**
-//  * Use functiion
-//  *
-//  * @access public
-//  * @param callback function req res next
-//  * @return JSON
-//  */
-// productRouter.use(function (req, res, next) {
-//   // console.log('perrmission : ', permission.readToken(req));
-//   if (permission.isLogin(req)) {
-//     next();
-//   } else {
-//     res.status(401).json({
-//       status: true,
-//       nologin: true,
-//       error: 'Access Denied'
-//     });
-//   }
-// });
 
 /**
  * product list

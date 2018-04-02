@@ -20,7 +20,13 @@
 </div>
 
 <div class="w3-container w3-text-grey" id="jeans">
-  <p>{{productLists.length}} items</p>
+  <div class="w3-margin-top w3-margin-bottom">
+    {{productLists.length}} items 
+    <p class="w3-tooltip w3-margin-left w3-white" style="cursor: pointer; display: inline;" (click)="add_new_product('create')">
+      <i class="fa fa-plus-square"></i>
+      <span style="position:absolute; left:0; bottom:18px; width:130px;" class="w3-text w3-tag">Add new product</span>
+    </p>
+  </div>
 </div>
 
 <!-- Product grid -->
@@ -37,8 +43,14 @@
       </div>
       <p>{{item.product_name}}
         <br>
-        <b>$24.99</b>
+        <b>฿{{item.product_price}}</b>
       </p>
     </div>
+  </div>
+</div>
+
+<div id="addproductmodel" class="w3-modal">
+  <div id="producct-model-content" class="w3-modal-content w3-card-4 w3-animate-zoom">
+    <app-add-edit-product [productId]="productId" [modelOpen] = 'true' (createProductResult)="createProductResult($event)"></app-add-edit-product>
   </div>
 </div>
