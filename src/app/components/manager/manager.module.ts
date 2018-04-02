@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 
 import { Uploader } from 'angular2-http-file-upload';
 
-import { ManagerRouting } from './manager.routing';
+import { ManagerRoutingModule } from './manager.routing';
 import { SharedComponentModule } from '../../shared/shared-component.module';
 
 import { ManagerComponent } from './manager.component';
@@ -21,8 +21,8 @@ import { StockInComponent } from './stock-in/stock-in.component';
   imports: [
     CommonModule,
     FormsModule,
-    SharedComponentModule,
-    ManagerRouting
+    ManagerRoutingModule,
+    SharedComponentModule
   ],
   declarations: [
     ManagerComponent,

@@ -5,15 +5,15 @@ import { FormsModule } from '@angular/forms';
 
 import { SharedServiceModule } from '../../shared/shared-service.module';
 import { LoginComponent } from './login.component';
-import { Routing } from './login.routing';
+import { LoginRoutingModule } from './login.routing';
 
 @NgModule({
   imports: [
     CommonModule,
     // BrowserModule,
     FormsModule,
-    SharedServiceModule,
-    Routing
+    LoginRoutingModule,
+    SharedServiceModule
   ],
   declarations: [
     LoginComponent

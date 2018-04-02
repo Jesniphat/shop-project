@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 
 import { Uploader } from 'angular2-http-file-upload';
 
-import { GlobalRouting } from './global.routing';
+import { GlobalRoutingModule } from './global.routing';
 import { SharedComponentModule } from '../../shared/shared-component.module';
 
 import { GlobalComponent } from './global.component';
@@ -18,8 +18,8 @@ import { ProductListComponent } from './product-list/product-list.component';
   imports: [
     CommonModule,
     FormsModule,
-    SharedComponentModule,
-    GlobalRouting
+    GlobalRoutingModule,
+    SharedComponentModule
   ],
   declarations: [
     GlobalComponent,
