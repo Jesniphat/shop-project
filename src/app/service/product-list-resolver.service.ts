@@ -10,7 +10,7 @@ export class ProductListResolverService {
   constructor(private router: Router) {}
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): any {
-    const id = route.paramMap.get('id');
-    return id;
+    const categoryId = route.paramMap.get('category');
+    return categoryId;
   }
 }

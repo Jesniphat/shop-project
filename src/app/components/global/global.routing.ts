@@ -13,7 +13,7 @@ const routes: Routes = [
   { path: 'page', component: GlobalComponent, children: [
     { path: '', redirectTo: '/global/page/(g:index)', pathMatch: 'full' },
     { path: 'index', component: IndexComponent, outlet: 'g' },
-    { path: 'product-list/:id',
+    { path: 'product-list',
       component: ProductListComponent,
       outlet: 'g',
       resolve: {

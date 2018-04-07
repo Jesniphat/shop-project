@@ -142,7 +142,7 @@ export class IndexComponent implements OnInit, OnDestroy {
    * @returns void
    */
   public ngOnDestroy(): void {
-    this.ucaccess.unsubscribe();
+    this.ucaccess = this.ucaccess != null ? this.ucaccess.unsubscribe() : null;
   }
 
 }
