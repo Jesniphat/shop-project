@@ -112,7 +112,7 @@ export class IndexComponent implements OnInit, OnDestroy {
       this.addEditProductComponent.reset();
     } else {
       this.productId = data.id;
-      this.addEditProductComponent.getProductByid(data.id);
+      this.addEditProductComponent.getProductByid(data);
     }
   }
 

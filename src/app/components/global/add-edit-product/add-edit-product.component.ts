@@ -146,6 +146,7 @@ export class AddEditProductComponent implements OnInit {
    * @access public
    */
   public getProductByid(prodId: any) {
+  console.log('sdfsdf => ', prodId);
   this.$rootScope.setBlock(true, 'Loading...');
   const param = {
     product_id: prodId
