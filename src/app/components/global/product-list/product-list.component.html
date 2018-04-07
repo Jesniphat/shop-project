@@ -1,3 +1,8 @@
+<!-- Add New Product -->
+<p class="w3-tooltip w3-margin-left w3-white" style="cursor: pointer;" (click)="add_new_product('create')">
+  <i class="fa fa-plus-square"></i>
+  <span style="position:absolute; left:0; bottom:18px; width:130px;" class="w3-text w3-tag">Add new product</span>
+</p>
 <!-- Product grid -->
 <div class="w3-row">
   <div class="w3-col l3 m4 s7" *ngFor="let item of productLists">
@@ -8,12 +13,22 @@
         <!-- <span class="w3-tag w3-display-topleft">Sale</span> -->
         <div class="w3-display-middle w3-display-hover">
           <button class="w3-button w3-tiny w3-black">Buy now <i class="fa fa-shopping-cart"></i></button>
+          <button *ngIf="access.edit" class="w3-button w3-small w3-padding" (click)="add_new_product(item.id)">
+            <i class="fa fa-edit"></i>
+          </button>
         </div>
       </div>
       <p>{{item.product_name}}
         <br>
-        <b>$24.99</b>
+        <b>฿{{item.product_price}}</b>
       </p>
     </div>
+  </div>
+</div>
+
+
+<div id="addproductmodel" class="w3-modal">
+  <div id="producct-model-content" class="w3-modal-content w3-card-4 w3-animate-zoom">
+    <app-add-edit-product [productId]="productId" [modelOpen] = 'true' (createProductResult)="createProductResult($event)"></app-add-edit-product>
   </div>
 </div>
