@@ -13,6 +13,7 @@ import { IndexComponent } from './index/index.component';
 import { AddEditCategoryComponent } from './add-edit-category/add-edit-category.component';
 import { AddEditProductComponent } from './add-edit-product/add-edit-product.component';
 import { ProductListComponent } from './product-list/product-list.component';
+import { ProductStockComponent } from './product-stock/product-stock.component';
 
 @NgModule({
   imports: [
@@ -27,7 +28,8 @@ import { ProductListComponent } from './product-list/product-list.component';
     IndexComponent,
     AddEditCategoryComponent,
     AddEditProductComponent,
-    ProductListComponent
+    ProductListComponent,
+    ProductStockComponent
   ],
   providers: [
     Uploader

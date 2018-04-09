@@ -5,7 +5,7 @@ import { Observable } from 'rxjs/Observable';
 import { ApiService } from '../service/api.service';
 
 @Injectable()
-export class ManagerGuard implements CanActivate {
+export class GlobalGuard implements CanActivate {
 
   constructor(private router: Router, public apiService: ApiService) { }
 
@@ -17,7 +17,7 @@ export class ManagerGuard implements CanActivate {
       return true;
     } catch (error) {
       // not logged in so redirect to login page with the return url
-      this.router.navigate(['/system-login']); // { queryParams: { returnUrl: state.url }} ** บางอย่างที่เค้าใช้กัน
+      this.router.navigate(['/global']); // { queryParams: { returnUrl: state.url }} ** บางอย่างที่เค้าใช้กัน
       return false;
     }
   }
@@ -25,10 +25,10 @@ export class ManagerGuard implements CanActivate {
   private _checkLogin() {
     return new Promise((resolve, reject) => {
       this.apiService
-      .get('/api/authen')
+      .get('/api/authen/access')
       .subscribe(
-        data => {
-          if (data.data) {
+        reaponse => {
+          if (reaponse.data.create && reaponse.data.edit && reaponse.data.delete) {
             resolve(true);
           } else {
             reject(false);

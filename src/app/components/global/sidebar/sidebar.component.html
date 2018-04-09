@@ -21,6 +21,7 @@
   	</button>
   </a>
 </div>
+<a *ngIf="accessSitebars.edit" [routerLink]="['/global/page', {outlets: {'g': ['product-stock']}}]" class="w3-bar-item w3-button w3-padding">Stock Product</a>
 <!-- <a href="#footer" class="w3-bar-item w3-button w3-padding">Contact</a>
 <a href="javascript:void(0)" class="w3-bar-item w3-button w3-padding" onclick="document.getElementById('newsletter').style.display='block'">Newsletter</a>
 <a href="#footer" class="w3-bar-item w3-button w3-padding">Subscribe</a> -->

@@ -1,0 +1,69 @@
+<div class="w3-container">
+  <div class="w3-row">
+    <div class="w3-col l4 m5 s11">
+      <app-autocomplete [autoCompleteData]="autoCompleteData"></app-autocomplete>
+    </div>
+    <div class="w3-col l1 m1 s1">
+      <div class="search-button">
+        <button class="w3-button w3-blue" style="width: 100%" (click)="clickSearch()"><i class="fa fa-search"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <br/>
+  
+  <form #stockInForm="ngForm">
+    <div class="w3-row">
+      <div class="w3-col l5 m6 s12">
+        <label for="stock-in-product-code">
+          Product Code
+        </label>
+        <input class="w3-input w3-border" type="text" id="stock-in-product-code" placeholder="Product Code" [(ngModel)]="stockInProduct.code" 
+        name="stockInProductCode" #stockInProductCode="ngModel" disabled required />
+      </div>
+    </div>
+    
+    <br/>
+
+    <div class="w3-row">
+      <div class="w3-col l5 m6 s12">
+        <label for="stock-in-product-name">
+          Product Name 
+        </label>
+        <input class="w3-input w3-border" type="text" id="stock-in-product-name" placeholder="Product Name" [(ngModel)]="stockInProduct.name" 
+        name="stockInProductName" #stockInProductName="ngModel" disabled required />
+      </div>
+    </div>
+    
+    <br/>
+
+    <div class="w3-row">
+      <div class="w3-col l5 m6 s12">
+        <label for="stock-in-product-qty">
+          Product Qty
+        </label>
+        <input class="w3-input w3-border" type="text" id="stock-in-product-qty" placeholder="Product Qty" [(ngModel)]="stockInProduct.qty" 
+        name="stockInProductQty" #stockInProductQty="ngModel" required />
+      </div>
+    </div>
+  
+    <br/>
+
+    <div class="w3-row">
+      <button class="w3-button w3-blue" id="saveLotIn" 
+              type="submit" [disabled]="stockInForm.form.invalid" (click)="saveLotIn()">Save</button>
+      <button class="w3-button w3-red" id="cancelAll" type="submit" (click)="reset()">Cancel</button>
+    </div>
+  </form>
+  
+  <div class="w3-row">
+    <app-table-element [dataTables]="stockList"></app-table-element>    
+  </div>
+</div>
+
+
+<div id="addproductmodel" class="w3-modal">
+  <div id="producct-model-content" class="w3-modal-content w3-card-4 w3-animate-zoom">
+    <app-add-edit-product [productId]="productId" [modelOpen] = 'true' (createProductResult)="createProductResult($event)"></app-add-edit-product>
+  </div>
+</div>

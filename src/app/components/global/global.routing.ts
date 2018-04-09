@@ -3,10 +3,13 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { ProductListResolverService } from '../../service/product-list-resolver.service';
 
+import { GlobalGuard } from '../../_guards/global.guard';
+
 import { GlobalComponent } from './global.component';
 
 import { IndexComponent } from './index/index.component';
 import { ProductListComponent } from './product-list/product-list.component';
+import { ProductStockComponent } from './product-stock/product-stock.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'page', pathMatch: 'full'},
@@ -19,7 +22,8 @@ const routes: Routes = [
       resolve: {
         categoryId: ProductListResolverService
       }
-    }
+    },
+    { path: 'product-stock', component: ProductStockComponent, outlet: 'g', canActivate: [GlobalGuard]}
   ]}
 ];
 

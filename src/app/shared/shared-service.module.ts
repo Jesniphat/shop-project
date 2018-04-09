@@ -12,6 +12,7 @@ import { AccessService } from '../service/access.service';
 import { ProductListResolverService } from '../service/product-list-resolver.service';
 
 import { ManagerGuard } from '../_guards/manager.guard';
+import { GlobalGuard } from '../_guards/global.guard';
 
 /**
  * This module mush be in app.module only.
@@ -22,6 +23,7 @@ import { ManagerGuard } from '../_guards/manager.guard';
   exports:      [ ],
   providers:    [
     ManagerGuard,
+    GlobalGuard,
     ApiService,
     RootscopeService,
     CookieService,
