@@ -54,7 +54,7 @@ export class OrderService {
    * @return void
    */
   public addTocart(product: any): void {
-    this.apiService.post('/api/order/add-to-cart', product).subscribe(
+    this.apiService.post('/api/order/addcart', product).subscribe(
       response => this._addTocartDoneAction(response.data),
       error => this._addTocartErrorAction(error)
     );

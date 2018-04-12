@@ -10,6 +10,7 @@ import { AlertsService } from '../service/alerts.service';
 import { SocketService } from '../service/socket.service';
 import { AccessService } from '../service/access.service';
 import { ProductListResolverService } from '../service/product-list-resolver.service';
+import { OrderService } from '../service/order.service';
 
 import { ManagerGuard } from '../_guards/manager.guard';
 import { GlobalGuard } from '../_guards/global.guard';
@@ -28,6 +29,7 @@ import { GlobalGuard } from '../_guards/global.guard';
     RootscopeService,
     CookieService,
     ProductStorageService,
+    OrderService,
     MenuListService,
     AlertsService,
     SocketService,

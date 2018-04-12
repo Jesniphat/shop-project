@@ -6,6 +6,7 @@ import { RootscopeService } from '../../../service/rootscope.service';
 import { AlertsService } from '../../../service/alerts.service';
 import { ApiService } from '../../../service/api.service';
 import { AccessService } from '../../../service/access.service';
+import { OrderService } from '../../../service/order.service';
 
 import { AddEditProductComponent } from '../add-edit-product/add-edit-product.component';
 
@@ -33,7 +34,8 @@ export class IndexComponent implements OnInit, OnDestroy {
     private _alertsService: AlertsService,
     private _rootScope: RootscopeService,
     private _api: ApiService,
-    private _access: AccessService
+    private _access: AccessService,
+    private _order: OrderService
   ) { }
 
   /**
@@ -134,6 +136,25 @@ export class IndexComponent implements OnInit, OnDestroy {
         console.log('can\'t save');
       }
     }
+  }
+
+  /**
+   * Add Product to cart
+   * @param id
+   * @param product_name
+   * @param product_price
+   * @access public
+   * @return void
+   */
+  public addToCart(id: number, product_name: string, product_price: number): void {
+    console.log(id, product_name, product_price);
+    const product = {
+      id: id,
+      name: product_name,
+      price: product_price
+    };
+
+    this._order.addTocart(product);
   }
 
   /**

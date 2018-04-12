@@ -41,7 +41,9 @@
         <img class="prod-img" *ngIf="!item.img" [src]="imgLink + 'public/images/empty-image.png'" style="width:100%">
         <!-- <span class="w3-tag w3-display-topleft">Sale</span> -->
         <div class="w3-display-middle w3-display-hover">
-          <button class="w3-button w3-tiny w3-black">Buy now <i class="fa fa-shopping-cart"></i></button>
+          <button class="w3-button w3-tiny w3-black" (click)="addToCart(item.id, item.product_name, item.product_price)">
+            Buy now <i class="fa fa-shopping-cart"></i>
+          </button>
           <button *ngIf="accesses.edit" class="w3-button w3-small w3-padding" (click)="add_new_product(item.id)">
             <i class="fa fa-edit"></i>
           </button>

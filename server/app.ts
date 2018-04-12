@@ -22,6 +22,7 @@ import { productStoreRouter } from './routes/productstore';
 import { uploadRouter } from './routes/upload';
 import { staffRouter } from './routes/staff';
 import { usersRouter } from './routes/users';
+import { orderRouter } from './routes/order';
 
 // Faster server renders w/ Prod mode (dev mode never needed)
 enableProdMode();
@@ -69,6 +70,7 @@ app.use('/api/productstore', productStoreRouter);
 app.use('/api/upload', uploadRouter);
 app.use('/api/staff', staffRouter);
 app.use('/api/user', usersRouter);
+app.use('/api/order', orderRouter);
 
 // Disable 304
 // app.disable('etag');
