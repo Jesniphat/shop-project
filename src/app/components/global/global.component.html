@@ -22,9 +22,11 @@
     <header class="w3-container w3-xlarge">
       <div class="p w3-left">Jeans</div>
       <div class="p w3-right">
-        <i class="fa fa-shopping-cart w3-margin-right"></i>
-        <i class="fa fa-search w3-margin-right"></i>
-        <div class="w3-right w3-dropdown-hover">
+        <div class="w3-right">
+          <i class="fa fa-shopping-cart"></i>
+          <span class="w3-badge w3-black">3</span>
+        </div>
+        <div class="w3-right w3-dropdown-hover w3-margin-right">
           <i class="fa fa-user pointer"></i>
           <div class="w3-left w3-dropdown-content w3-bar-block w3-card-4">
             <button *ngIf="!accesses.id" class="w3-bar-item w3-button w3-medium" (click)="showLogin()"><i class="fa fa-user w3-margin-right"></i><span>Login</span></button>

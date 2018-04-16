@@ -3,6 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { Observable } from 'rxjs/Observable';
 import { ApiService } from './api.service';
 import { CookieService } from './cookie.service';
+import { AlertsService } from './alerts.service';
 
 @Injectable()
 export class OrderService {
@@ -12,7 +13,8 @@ export class OrderService {
   constructor(
     @Inject(PLATFORM_ID) private platformId: object, // Get platform is cliend and server
     public apiService: ApiService,
-    public cookieService: CookieService
+    public cookieService: CookieService,
+    private _alert: AlertsService
   ) { }
 
   /**
@@ -67,7 +69,9 @@ export class OrderService {
    * @return void
    */
   private _addTocartDoneAction(res: any): void {
-
+    if (res.cart.length > 0) {
+      this._alert.success('Add product to cart.');
+    }
   }
 
   /**
@@ -77,7 +81,7 @@ export class OrderService {
    * @return void
    */
   private _addTocartErrorAction(error: any): void {
-
+    this._alert.warning('Can\'t add product to cart.');
   }
 
 }
