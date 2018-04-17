@@ -7,6 +7,7 @@ import { AlertsService } from '../../service/alerts.service';
 import { AccessService } from '../../service/access.service';
 import { SocketService } from '../../service/socket.service';
 import { RootscopeService } from '../../service/rootscope.service';
+import { OrderService } from '../../service/order.service';
 
 declare const $: any;
 
@@ -26,19 +27,24 @@ export class GlobalComponent implements OnInit, OnDestroy {
     staffId: '',
     staffPic: ''
   };
+  public scroll: any = 'auto';
+  public cartNumber: any = 0;
+
+  /** Unsubcripe fn */
   public accesses: any = { create: 0, edit: 0, delete: 0 };
   public unsubRootScopeBlogUi: any;
   public unsubScrollBar: any;
   public unsubMenu: any;
   public unsubAccess: any;
-  public scroll: any = 'auto';
+  public unsubCartNumber: any;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: object, // Get platform is cliend and server
     private _apiService: ApiService,
     private _alertsService: AlertsService,
     private _accessService: AccessService,
-    private _rootScope: RootscopeService
+    private _rootScope: RootscopeService,
+    private _order: OrderService
   ) { }
 
 /**
@@ -55,7 +61,9 @@ export class GlobalComponent implements OnInit, OnDestroy {
     this.unsubScrollBar = this._rootScope.scrollBar$.subscribe(data => this.scroll = data);
     this.unsubMenu = this._rootScope.menu$.subscribe(data => this._showMenu(data));
     this.unsubAccess = this._rootScope.accessIndex$.subscribe(data => this.accesses = data);
+    this.unsubCartNumber = this._rootScope.badge$.subscribe(number => this.cartNumber = number);
     this._accessService.access();
+    this._order.getProductFromCookie();
   }
 
 /**

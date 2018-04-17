@@ -127,6 +127,9 @@ orderRouter.get('/cart', (req, res, next) => {
       }
     }
   }
+
+  const getCartList = new GetClassList(req, res);
+  getCartList.getCart();
 });
 
 export { orderRouter };

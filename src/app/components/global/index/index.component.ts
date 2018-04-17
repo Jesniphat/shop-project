@@ -147,7 +147,6 @@ export class IndexComponent implements OnInit, OnDestroy {
    * @return void
    */
   public addToCart(id: number, product_name: string, product_price: number): void {
-    console.log(id, product_name, product_price);
     const product = {
       id: id,
       name: product_name,
