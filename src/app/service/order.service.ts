@@ -4,6 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import { ApiService } from './api.service';
 import { CookieService } from './cookie.service';
 import { AlertsService } from './alerts.service';
+import { RootscopeService } from './rootscope.service';
 
 @Injectable()
 export class OrderService {
@@ -14,7 +15,8 @@ export class OrderService {
     @Inject(PLATFORM_ID) private platformId: object, // Get platform is cliend and server
     public apiService: ApiService,
     public cookieService: CookieService,
-    private _alert: AlertsService
+    private _alert: AlertsService,
+    private _root: RootscopeService
   ) { }
 
   /**
@@ -23,7 +25,7 @@ export class OrderService {
    * @return void
    */
   public getProductFromCookie(): void {
-    this.apiService.get('/api/order/get-cart').subscribe(
+    this.apiService.get('/api/order/cart').subscribe(
       response => this._getCartData(response.data),
       error => this._getCartError(error)
     );
@@ -35,8 +37,14 @@ export class OrderService {
    * @access private
    * @return void
    */
-  private _getCartData(cart: any): void {
-
+  private _getCartData(res: any): void {
+    let cartNumber = 0;
+    if (res.cart.length > 0) {
+      res.cart.forEach((value) => {
+        cartNumber += value.qty;
+      });
+    }
+    this._root.setCartNumber(cartNumber);
   }
 
   /**
@@ -46,7 +54,7 @@ export class OrderService {
    * @return void
    */
   private _getCartError(error: any): void {
-
+    this._alert.warning('Can\'t get product cart lists.');
   }
 
   /**
@@ -69,9 +77,14 @@ export class OrderService {
    * @return void
    */
   private _addTocartDoneAction(res: any): void {
+    let cartNumber = 0;
     if (res.cart.length > 0) {
       this._alert.success('Add product to cart.');
+      res.cart.forEach((value) => {
+        cartNumber += value.qty;
+      });
     }
+    this._root.setCartNumber(cartNumber);
   }
 
   /**

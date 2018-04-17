@@ -16,6 +16,7 @@ export class RootscopeService {
   public accessIndex$: Observable<any>;
   public menu$: Observable<any>;
   public setCategoryId$: Observable<any>;
+  public badge$: Observable<any>;
 
 /**
  * var for observer
@@ -29,6 +30,7 @@ export class RootscopeService {
   private _accessIndex: any;
   private _menu: any;
   private _setCategoryId: any;
+  private _badge: any;
 
   constructor() {
     this.doBlock$ = new Observable(observer => this._blockUI = observer);
@@ -40,6 +42,7 @@ export class RootscopeService {
     this.accessIndex$ = new Observable(observer => this._accessIndex = observer);
     this.menu$ = new Observable(observer => this._menu = observer);
     this.setCategoryId$ = new Observable(observer => this._setCategoryId = observer);
+    this.badge$ = new Observable(observer => this._badge = observer);
   }
 
 /**
@@ -116,6 +119,18 @@ export class RootscopeService {
   public setCategoryId(id: any): void {
     if (this._setCategoryId != null) {
       this._setCategoryId.next(id);
+    }
+  }
+
+/**
+ * Set number of cart product
+ * @param int cartNumber
+ * @access public
+ * @return void
+ */
+  public setCartNumber(qty: number = null): void {
+    if (qty && this._badge != null) {
+      this._badge.next(qty);
     }
   }
 }
