@@ -8,7 +8,9 @@ import { AlertsService } from '../../service/alerts.service';
   styleUrls: ['./alerts.component.scss']
 })
 export class AlertsComponent implements OnInit, OnDestroy {
-  /** Varable */
+  /**
+   * Varable
+   */
   public success: any = 'none';
   public info: any = 'none';
   public warning: any = 'none';

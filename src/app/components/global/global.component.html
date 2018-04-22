@@ -7,7 +7,9 @@
 
   <!-- Top menu on small screens -->
   <header class="w3-bar w3-top w3-hide-large w3-black w3-xlarge">
-    <div class="w3-bar-item w3-padding-24 w3-wide">LOGO</div>
+    <a [routerLink]="['/global/page', {outlets: {'g': ['index']}}]" style="text-decoration: none;">
+      <div class="w3-bar-item w3-padding-24 w3-wide">LOGO</div>
+    </a>
     <a class="w3-bar-item w3-button w3-padding-24 w3-right" (click)="w3_open()">
       <i class="fa fa-bars"></i>
     </a>
@@ -23,8 +25,10 @@
       <div class="p w3-left">Jeans</div>
       <div class="p w3-right">
         <div class="w3-right">
-          <i class="fa fa-shopping-cart"></i>
-          <span class="w3-badge w3-black">{{cartNumber}}</span>
+          <a [routerLink]="['/global/page', {outlets: {'g': ['cart-list']}}]" style="text-decoration: none;">
+            <i class="fa fa-shopping-cart"></i>
+            <span class="w3-badge w3-black">{{cartNumber}}</span>
+          </a>
         </div>
         <div class="w3-right w3-dropdown-hover w3-margin-right">
           <i class="fa fa-user pointer"></i>

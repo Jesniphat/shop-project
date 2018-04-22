@@ -19,7 +19,6 @@ export class CategoryListComponent implements OnInit {
 	 */
   public item = 1;
   public error: any = '';
-  // public query: string = '';
   public categoryLists: any = [];
   public categoryId: any = 'create';
 

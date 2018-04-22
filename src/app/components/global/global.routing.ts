@@ -10,6 +10,7 @@ import { GlobalComponent } from './global.component';
 import { IndexComponent } from './index/index.component';
 import { ProductListComponent } from './product-list/product-list.component';
 import { ProductStockComponent } from './product-stock/product-stock.component';
+import { CartListComponent } from './cart-list/cart-list.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'page', pathMatch: 'full'},
@@ -23,7 +24,8 @@ const routes: Routes = [
         categoryId: ProductListResolverService
       }
     },
-    { path: 'product-stock', component: ProductStockComponent, outlet: 'g', canActivate: [GlobalGuard]}
+    { path: 'product-stock', component: ProductStockComponent, outlet: 'g', canActivate: [GlobalGuard]},
+    { path: 'cart-list', component: CartListComponent, outlet: 'g' }
   ]}
 ];
 

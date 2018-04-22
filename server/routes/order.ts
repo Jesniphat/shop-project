@@ -132,4 +132,50 @@ orderRouter.get('/cart', (req, res, next) => {
   getCartList.getCart();
 });
 
+orderRouter.put('/remove/:id', (req, res, next) => {
+  class RemoveFromCart {
+    public cartList: any;
+    private _cart: any;
+    private _prodId: any;
+    constructor(private _req: any, private _res: any) {
+      this._cart = new Cart(_req, _res);
+      this._prodId = _req.params.id;
+    }
+
+    private _removeByid(id: any): Promise<any> {
+      return new Promise((resolve, reject) => {
+        for (let i = 0; i < this.cartList.length; i++ ) {
+          if (this.cartList[i].id === parseInt(id, 0)) {
+            this.cartList.splice(i, 1);
+          }
+        }
+
+        resolve(id);
+      });
+    }
+
+    public async removeCart() {
+      try {
+        this.cartList = await this._cart.cartList();
+        await this._removeByid(this._prodId);
+        await this._cart.writeCartList(this.cartList);
+        await this._res.json({
+          status: true,
+          data: {
+            cart: this.cartList
+          }
+        });
+      } catch ($e) {
+        await this._res.json({
+          status: false,
+          error: $e
+        });
+      }
+    }
+  }
+
+  const getCartList = new RemoveFromCart(req, res);
+  getCartList.removeCart();
+});
+
 export { orderRouter };

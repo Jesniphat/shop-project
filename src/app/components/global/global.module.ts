@@ -14,6 +14,7 @@ import { AddEditCategoryComponent } from './add-edit-category/add-edit-category.
 import { AddEditProductComponent } from './add-edit-product/add-edit-product.component';
 import { ProductListComponent } from './product-list/product-list.component';
 import { ProductStockComponent } from './product-stock/product-stock.component';
+import { CartListComponent } from './cart-list/cart-list.component';
 
 @NgModule({
   imports: [
@@ -29,7 +30,8 @@ import { ProductStockComponent } from './product-stock/product-stock.component';
     AddEditCategoryComponent,
     AddEditProductComponent,
     ProductListComponent,
-    ProductStockComponent
+    ProductStockComponent,
+    CartListComponent
   ],
   providers: [
     Uploader
