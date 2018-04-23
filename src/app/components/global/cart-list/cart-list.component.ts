@@ -102,6 +102,13 @@ export class CartListComponent implements OnInit {
     this._removeProductFromCart(data);
   }
 
+
+  /**
+   * Remove product to cart
+   * @param data
+   * @access private
+   * @return void
+   */
   private _removeProductFromCart(data: any): void {
     this._api.put('/api/order/remove/' + data.id, {})
     .subscribe(
@@ -115,12 +122,16 @@ export class CartListComponent implements OnInit {
 
 
   /**
-   * Element return some data
-   * @param data: any
+   * Save order
    * @access public
    * @return void
    */
-  public tableReturn(data: any): void {
+  public saveCart(): void {
+    this._api.post('api/order', {})
+    .subscribe(
+      response => {},
+      error => {}
+    );
   }
 
 }

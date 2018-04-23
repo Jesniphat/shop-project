@@ -60,6 +60,10 @@ export class AlertsComponent implements OnInit, OnDestroy {
     }
   }
 
+  public close(element: any): void {
+    document.getElementById(element).style.display = 'none';
+  }
+
   /**
    * When component has destroy
    * @access public
