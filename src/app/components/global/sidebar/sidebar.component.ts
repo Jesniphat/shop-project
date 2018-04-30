@@ -174,7 +174,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
  * @access public
  */
  public ngOnDestroy() {
-  this.unsubaccesses.unsubscribe();
+  let destroy: any;
+  destroy = this.unsubaccesses != null ? this.unsubaccesses.unsubscribe() : null;
  }
 
 }

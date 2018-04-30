@@ -276,10 +276,11 @@ export class GlobalComponent implements OnInit, OnDestroy {
  * @return void
  */
   public ngOnDestroy(): void {
-    this.unsubRootScopeBlogUi = this.unsubRootScopeBlogUi != null ? this.unsubRootScopeBlogUi.unsubscribe() : null;
-    this.unsubScrollBar = this.unsubScrollBar != null ? this.unsubScrollBar.unsubscribe() : null;
-    this.unsubMenu = this.unsubMenu != null ? this.unsubMenu.unsubscribe() : null;
-    this.unsubAccess = this.unsubAccess != null ? this.unsubAccess.unsubscribe() : null;
+    let unsub: any;
+    unsub = this.unsubRootScopeBlogUi != null ? this.unsubRootScopeBlogUi.unsubscribe() : null;
+    unsub = this.unsubScrollBar != null ? this.unsubScrollBar.unsubscribe() : null;
+    unsub = this.unsubMenu != null ? this.unsubMenu.unsubscribe() : null;
+    unsub = this.unsubAccess != null ? this.unsubAccess.unsubscribe() : null;
   }
 
 }

@@ -274,7 +274,8 @@ export class ProductStockComponent implements OnInit, OnDestroy {
    * @access public
    */
   public ngOnDestroy() {
-    this.unsubProductList = this.unsubProductList != null ? this.unsubProductList.unsubscribe() : null;
+    let destroy: any;
+    destroy = this.unsubProductList != null ? this.unsubProductList.unsubscribe() : null;
   }
 
 }
