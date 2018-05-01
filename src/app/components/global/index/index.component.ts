@@ -147,6 +147,7 @@ export class IndexComponent implements OnInit, OnDestroy {
    * @return void
    */
   public addToCart(id: number, product_name: string, product_price: number): void {
+    this._rootScope.setBlock(true, 'Set product to cart ...');
     const product = {
       id: id,
       name: product_name,

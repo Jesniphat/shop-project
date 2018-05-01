@@ -15,6 +15,7 @@ import { AddEditProductComponent } from './add-edit-product/add-edit-product.com
 import { ProductListComponent } from './product-list/product-list.component';
 import { ProductStockComponent } from './product-stock/product-stock.component';
 import { CartListComponent } from './cart-list/cart-list.component';
+import { ConfirmOrderComponent } from './confirm-order/confirm-order.component';
 
 @NgModule({
   imports: [
@@ -31,7 +32,8 @@ import { CartListComponent } from './cart-list/cart-list.component';
     AddEditProductComponent,
     ProductListComponent,
     ProductStockComponent,
-    CartListComponent
+    CartListComponent,
+    ConfirmOrderComponent
   ],
   providers: [
     Uploader

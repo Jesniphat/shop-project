@@ -1,10 +1,10 @@
 <div class="w3-container page-container">
   <div class="w3-row">
-    <app-table-element [dataTables]="cartList" (deleteData)="getDataDelete($event)"></app-table-element>    
+    <app-table-element [dataTables]="cartList" (deleteData)="getDataDelete($event)"></app-table-element>
   </div>
 
   <br>
-  <button class="w3-button w3-right w3-blue" id="saveCart" type="submit" (click)="saveCart()">Pay</button>
+  <button class="w3-button w3-right w3-blue" id="saveCart" type="submit" (click)="saveCart()" [disabled]="cartList.length === 0">Pay</button>
 
 </div>
 

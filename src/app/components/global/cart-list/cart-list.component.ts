@@ -19,7 +19,7 @@ export class CartListComponent implements OnInit {
 	 */
   @ViewChild(TableElementComponent) private tableElementComponent: TableElementComponent;
 
-  public cartList: any;
+  public cartList: any = [];
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: object,

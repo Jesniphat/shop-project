@@ -257,7 +257,6 @@ export class ProductStockComponent implements OnInit, OnDestroy {
   }
 
   public createProductResult(result) {
-    console.log(result);
     if (result) {
       if (isPlatformBrowser(this.platformId)) {
         document.getElementById('addproductmodel').style.display = 'none';

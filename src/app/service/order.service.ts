@@ -77,6 +77,7 @@ export class OrderService {
    * @return void
    */
   private _addTocartDoneAction(res: any): void {
+    this._root.setBlock(false);
     let cartNumber = 0;
     if (res.cart.length > 0) {
       this._alert.success('Add product to cart.');
@@ -94,6 +95,7 @@ export class OrderService {
    * @return void
    */
   private _addTocartErrorAction(error: any): void {
+    this._root.setBlock(false);
     this._alert.warning('Can\'t add product to cart.');
   }
 
