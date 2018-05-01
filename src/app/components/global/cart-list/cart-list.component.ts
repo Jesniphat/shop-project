@@ -75,7 +75,13 @@ export class CartListComponent implements OnInit {
       edit: false,
       delete: true
     };
-    this.tableElementComponent.getTableDataLists({list: this.cartList, column: cartColumn, action: action});
+    this.tableElementComponent.getTableDataLists(
+      {
+        list: this.cartList,
+        column: cartColumn,
+        action: action
+      }
+    );
     this._root.setBlock(false);
   }
 
