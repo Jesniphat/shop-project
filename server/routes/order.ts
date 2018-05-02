@@ -61,6 +61,7 @@ orderRouter.post('/addcart', (req, res, next) => {
           for (let i = 0; i < cartList.length; i++) {
             if (cartList[i].id === this._product.id) {
               isCart = true;
+              cartList[i].priceperunit = this._product.price;
               cartList[i].price += this._product.price;
               cartList[i].qty += 1;
             }
@@ -70,6 +71,7 @@ orderRouter.post('/addcart', (req, res, next) => {
 
         if (!isCart) {
           this._product.qty = 1;
+          this._product.priceperunit = this._product.price;
           this.cartList.push(this._product);
         }
 

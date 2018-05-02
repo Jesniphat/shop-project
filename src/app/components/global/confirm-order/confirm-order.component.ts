@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { ApiService } from '../../../service/api.service';
 import { RootscopeService } from '../../../service/rootscope.service';
 import { OrderService } from '../../../service/order.service';
+import { AlertsService } from '../../../service/alerts.service';
 
 import { TableElementComponent } from '../../../element/table-element/table-element.component';
 
@@ -20,6 +21,7 @@ export class ConfirmOrderComponent implements OnInit {
   @ViewChild(TableElementComponent) private tableElementComponent: TableElementComponent;
 
   public cartList: any = [];
+  public sumPrice: any = 0;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: object,
@@ -28,7 +30,8 @@ export class ConfirmOrderComponent implements OnInit {
     public router: Router,
     private _api: ApiService,
     private _root: RootscopeService,
-    private _order: OrderService
+    private _order: OrderService,
+    private _alert: AlertsService
   ) {
     title.setTitle('Category');
     meta.addTags([
@@ -73,8 +76,15 @@ export class ConfirmOrderComponent implements OnInit {
       edit: false,
       delete: false
     };
-    console.log(this.cartList);
-    // this.tableElementComponent.getTableDataLists({list: this.cartList, column: cartColumn, action: action});
+
+    if (this.cartList.length === 0) {
+      this._alert.warning('Not have product in your cart.');
+    }
+
+    for (let i = 0; i < this.cartList.length; i++) {
+      this.sumPrice += this.cartList[i].price;
+    }
+
     this._root.setBlock(false);
   }
 

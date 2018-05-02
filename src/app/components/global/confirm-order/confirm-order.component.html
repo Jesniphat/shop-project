@@ -1,3 +1,28 @@
-<p>
-  Summary you order.
-</p>
+<div class="w3-row">
+  <table class="w3-table-all">
+    <thead>
+      <tr>
+        <th>No.</th>
+        <th>Product Name</th>
+        <th>Product Qty</th>
+        <th>Product Per/Price</th>
+        <th>Product Price</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of cartList; let no = index">
+        <td>{{no + 1}}.</td>
+        <td>{{item.name}}</td>
+        <td>{{item.qty}}</td>
+        <td>{{item.priceperunit}}</td>
+        <td>{{item.price}}</td>
+      </tr>
+      <tr>
+        <td colspan="4">Summary Price</td>
+        <td>{{sumPrice}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<br>
