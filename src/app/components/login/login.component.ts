@@ -34,7 +34,11 @@ export class LoginComponent implements OnInit {
     ]);
   }
 
-  ngOnInit() {
+
+  /**
+   * Start function
+   */
+  public ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
       this.storage = localStorage;
     }
@@ -42,7 +46,13 @@ export class LoginComponent implements OnInit {
     this.getLogin();
   }
 
-  getLogin() {
+
+  /**
+   * Get login function
+   * @access public
+   * @return void
+   */
+  public getLogin() {
     if (isPlatformBrowser(this.platformId)) {
       const param = {'clear': 'login'};
       this.apiService
@@ -54,15 +64,32 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  getLoginDoneAction(res: any) {
+  /**
+   * Get login done
+   * @param res
+   * @access private
+   * @return void
+   */
+  private getLoginDoneAction(res: any) {
     // console.log("res login = ", res);
   }
 
-  getLoginErrorAction(error: any) {
+  /**
+   * Get login Error
+   * @param error
+   * @access private
+   * @return void
+   */
+  private getLoginErrorAction(error: any) {
       this.error = error.message;
   }
 
-  login() {
+  /**
+   * Post login
+   * @access public
+   * @return void
+   */
+  public login() {
     const param = {
       user: this.username,
       password: this.password
@@ -76,21 +103,32 @@ export class LoginComponent implements OnInit {
       );
   }
 
-  loginDoneAction(res: any) {
+  /**
+   * Login done action
+   * @param res
+   * @access private
+   * @return void
+   */
+  private loginDoneAction(res: any) {
     if ( res.status === true) {
         const loginData = JSON.stringify(res.data);
         this.storage.setItem('logindata', loginData);
         this.router.navigate(['/manager']);
     } else {
-        // console.log('can nott login = ', res.error);
         this.msgs = [];
         this.msgs.push({severity: 'warn', summary: 'Oops!', detail: res.error});
     }
   }
 
-  loginErrorAction(error: any) {
+
+  /**
+   * Login Error
+   * @param error
+   * @access private
+   * @return void
+   */
+  private loginErrorAction(error: any) {
     this.error = error.message;
-    // console.log('error = ', this.error);
   }
 
 }

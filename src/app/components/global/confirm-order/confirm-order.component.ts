@@ -22,6 +22,7 @@ export class ConfirmOrderComponent implements OnInit {
 
   public cartList: any = [];
   public sumPrice: any = 0;
+  public users: any [];
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: object,
@@ -43,6 +44,7 @@ export class ConfirmOrderComponent implements OnInit {
 
   public ngOnInit() {
     this._getCartList();
+    this._getUserData();
   }
 
   /**
@@ -98,6 +100,22 @@ export class ConfirmOrderComponent implements OnInit {
   private _showCartListError(error: any): void {
     console.log(error);
     this._root.setBlock(false);
+  }
+
+  private _getUserData(): void {
+    this._api.get('/api/user').subscribe(
+      response => this._getUserDoneAction(response.data),
+      error => this._getUserErrorAction(error)
+    );
+  }
+
+  private _getUserDoneAction(response): void {
+    console.log(response);
+  }
+
+
+  private _getUserErrorAction(error): void {
+    console.log(error);
   }
 
 }

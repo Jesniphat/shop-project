@@ -137,8 +137,6 @@ authenRouter.post('/login', function(req, res, next) {
             display_name: this.$scope.name,
             last_name: this.$scope.lastname,
             login_name: this.$scope.user,
-            password: this.$scope.password,
-            type: this.$scope.type,
             pic: this.$scope.pic
           }
         });
