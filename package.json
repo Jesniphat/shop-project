@@ -9,7 +9,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "dev": "concurrently \"npm run cliend:dev \" \"npm run server:dev\" ",
+    "dev": "concurrently \"npm run client:dev \" \"npm run server:dev\" ",
     "server:dev": "concurrently \"nodemon -e js,ts --watch server/ --exec npm run webpack:dev\" \"PROD=development nodemon --watch dist/server/ ./dist/server/www.js\" ",
     "server-windows:dev": "concurrently \"nodemon -e js,ts --watch server/ --exec npm run webpack:dev\" \"set PROD=development && nodemon --watch dist/server/ ./dist/server/www.js\" ",
     "client:dev": "ng serve --aot --proxy-config proxy.conf.json",
