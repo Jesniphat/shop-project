@@ -47,60 +47,79 @@ import { ngExpressEngine } from '@nguniversal/express-engine';
 
 const { provideModuleMap } = require('@nguniversal/module-map-ngfactory-loader');
 
-app.engine('html', ngExpressEngine({
-  bootstrap: AppServerModuleNgFactory,
-  providers: [
-    provideModuleMap(LAZY_MODULE_MAP)
-  ]
-}));
+class App {
+  constructor() {
+    this.initViewEngine();
+    this.initExpressMiddleware();
+    this.initRoutes();
+    this.initRoutes();
+  }
 
-app.set('view engine', 'html');
-app.set('views', join(DIST_FOLDER, 'browser'));
+  private initViewEngine() {
+    app.engine('html', ngExpressEngine({
+      bootstrap: AppServerModuleNgFactory,
+      providers: [
+        provideModuleMap(LAZY_MODULE_MAP)
+      ]
+    }));
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+    app.set('view engine', 'html');
+    app.set('views', join(DIST_FOLDER, 'browser'));
+  }
 
-app.use('/api/menu', menuRouter);
-app.use('/api/authen', authenRouter);
-app.use('/api/home', homeRouter);
-app.use('/api/category', categoryRouter);
-app.use('/api/product', productRouter);
-app.use('/api/productstore', productStoreRouter);
-app.use('/api/upload', uploadRouter);
-app.use('/api/staff', staffRouter);
-app.use('/api/user', usersRouter);
-app.use('/api/order', orderRouter);
+  private initExpressMiddleware() {
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(cookieParser());
+  }
 
-// Disable 304
-// app.disable('etag');
+  private initRoutes() {
+    app.use('/api/menu', menuRouter);
+    app.use('/api/authen', authenRouter);
+    app.use('/api/home', homeRouter);
+    app.use('/api/category', categoryRouter);
+    app.use('/api/product', productRouter);
+    app.use('/api/productstore', productStoreRouter);
+    app.use('/api/upload', uploadRouter);
+    app.use('/api/staff', staffRouter);
+    app.use('/api/user', usersRouter);
+    app.use('/api/order', orderRouter);
 
-// Server static files from /public
-app.use('/public', express.static(join(DIST_FOLDER, 'public')));
+    // Disable 304
+    // app.disable('etag');
 
-// Server static files from /browser
-app.get('*.*', express.static(join(DIST_FOLDER, 'browser')));
+    // Server static files from /public
+    app.use('/public', express.static(join(DIST_FOLDER, 'public')));
 
-// All regular routes use the Universal engine
-app.get('*', (req, res) => {
-  res.render(join(DIST_FOLDER, 'browser', 'index.html'), { req });
-});
+    // Server static files from /browser
+    app.get('*.*', express.static(join(DIST_FOLDER, 'browser')));
 
-// This one add it with out ex from angular.io It same express gen. For debug some error. Then we add ./bin/www.ts
-// catch 404 and forward to error handler
-app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
-  const err = new Error('Not Found');
-  next(err);
-});
+    // All regular routes use the Universal engine
+    app.get('*', (req, res) => {
+      res.render(join(DIST_FOLDER, 'browser', 'index.html'), { req });
+    });
+  }
 
-// production error handler
-// no stacktrace leaked to user
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  res.status(err.status || 500);
-  res.json({
-    error: {},
-    message: err.message,
-  });
-});
+  private initCatch() {
+    // This one add it with out ex from angular.io It same express gen. For debug some error. Then we add ./bin/www.ts
+    // catch 404 and forward to error handler
+    app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+      const err = new Error('Not Found');
+      next(err);
+    });
+
+    // production error handler
+    // no stacktrace leaked to user
+    app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+      res.status(err.status || 500);
+      res.json({
+        error: {},
+        message: err.message,
+      });
+    });
+  }
+}
+
+const app_start =  new App();
 
 export { app };

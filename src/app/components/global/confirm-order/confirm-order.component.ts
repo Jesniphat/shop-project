@@ -6,6 +6,7 @@ import { ApiService } from '../../../service/api.service';
 import { RootscopeService } from '../../../service/rootscope.service';
 import { OrderService } from '../../../service/order.service';
 import { AlertsService } from '../../../service/alerts.service';
+import { AccessService } from '../../../service/access.service';
 
 import { TableElementComponent } from '../../../element/table-element/table-element.component';
 
@@ -23,6 +24,10 @@ export class ConfirmOrderComponent implements OnInit {
   public cartList: any = [];
   public sumPrice: any = 0;
   public users: any [];
+  public login: any = {
+    id: 0
+  };
+  public clear: any;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: object,
@@ -32,7 +37,8 @@ export class ConfirmOrderComponent implements OnInit {
     private _api: ApiService,
     private _root: RootscopeService,
     private _order: OrderService,
-    private _alert: AlertsService
+    private _alert: AlertsService,
+    private _access: AccessService
   ) {
     title.setTitle('Category');
     meta.addTags([
@@ -44,6 +50,7 @@ export class ConfirmOrderComponent implements OnInit {
 
   public ngOnInit() {
     this._getCartList();
+    this.clear = this._root.accessPage$.subscribe(accesses => this.login = accesses);
     this._getUserData();
   }
 
@@ -102,15 +109,23 @@ export class ConfirmOrderComponent implements OnInit {
     this._root.setBlock(false);
   }
 
+
+  /**
+   * Get user login
+   * @access private
+   * @return void
+   */
   private _getUserData(): void {
     this._api.get('/api/user').subscribe(
-      response => this._getUserDoneAction(response.data),
+      response => this._getUserDoneAction(response),
       error => this._getUserErrorAction(error)
     );
   }
 
   private _getUserDoneAction(response): void {
-    console.log(response);
+    if (response.data.status !== 0) {
+      this.login = true;
+    }
   }
 
 

@@ -102,7 +102,7 @@ authenRouter.post('/login', function(req, res, next) {
         };
         const gets = {
           fields: '*',
-          table:  'staff',
+          table:  'user',
           where:  where
         };
         this.db.SelectRow(gets,
@@ -137,6 +137,7 @@ authenRouter.post('/login', function(req, res, next) {
             display_name: this.$scope.name,
             last_name: this.$scope.lastname,
             login_name: this.$scope.user,
+            email: this.$scope.email,
             pic: this.$scope.pic
           }
         });

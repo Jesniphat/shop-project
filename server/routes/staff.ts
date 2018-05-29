@@ -24,22 +24,22 @@ staffRouter.use(function (req, res, next) {
 staffRouter.post('/', (req, res, next) => {
   class SaveStaff {
     private db = new Databases();
-    private _staff: any = req.body;
+    private _user: any = req.body;
 
     constructor(private _req, private _res) {
-      this._staff = this._req.body;
+      this._user = this._req.body;
     }
 
     private _insertStaff = function(): Promise<any> {
       return new Promise((resolve, reject) => {
         const insertData = {
-          table: 'staff',
+          table: 'user',
           query: {
-            name: this._staff.staffName,
-            lastname: this._staff.staffLastName,
-            user: this._staff.staffUserName,
+            name: this._user.staffName,
+            lastname: this._user.staffLastName,
+            user: this._user.staffUserName,
             password: md5(this._staff.staffPassword),
-            pic: this._staff.staffPic,
+            pic: this._user.staffPic,
             uuid: uuidv1()
           }
         };
@@ -76,44 +76,44 @@ staffRouter.post('/', (req, res, next) => {
 staffRouter.put('/', (req, res, next) => {
   class UpdateStaff {
     private db = new Databases();
-    private _staff: any = req.body;
+    private _user: any = req.body;
 
     constructor (private _req, private _res) {
-      this._staff = this._req.body;
+      this._user = this._req.body;
     }
 
-    private _updataStaff(): Promise<any> {
+    private _updataUser(): Promise<any> {
       return new Promise((resolve, reject) => {
-        const updataStaffdata = {
-          table: 'staff',
+        const updataUserdata = {
+          table: 'user',
           query: {
-            name: this._staff.name,
-            lastname: this._staff.lastName,
-            user: this._staff.user,
-            pic: this._staff.pic
+            name: this._user.name,
+            lastname: this._user.lastName,
+            user: this._user.user,
+            pic: this._user.pic
           },
-          where: { id: this._staff.id }
+          where: { id: this._user.id }
         };
-        const update = this.db.Update(updataStaffdata, success => resolve(success), error => reject(error));
+        const update = this.db.Update(updataUserdata, success => resolve(success), error => reject(error));
       });
     }
 
     public async updateData() {
       try {
         await this.db.beginTransection();
-        await this._updataStaff();
+        await this._updataUser();
         await this.db.Commit();
         await this.db.EndConnect();
 
         await this._res.json({
           status: true,
             data: {
-              id: this._staff.id,
-              display_name: this._staff.name,
-              last_name: this._staff.lastName,
-              login_name: this._staff.user,
-              password: this._staff.password,
-              pic: this._staff.pic
+              id: this._user.id,
+              display_name: this._user.name,
+              last_name: this._user.lastName,
+              login_name: this._user.user,
+              password: this._user.password,
+              pic: this._user.pic
             }
         });
       } catch ($e) {

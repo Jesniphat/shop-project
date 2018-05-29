@@ -132,12 +132,8 @@ export class CartListComponent implements OnInit {
    * @access public
    * @return void
    */
-  public saveCart(): void {
-    this._api.post('api/order', {})
-    .subscribe(
-      response => {},
-      error => {}
-    );
+  public confirmOrder(): void {
+    this.router.navigate(['/global/page', {outlets: {'g': ['confirm-order']}}]);
   }
 
 }

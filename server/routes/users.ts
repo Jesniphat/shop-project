@@ -16,8 +16,8 @@ usersRouter.get('/', function(req, res, next) {
     private _getUserData(): Promise<any> {
       return new Promise((resolve, reject) => {
         if (super.isLogin) {
-          this.loginId = super.getID;
-          resolve(true);
+          this.loginId = super.getID(this.request);
+          resolve(this.loginId);
         } else {
           reject(false);
         }
